@@ -19,7 +19,7 @@ final class DashboardController extends AbstractController
     {
         $accessToken = $request->getSession()->get('access_token');
         $user = new StravaUser($accessToken);
-        dump($user->getAllActivities());
+        //dump($user->getAllActivities());
 
         return $this->render('dashboard/index.html.twig');
     }
