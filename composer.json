@@ -9,6 +9,8 @@
         "php": ">=8.3.19",
         "ext-ctype": "*",
         "ext-iconv": "*",
+        "edwin-luijten/oauth2-strava": "^1.4",
+        "knpuniversity/oauth2-client-bundle": "^2.18",
         "runtime/frankenphp-symfony": "^0.2.0",
         "symfony/console": "7.2.*",
         "symfony/dotenv": "7.2.*",
@@ -67,5 +69,8 @@
             "require": "7.2.*",
             "docker": true
         }
+    },
+    "require-dev": {
+        "symfony/maker-bundle": "^1.62"
     }
 }
