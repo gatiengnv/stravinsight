@@ -11,7 +11,8 @@ class StravaUser
     public function __construct(
         private string $accessToken,
         private ClientInterface $httpClient = new Client(),
-    ){}
+    ) {
+    }
 
     public function getAccessToken(): string
     {
@@ -40,14 +41,12 @@ class StravaUser
     {
         $request = $this->httpClient->request('GET',
             'https://www.strava.com/api/v3/athlete/activities',
-            ['headers' =>
-                [
-                    'Authorization' => 'Bearer ' . $this->accessToken,
-                ]
+            ['headers' => [
+                'Authorization' => 'Bearer '.$this->accessToken,
+            ],
             ]
         )->getBody()->getContents();
+
         return json_decode($request, true);
     }
-
-
 }

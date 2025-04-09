@@ -12,16 +12,16 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class StravaLoginController extends AbstractController
 {
-
     #[Route('/connect/strava', name: 'connect_strava_start')]
     public function connectAction(ClientRegistry $clientRegistry): RedirectResponse
     {
         return $clientRegistry
             ->getClient('strava')
             ->redirect([
-                'read_all,activity:read_all'
+                'read_all,activity:read_all',
             ]);
     }
+
     #[Route('/connect/strava/check', name: 'connect_strava_check')]
     public function connectCheckAction(Request $request, ClientRegistry $clientRegistry): RedirectResponse
     {
@@ -32,8 +32,10 @@ class StravaLoginController extends AbstractController
             $accessToken = $client->getAccessToken();
             $request->getSession()->set('access_token', $accessToken);
         } catch (IdentityProviderException $e) {
-            var_dump($e->getMessage()); die;
+            var_dump($e->getMessage());
+            exit;
         }
+
         return $this->redirectToRoute('app_dashboard');
     }
 }
