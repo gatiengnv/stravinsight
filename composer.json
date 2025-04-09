@@ -18,6 +18,8 @@
         "symfony/framework-bundle": "7.2.*",
         "symfony/runtime": "7.2.*",
         "symfony/twig-bundle": "7.2.*",
+        "symfony/ux-react": "^2.24",
+        "symfony/webpack-encore-bundle": "^2.2",
         "symfony/yaml": "7.2.*"
     },
     "config": {
