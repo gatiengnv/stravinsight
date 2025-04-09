@@ -59,6 +59,12 @@
         ],
         "post-update-cmd": [
             "@auto-scripts"
+        ],
+        "fix": [
+            "php vendor/bin/php-cs-fixer fix"
+        ],
+        "fix-twig": [
+            "php vendor/bin/twig-cs-fixer fix"
         ]
     },
     "conflict": {
@@ -72,6 +78,8 @@
         }
     },
     "require-dev": {
-        "symfony/maker-bundle": "^1.62"
+        "friendsofphp/php-cs-fixer": "^3.75",
+        "symfony/maker-bundle": "^1.62",
+        "vincentlanglet/twig-cs-fixer": "^3.5"
     }
 }
