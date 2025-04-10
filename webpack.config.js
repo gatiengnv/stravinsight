@@ -1,4 +1,22 @@
-const Encore = require('@symfony/webpack-encore');
+const WatchFilesPlugin = require('webpack-watch-files-plugin').default;
+
+const Encore = require('@symfony/webpack-encore')
+  .configureDevServerOptions((options) => {
+    options.liveReload = true;
+    options.static = {
+      watch: false,
+    };
+    options.watchFiles = {
+      paths: ["src/**/*.php", "templates/**/*"],
+    };
+  })
+  .addPlugin(new WatchFilesPlugin({
+    files: ['src/**/*.php', 'templates/**/*'],
+    options: {
+      aggregateTimeout: 300, // Optional: Delay rebuild for 300ms
+      ignoreInitial: true // Optional: Avoid initial rebuild
+    }
+  }));
 
 // Manually configure the runtime environment if not already configured yet by the "encore" command.
 // It's useful when you use tools that rely on webpack.config.js file.
