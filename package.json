@@ -9,6 +9,7 @@
         "@symfony/webpack-encore": "^5.0.0",
         "autoprefixer": "^10.4.21",
         "core-js": "^3.38.0",
+        "daisyui": "^5.0.18",
         "postcss": "^8.5.3",
         "postcss-loader": "^8.1.1",
         "react": "^18.0",
