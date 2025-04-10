@@ -1,2 +1,36 @@
 @import "tailwindcss";
 @plugin "daisyui";
+@plugin "daisyui/theme" {
+    name: "strava";
+    default: true;
+    prefersdark: false;
+    color-scheme: light;
+    --color-base-100: #FFFFFF;
+    --color-base-200: #F7F7F7;
+    --color-base-300: #E5E5E5;
+    --color-base-content: #333333;
+    --color-primary: #FC4C02;
+    --color-primary-content: #FFFFFF;
+    --color-secondary: #F7F7F7;
+    --color-secondary-content: #333333;
+    --color-accent: #767676;
+    --color-accent-content: #FFFFFF;
+    --color-neutral: #333333;
+    --color-neutral-content: #FFFFFF;
+    --color-info: #3ABFF8;
+    --color-info-content: #FFFFFF;
+    --color-success: #36D399;
+    --color-success-content: #FFFFFF;
+    --color-warning: #FBBF24;
+    --color-warning-content: #333333;
+    --color-error: #F87272;
+    --color-error-content: #FFFFFF;
+    --radius-selector: 1rem;
+    --radius-field: 0.25rem;
+    --radius-box: 0.5rem;
+    --size-selector: 0.25rem;
+    --size-field: 0.25rem;
+    --border: 1px;
+    --depth: 1;
+    --noise: 0;
+}
