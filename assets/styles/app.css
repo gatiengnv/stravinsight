@@ -3,34 +3,49 @@
 @plugin "daisyui/theme" {
     name: "strava";
     default: true;
-    prefersdark: false;
-    color-scheme: light;
-    --color-base-100: #FFFFFF;
-    --color-base-200: #F7F7F7;
-    --color-base-300: #E5E5E5;
-    --color-base-content: #333333;
-    --color-primary: #FC4C02;
-    --color-primary-content: #FFFFFF;
-    --color-secondary: #F7F7F7;
-    --color-secondary-content: #333333;
-    --color-accent: #767676;
-    --color-accent-content: #FFFFFF;
-    --color-neutral: #333333;
-    --color-neutral-content: #FFFFFF;
+    prefersdark: true;
+    color-scheme: dark;
+
+    --color-base-100: #0f0f0f;
+    --color-base-200: #1c1c1e;
+    --color-base-300: #2c2c2e;
+    --color-base-content: #ffffff;
+
+    --color-primary: #fc4c02;
+    --color-primary-content: #ffffff;
+
+    --color-secondary: #202124;
+    --color-secondary-content: #ffffff;
+
+    --color-accent: #3d3d3d;
+    --color-accent-content: #ffffff;
+
+    --color-neutral: #121212;
+    --color-neutral-content: #ffffff;
+
     --color-info: #3ABFF8;
-    --color-info-content: #FFFFFF;
+    --color-info-content: #ffffff;
+
     --color-success: #36D399;
-    --color-success-content: #FFFFFF;
+    --color-success-content: #ffffff;
+
     --color-warning: #FBBF24;
-    --color-warning-content: #333333;
+    --color-warning-content: #1c1c1c;
+
     --color-error: #F87272;
-    --color-error-content: #FFFFFF;
+    --color-error-content: #ffffff;
+
     --radius-selector: 1rem;
     --radius-field: 0.25rem;
     --radius-box: 0.5rem;
+
     --size-selector: 0.25rem;
     --size-field: 0.25rem;
+
     --border: 1px;
     --depth: 1;
     --noise: 0;
+
+    background-color: var(--color-base-100);
+    color: var(--color-base-content);
 }
