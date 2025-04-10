@@ -9,6 +9,7 @@ const Encore = require('@symfony/webpack-encore')
     options.watchFiles = {
       paths: ["src/**/*.php", "templates/**/*"],
     };
+    options.ignored = ["vendor/**", "node_modules/**"];
   })
   .addPlugin(new WatchFilesPlugin({
     files: ['src/**/*.php', 'templates/**/*'],
