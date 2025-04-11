@@ -1,27 +1,24 @@
 <?php
 
-namespace App\Strava;
+namespace App\Strava\Client;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\ClientInterface;
+use App\Strava\Activities;
+use App\Strava\Client\Strava;
 use GuzzleHttp\Exception\GuzzleException;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
 use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class StravaUser
+
+class StravaClient implements Strava
 {
-    public function __construct(
-        private string $accessToken,
-        private ClientInterface $httpClient = new Client(),
-    ) {
-    }
+    private string $accessToken = '';
 
-    public function getAccessToken(): string
-    {
-        return $this->accessToken;
+    public function __construct(
+        private HttpClientInterface $httpClient,
+    ) {
     }
 
     public function setAccessToken(string $accessToken): void
@@ -29,30 +26,20 @@ class StravaUser
         $this->accessToken = $accessToken;
     }
 
-    public function getHttpClient(): ClientInterface
-    {
-        return $this->httpClient;
-    }
-
-    public function setHttpClient(ClientInterface $httpClient): void
-    {
-        $this->httpClient = $httpClient;
-    }
-
     /**
-     * @throws GuzzleException
+     * @return Activities[]
      */
-    public function getAllActivities(): mixed
+    public function getAllActivities(): array
     {
         $responseBody = $this->httpClient->request(
             'GET',
             'https://www.strava.com/api/v3/athlete/activities',
             [
                 'headers' => [
-                    'Authorization' => 'Bearer ' . $this->accessToken,
+                    'Authorization' => \sprintf('Bearer %s', $this->accessToken),
                 ],
             ]
-        )->getBody()->getContents();
+        )->getContent();
 
         $serializer = new Serializer(
             [new GetSetMethodNormalizer(), new ArrayDenormalizer()],

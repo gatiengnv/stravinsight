@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Strava\StravaUser;
+use App\Strava\Client\Strava;
 use GuzzleHttp\Exception\GuzzleException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -11,6 +11,10 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class DashboardController extends AbstractController
 {
+    public function __construct(private Strava $client)
+    {
+    }
+
     /**
      * @throws GuzzleException
      */
@@ -18,8 +22,10 @@ final class DashboardController extends AbstractController
     public function index(Request $request): Response
     {
         $accessToken = $request->getSession()->get('access_token');
-        $user = new StravaUser($accessToken);
-        dump($user->getAllActivities());
+
+        $this->client->setAccessToken($accessToken);
+        dump($this->client->getAllActivities());
+        die;
 
         return $this->render('dashboard/index.html.twig');
     }
