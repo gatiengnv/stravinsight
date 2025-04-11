@@ -5,14 +5,16 @@ namespace App\Strava;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 
 class StravaUser
 {
     public function __construct(
         private string $accessToken,
         private ClientInterface $httpClient = new Client(),
-    ) {
-    }
+    ) {}
 
     public function getAccessToken(): string
     {
@@ -37,16 +39,19 @@ class StravaUser
     /**
      * @throws GuzzleException
      */
-    public function getAllActivities(): array
+    public function getAllActivities(): mixed
     {
-        $request = $this->httpClient->request('GET',
+        $request = $this->httpClient->request(
+            'GET',
             'https://www.strava.com/api/v3/athlete/activities',
             ['headers' => [
                 'Authorization' => 'Bearer '.$this->accessToken,
             ],
             ]
         )->getBody()->getContents();
-
-        return json_decode($request, true);
+        $serializer = new Serializer([new ObjectNormalizer()], [new JsonEncoder()]);
+        dump($serializer->deserialize($request, Activities::class.'[]', 'json'));
+        die;
+        return $this->serializer->deserialize($request, \stdClass::class, 'json');
     }
 }
