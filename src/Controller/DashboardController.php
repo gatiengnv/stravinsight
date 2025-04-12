@@ -24,8 +24,7 @@ final class DashboardController extends AbstractController
         $accessToken = $request->getSession()->get('access_token');
 
         $this->client->setAccessToken($accessToken);
-        dump($this->client->getAllActivities());
-        die;
+        $this->client->getAllActivities();
 
         return $this->render('dashboard/index.html.twig');
     }
