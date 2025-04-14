@@ -55,6 +55,16 @@ services:
       # - ./docker/db/data:/var/lib/postgresql/data:rw
 ###< doctrine/doctrine-bundle ###
 
+  adminer:
+    image: adminer
+    restart: unless-stopped
+    environment:
+        ADMINER_DEFAULT_SERVER: database
+    ports:
+         - "8080:8080"
+    depends_on:
+         - database
+
 volumes:
   caddy_data:
   caddy_config:
