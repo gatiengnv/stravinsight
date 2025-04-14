@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello ActivityController!{% endblock %}
+
+{% block body %}
+    <div {{ react_component('Activities') }}>
+        <div class="flex justify-center items-center h-screen">
+            <span class="loading loading-spinner loading-xl text-primary"></span>
+        </div>
+    </div>
+{% endblock %}
