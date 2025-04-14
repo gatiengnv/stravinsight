@@ -26,6 +26,4 @@ class Activities
     {
         $this->distance = $distance;
     }
-
-
 }

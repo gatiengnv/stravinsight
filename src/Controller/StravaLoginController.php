@@ -27,7 +27,6 @@ class StravaLoginController extends AbstractController
     {
         /** @var StravaClient $client */
         $client = $clientRegistry->getClient('strava');
-
         try {
             $accessToken = $client->getAccessToken();
             $request->getSession()->set('access_token', $accessToken);
@@ -36,6 +35,6 @@ class StravaLoginController extends AbstractController
             exit;
         }
 
-        return $this->redirectToRoute('app_dashboard');
+        return $this->redirectToRoute('app_initialize');
     }
 }

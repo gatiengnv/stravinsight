@@ -10,4 +10,6 @@ interface Strava
 
     /** @return Activities[] */
     public function getAllActivities(): array;
+
+    public function getUserInfo(): array;
 }

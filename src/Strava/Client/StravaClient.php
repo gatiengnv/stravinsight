@@ -3,14 +3,11 @@
 namespace App\Strava\Client;
 
 use App\Strava\Activities;
-use App\Strava\Client\Strava;
-use GuzzleHttp\Exception\GuzzleException;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
 use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
-
 
 class StravaClient implements Strava
 {
@@ -46,6 +43,21 @@ class StravaClient implements Strava
             [new JsonEncoder()]
         );
 
-        return $serializer->deserialize($responseBody, Activities::class . '[]', 'json');
+        return $serializer->deserialize($responseBody, Activities::class.'[]', 'json');
+    }
+
+    public function getUserInfo(): array
+    {
+        $responseBody = $this->httpClient->request(
+            'GET',
+            'https://www.strava.com/api/v3/athlete',
+            [
+                'headers' => [
+                    'Authorization' => \sprintf('Bearer %s', $this->accessToken),
+                ],
+            ]
+        )->getContent();
+
+        return json_decode($responseBody, true);
     }
 }
