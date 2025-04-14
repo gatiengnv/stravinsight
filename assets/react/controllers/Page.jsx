@@ -1,14 +1,19 @@
 import React from "react";
-import {LucideTrophy} from "lucide-react";
 
-export default function dashboard() {
+export default function Dashboard() {
     return (
+
         <div className="p-4 md:p-6">
             <h1 className={"m-3 text-2xl font-bold"}>Dashboard</h1>
-            <div className="stats shadow mb-6 w-full">
 
+            {}
+            {}
+            <div className="stats stats-vertical lg:stats-horizontal shadow mb-6 w-full">
+
+                {}
                 <div className="stat">
                     <div className="stat-figure text-secondary">
+                        {}
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5"
                              stroke="currentColor" className="w-6 h-6">
                             <path strokeLinecap="round" strokeLinejoin="round"
@@ -19,8 +24,11 @@ export default function dashboard() {
                     <div className="stat-value">127</div>
                     <div className="stat-desc text-success">+5 from last month</div>
                 </div>
+
+                {}
                 <div className="stat">
                     <div className="stat-figure text-secondary">
+                        {}
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5"
                              stroke="currentColor" className="w-6 h-6">
                             <path strokeLinecap="round" strokeLinejoin="round"
@@ -33,8 +41,11 @@ export default function dashboard() {
                     <div className="stat-value">1,248 km</div>
                     <div className="stat-desc text-success">+89 km from last month</div>
                 </div>
+
+                {}
                 <div className="stat">
                     <div className="stat-figure text-secondary">
+                        {}
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5"
                              stroke="currentColor" className="w-6 h-6">
                             <path strokeLinecap="round" strokeLinejoin="round"
@@ -45,8 +56,11 @@ export default function dashboard() {
                     <div className="stat-value">87h 23m</div>
                     <div className="stat-desc text-success">+7h from last month</div>
                 </div>
+
+                {}
                 <div className="stat">
                     <div className="stat-figure text-secondary">
+                        {}
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5"
                              stroke="currentColor" className="w-6 h-6">
                             <path strokeLinecap="round" strokeLinejoin="round"
@@ -61,19 +75,25 @@ export default function dashboard() {
                 </div>
             </div>
 
-
+            {}
             <div className="tabs tabs-bordered">
+                {}
                 <input type="radio" id="tab-overview" name="my_tabs_2" className="tab" aria-label="Overview" defaultChecked />
-                <div role="tabpanel" className="tab-content bg-base-200 border-base-300 rounded-box p-6 text-base-content">
+                {}
+                {}
+                <div role="tabpanel" className="tab-content bg-base-200 border-base-300 rounded-box p-4 md:p-6 text-base-content mt-[-1px]"> {}
 
+                    {}
+                    {}
                     <div className="flex flex-col lg:flex-row gap-6">
 
-
-                        <div className="card bg-neutral text-neutral-content p-6 flex-1 shadow-lg">
+                        {}
+                        {}
+                        <div className="card bg-neutral text-neutral-content p-4 md:p-6 flex-1 shadow-lg">
                             <h2 className="card-title text-xl font-bold mb-1">Recent Activities</h2>
                             <p className="text-sm opacity-80 mb-4">Your last 5 activities</p>
                             <div className="space-y-4">
-
+                                {}
                                 <div className="flex justify-between items-center text-sm">
                                     <div>
                                         <div className="font-semibold">Morning Run</div>
@@ -84,7 +104,6 @@ export default function dashboard() {
                                         <div className="text-xs opacity-70">28:45</div>
                                     </div>
                                 </div>
-
                                 <div className="flex justify-between items-center text-sm">
                                     <div>
                                         <div className="font-semibold">Evening Ride</div>
@@ -95,7 +114,6 @@ export default function dashboard() {
                                         <div className="text-xs opacity-70">42:18</div>
                                     </div>
                                 </div>
-
                                 <div className="flex justify-between items-center text-sm">
                                     <div>
                                         <div className="font-semibold">Trail Run</div>
@@ -106,7 +124,6 @@ export default function dashboard() {
                                         <div className="text-xs opacity-70">52:30</div>
                                     </div>
                                 </div>
-
                                 <div className="flex justify-between items-center text-sm">
                                     <div>
                                         <div className="font-semibold">Recovery Ride</div>
@@ -117,7 +134,6 @@ export default function dashboard() {
                                         <div className="text-xs opacity-70">55:12</div>
                                     </div>
                                 </div>
-
                                 <div className="flex justify-between items-center text-sm">
                                     <div>
                                         <div className="font-semibold">Long Run</div>
@@ -131,12 +147,13 @@ export default function dashboard() {
                             </div>
                         </div>
 
-
-                        <div className="card bg-neutral text-neutral-content p-6 flex-1 shadow-lg">
+                        {}
+                        {}
+                        <div className="card bg-neutral text-neutral-content p-4 md:p-6 flex-1 shadow-lg">
                             <h2 className="card-title text-xl font-bold mb-1">Personal Records</h2>
                             <p className="text-sm opacity-80 mb-4">Your best performances</p>
                             <div className="space-y-4">
-
+                                {}
                                 <div className="flex justify-between items-center text-sm">
                                     <div>
                                         <div className="font-semibold">5K</div>
@@ -147,7 +164,6 @@ export default function dashboard() {
                                         <span>22:15</span>
                                     </div>
                                 </div>
-
                                 <div className="flex justify-between items-center text-sm">
                                     <div>
                                         <div className="font-semibold">10K</div>
@@ -158,7 +174,6 @@ export default function dashboard() {
                                         <span>48:32</span>
                                     </div>
                                 </div>
-
                                 <div className="flex justify-between items-center text-sm">
                                     <div>
                                         <div className="font-semibold">Half Marathon</div>
@@ -169,7 +184,6 @@ export default function dashboard() {
                                         <span>1:52:45</span>
                                     </div>
                                 </div>
-
                                 <div className="flex justify-between items-center text-sm">
                                     <div>
                                         <div className="font-semibold">Marathon</div>
@@ -180,7 +194,6 @@ export default function dashboard() {
                                         <span>4:05:18</span>
                                     </div>
                                 </div>
-
                                 <div className="flex justify-between items-center text-sm">
                                     <div>
                                         <div className="font-semibold">Longest Ride</div>
@@ -193,22 +206,26 @@ export default function dashboard() {
                                 </div>
                             </div>
                         </div>
-
                     </div>
-
                 </div>
 
+                {}
                 <input type="radio" id="tab-analytics" name="my_tabs_2" className="tab" aria-label="Analytics" />
-                <div role="tabpanel" className="tab-content bg-base-200 border-base-300 rounded-box p-6 text-base-content">
+                {}
+                {}
+                <div role="tabpanel" className="tab-content bg-base-200 border-base-300 rounded-box p-4 md:p-6 text-base-content mt-[-1px]"> {}
 
+                    {}
+                    {}
                     <div className="flex flex-col lg:flex-row gap-6">
 
-
-                        <div className="card bg-neutral text-neutral-content p-6 flex-1 shadow-lg">
+                        {}
+                        {}
+                        <div className="card bg-neutral text-neutral-content p-4 md:p-6 flex-1 shadow-lg">
                             <h2 className="card-title text-xl font-bold mb-1">Heart Rate Zones</h2>
                             <p className="text-sm opacity-80 mb-4">Time spent in each zone</p>
                             <div className="space-y-3">
-
+                                {}
                                 <div className="flex items-center gap-3">
                                   <span className="flex-shrink-0">
                                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5">
@@ -223,7 +240,6 @@ export default function dashboard() {
                                         <progress className="progress progress-success w-full h-2" value="25" max="100"></progress>
                                     </div>
                                 </div>
-
                                 <div className="flex items-center gap-3">
                                   <span className="flex-shrink-0">
                                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5">
@@ -238,7 +254,6 @@ export default function dashboard() {
                                         <progress className="progress progress-info w-full h-2" value="45" max="100"></progress>
                                     </div>
                                 </div>
-
                                 <div className="flex items-center gap-3">
                                   <span className="flex-shrink-0">
                                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5">
@@ -253,7 +268,6 @@ export default function dashboard() {
                                         <progress className="progress progress-warning w-full h-2" value="20" max="100"></progress>
                                     </div>
                                 </div>
-
                                 <div className="flex items-center gap-3">
                                    <span className="flex-shrink-0">
                                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5">
@@ -285,24 +299,26 @@ export default function dashboard() {
                             </div>
                         </div>
 
-
-                        <div className="card bg-neutral text-neutral-content p-6 flex-1 shadow-lg">
+                        {}
+                        {}
+                        <div className="card bg-neutral text-neutral-content p-4 md:p-6 flex-1 shadow-lg">
                             <h2 className="card-title text-xl font-bold mb-1">Fitness Trend</h2>
                             <p className="text-sm opacity-80 mb-4">Your fitness level over time</p>
-                            <div className="flex items-end justify-center gap-1.5 h-48 mb-4 px-4">
-
-                                <div className="bg-orange-500 w-4 rounded-t-sm" style={{ height: '25%' }}></div>
-                                <div className="bg-orange-500 w-4 rounded-t-sm" style={{ height: '35%' }}></div>
-                                <div className="bg-orange-500 w-4 rounded-t-sm" style={{ height: '40%' }}></div>
-                                <div className="bg-orange-500 w-4 rounded-t-sm" style={{ height: '50%' }}></div>
-                                <div className="bg-orange-500 w-4 rounded-t-sm" style={{ height: '55%' }}></div>
-                                <div className="bg-orange-500 w-4 rounded-t-sm" style={{ height: '65%' }}></div>
-                                <div className="bg-orange-500 w-4 rounded-t-sm" style={{ height: '70%' }}></div>
-                                <div className="bg-orange-500 w-4 rounded-t-sm" style={{ height: '78%' }}></div>
-                                <div className="bg-orange-500 w-4 rounded-t-sm" style={{ height: '85%' }}></div>
-                                <div className="bg-orange-500 w-4 rounded-t-sm" style={{ height: '88%' }}></div>
-                                <div className="bg-orange-500 w-4 rounded-t-sm" style={{ height: '92%' }}></div>
-                                <div className="bg-orange-500 w-4 rounded-t-sm" style={{ height: '98%' }}></div>
+                            {}
+                            <div className="flex items-end justify-center gap-1 sm:gap-1.5 h-48 mb-4 px-2 sm:px-4">
+                                {}
+                                <div className="bg-orange-500 w-full rounded-t-sm" style={{ height: '25%' }}></div>
+                                <div className="bg-orange-500 w-full rounded-t-sm" style={{ height: '35%' }}></div>
+                                <div className="bg-orange-500 w-full rounded-t-sm" style={{ height: '40%' }}></div>
+                                <div className="bg-orange-500 w-full rounded-t-sm" style={{ height: '50%' }}></div>
+                                <div className="bg-orange-500 w-full rounded-t-sm" style={{ height: '55%' }}></div>
+                                <div className="bg-orange-500 w-full rounded-t-sm" style={{ height: '65%' }}></div>
+                                <div className="bg-orange-500 w-full rounded-t-sm" style={{ height: '70%' }}></div>
+                                <div className="bg-orange-500 w-full rounded-t-sm" style={{ height: '78%' }}></div>
+                                <div className="bg-orange-500 w-full rounded-t-sm" style={{ height: '85%' }}></div>
+                                <div className="bg-orange-500 w-full rounded-t-sm" style={{ height: '88%' }}></div>
+                                <div className="bg-orange-500 w-full rounded-t-sm" style={{ height: '92%' }}></div>
+                                <div className="bg-orange-500 w-full rounded-t-sm" style={{ height: '98%' }}></div>
                             </div>
                             <div className="text-center text-sm flex items-center justify-center gap-2">
                                 <span className="opacity-80">Last 12 weeks</span>
@@ -314,27 +330,32 @@ export default function dashboard() {
                               </span>
                             </div>
                         </div>
-
                     </div>
-
                 </div>
 
+                {}
                 <input type="radio" id="tab-achievements" name="my_tabs_2" className="tab" aria-label="Achievements"/>
-                <div role="tabpanel" className="tab-content bg-base-200 border-base-300 rounded-box p-6 text-base-content">
+                {}
+                {}
+                <div role="tabpanel" className="tab-content bg-base-200 border-base-300 rounded-box p-4 md:p-6 text-base-content mt-[-1px]"> {}
 
+                    {}
+                    {}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-
+                        {}
                         <div className="card bg-neutral text-neutral-content p-4 shadow-md">
                             <div className="flex items-start gap-4">
-                                <div className="avatar placeholder">
-                                    <div className="bg-orange-600 text-neutral-content rounded-full w-12">
-                                        <div className={"flex justify-center items-center m-3"}>
+                                {}
+                                <div className="avatar placeholder flex-shrink-0">
+                                    <div className="bg-orange-600 text-neutral-content rounded-full w-12 h-12"> {}
+                                        <div className="flex justify-center items-center w-full h-full"> {}
                                             <CyclingIcon className="w-6 h-6" />
                                         </div>
-                                        </div>
+                                    </div>
                                 </div>
-                                <div className="flex-grow">
+                                {}
+                                <div className="flex-grow min-w-0">
                                     <h3 className="font-semibold text-md">Century Ride</h3>
                                     <p className="text-xs opacity-80 mb-2">Complete a 100 km ride</p>
                                     <div className="flex justify-between items-center text-xs">
@@ -344,18 +365,16 @@ export default function dashboard() {
                                 </div>
                             </div>
                         </div>
-
-
                         <div className="card bg-neutral text-neutral-content p-4 shadow-md">
                             <div className="flex items-start gap-4">
-                                <div className="avatar placeholder">
-                                    <div className="bg-orange-600 text-neutral-content rounded-full w-12">
-                                        <div className={"flex justify-center items-center m-3"}>
+                                <div className="avatar placeholder flex-shrink-0">
+                                    <div className="bg-orange-600 text-neutral-content rounded-full w-12 h-12">
+                                        <div className="flex justify-center items-center w-full h-full">
                                             <TrendingUpIcon className="w-6 h-6"/>
                                         </div>
                                     </div>
                                 </div>
-                                <div className="flex-grow">
+                                <div className="flex-grow min-w-0">
                                     <h3 className="font-semibold text-md">Marathon Finisher</h3>
                                     <p className="text-xs opacity-80 mb-2">Complete a marathon</p>
                                     <div className="flex justify-between items-center text-xs">
@@ -365,18 +384,16 @@ export default function dashboard() {
                                 </div>
                             </div>
                         </div>
-
-
                         <div className="card bg-neutral text-neutral-content p-4 shadow-md">
                             <div className="flex items-start gap-4">
-                                <div className="avatar placeholder">
-                                    <div className="bg-orange-600 text-neutral-content rounded-full w-12">
-                                        <div className={"flex justify-center items-center m-3"}>
+                                <div className="avatar placeholder flex-shrink-0">
+                                    <div className="bg-orange-600 text-neutral-content rounded-full w-12 h-12">
+                                        <div className="flex justify-center items-center w-full h-full">
                                             <SunriseIcon className="w-6 h-6" />
                                         </div>
                                     </div>
                                 </div>
-                                <div className="flex-grow">
+                                <div className="flex-grow min-w-0">
                                     <h3 className="font-semibold text-md">Early Bird</h3>
                                     <p className="text-xs opacity-80 mb-2">Complete 10 activities before 7 AM</p>
                                     <div className="flex justify-between items-center text-xs">
@@ -386,18 +403,16 @@ export default function dashboard() {
                                 </div>
                             </div>
                         </div>
-
-
                         <div className="card bg-neutral text-neutral-content p-4 shadow-md">
                             <div className="flex items-start gap-4">
-                                <div className="avatar placeholder">
-                                    <div className="bg-orange-600 text-neutral-content rounded-full w-12">
-                                        <div className={"flex justify-center items-center m-3"}>
+                                <div className="avatar placeholder flex-shrink-0">
+                                    <div className="bg-orange-600 text-neutral-content rounded-full w-12 h-12">
+                                        <div className="flex justify-center items-center w-full h-full">
                                             <TrendingUpIcon className="w-6 h-6"/>
                                         </div>
                                     </div>
                                 </div>
-                                <div className="flex-grow">
+                                <div className="flex-grow min-w-0">
                                     <h3 className="font-semibold text-md">Elevation Gain</h3>
                                     <p className="text-xs opacity-80 mb-2">Climb 5,000 meters in a month</p>
                                     <div className="flex justify-between items-center text-xs">
@@ -407,18 +422,16 @@ export default function dashboard() {
                                 </div>
                             </div>
                         </div>
-
-
                         <div className="card bg-neutral text-neutral-content p-4 shadow-md">
                             <div className="flex items-start gap-4">
-                                <div className="avatar placeholder">
-                                    <div className="bg-orange-600 text-neutral-content rounded-full w-12">
-                                        <div className={"flex justify-center items-center m-3"}>
+                                <div className="avatar placeholder flex-shrink-0">
+                                    <div className="bg-orange-600 text-neutral-content rounded-full w-12 h-12">
+                                        <div className="flex justify-center items-center w-full h-full">
                                             <CalendarIcon className="w-6 h-6" />
                                         </div>
                                     </div>
                                 </div>
-                                <div className="flex-grow">
+                                <div className="flex-grow min-w-0">
                                     <h3 className="font-semibold text-md">Consistent Runner</h3>
                                     <p className="text-xs opacity-80 mb-2">Run 3 times a week for 4 weeks</p>
                                     <div className="flex justify-between items-center text-xs">
@@ -428,18 +441,16 @@ export default function dashboard() {
                                 </div>
                             </div>
                         </div>
-
-
                         <div className="card bg-neutral text-neutral-content p-4 shadow-md">
                             <div className="flex items-start gap-4">
-                                <div className="avatar placeholder">
-                                    <div className="bg-orange-600 text-neutral-content rounded-full w-12">
-                                        <div className={"flex justify-center items-center m-3"}>
-                                         <MapPinIcon className="w-6 h-6" />
+                                <div className="avatar placeholder flex-shrink-0">
+                                    <div className="bg-orange-600 text-neutral-content rounded-full w-12 h-12">
+                                        <div className="flex justify-center items-center w-full h-full">
+                                            <MapPinIcon className="w-6 h-6" />
                                         </div>
                                     </div>
                                 </div>
-                                <div className="flex-grow">
+                                <div className="flex-grow min-w-0">
                                     <h3 className="font-semibold text-md">Explorer</h3>
                                     <p className="text-xs opacity-80 mb-2">Complete activities in 5 different cities</p>
                                     <div className="flex justify-between items-center text-xs">
@@ -449,12 +460,9 @@ export default function dashboard() {
                                 </div>
                             </div>
                         </div>
-
                     </div>
-
                 </div>
             </div>
-
         </div>
     );
 }
