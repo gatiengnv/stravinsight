@@ -1,4 +1,7 @@
 import React from "react";
+import ActivityItem from "../components/ActivityItem";
+import CardItem from "../components/CardItem";
+import {faBolt, faClock, faFire, faLocationDot} from "@fortawesome/free-solid-svg-icons";
 
 export default function Dashboard() {
     return (
@@ -6,103 +9,11 @@ export default function Dashboard() {
             <h1 className={"m-3 text-2xl font-bold"}>Dashboard</h1>
 
             <div className="stats stats-vertical lg:stats-horizontal shadow mb-6 w-full">
-                <div className="stat">
-                    <div className="stat-figure text-secondary">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth="1.5"
-                            stroke="currentColor"
-                            className="w-6 h-6"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
-                            />
-                        </svg>
-                    </div>
-                    <div className="stat-title">Total Activities</div>
-                    <div className="stat-value">127</div>
-                    <div className="stat-desc text-success">+5 from last month</div>
-                </div>
-
-                <div className="stat">
-                    <div className="stat-figure text-secondary">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth="1.5"
-                            stroke="currentColor"
-                            className="w-6 h-6"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-                            />
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"
-                            />
-                        </svg>
-                    </div>
-                    <div className="stat-title">Total Distance</div>
-                    <div className="stat-value">1,248 km</div>
-                    <div className="stat-desc text-success">+89 km from last month</div>
-                </div>
-
-                <div className="stat">
-                    <div className="stat-figure text-secondary">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth="1.5"
-                            stroke="currentColor"
-                            className="w-6 h-6"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                            />
-                        </svg>
-                    </div>
-                    <div className="stat-title">Total Time</div>
-                    <div className="stat-value">87h 23m</div>
-                    <div className="stat-desc text-success">+7h from last month</div>
-                </div>
-
-                <div className="stat">
-                    <div className="stat-figure text-secondary">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth="1.5"
-                            stroke="currentColor"
-                            className="w-6 h-6"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M15.362 5.214A8.252 8.252 0 0 1 12 21 8.25 8.25 0 0 1 6.038 7.047 8.287 8.287 0 0 0 9 9.601a8.983 8.983 0 0 1 3.361-6.867 8.21 8.21 0 0 0 3 2.48Z"
-                            />
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M12 18a3.75 3.75 0 0 0 .495-7.468 5.99 5.99 0 0 0-1.925 3.547 5.975 5.975 0 0 1-2.133-1.001A3.75 3.75 0 0 0 12 18Z"
-                            />
-                        </svg>
-                    </div>
-                    <div className="stat-title">Calories Burned</div>
-                    <div className="stat-value">48,302</div>
-                    <div className="stat-desc text-success">+4,120 from last month</div>
-                </div>
+                <CardItem icon={faBolt} title={"Total Activities"} value={127} desc={"+5 from last month"}/>
+                <CardItem icon={faLocationDot} title={"Total Distance"} value={"1,248 km"}
+                          desc={"+89 km from last month"}/>
+                <CardItem icon={faClock} title={"Total Time"} value={"87h 23m"} desc={"+7h from last month"}/>
+                <CardItem icon={faFire} title={"Calories Burned"} value={"48,302"} desc={"+4,120 from last month"}/>
             </div>
 
             <div className="tabs tabs-bordered">
@@ -126,56 +37,22 @@ export default function Dashboard() {
                             </h2>
                             <p className="text-sm opacity-80 mb-4">Your last 5 activities</p>
                             <div className="space-y-4">
-                                <div className="flex justify-between items-center text-sm">
-                                    <div>
-                                        <div className="font-semibold">Morning Run</div>
-                                        <div className="text-xs opacity-70">Today</div>
-                                    </div>
-                                    <div className="text-right">
-                                        <div className="font-semibold">5.2 km</div>
-                                        <div className="text-xs opacity-70">28:45</div>
-                                    </div>
-                                </div>
-                                <div className="flex justify-between items-center text-sm">
-                                    <div>
-                                        <div className="font-semibold">Evening Ride</div>
-                                        <div className="text-xs opacity-70">Yesterday</div>
-                                    </div>
-                                    <div className="text-right">
-                                        <div className="font-semibold">12.7 km</div>
-                                        <div className="text-xs opacity-70">42:18</div>
-                                    </div>
-                                </div>
-                                <div className="flex justify-between items-center text-sm">
-                                    <div>
-                                        <div className="font-semibold">Trail Run</div>
-                                        <div className="text-xs opacity-70">2 days ago</div>
-                                    </div>
-                                    <div className="text-right">
-                                        <div className="font-semibold">8.4 km</div>
-                                        <div className="text-xs opacity-70">52:30</div>
-                                    </div>
-                                </div>
-                                <div className="flex justify-between items-center text-sm">
-                                    <div>
-                                        <div className="font-semibold">Recovery Ride</div>
-                                        <div className="text-xs opacity-70">3 days ago</div>
-                                    </div>
-                                    <div className="text-right">
-                                        <div className="font-semibold">15.3 km</div>
-                                        <div className="text-xs opacity-70">55:12</div>
-                                    </div>
-                                </div>
-                                <div className="flex justify-between items-center text-sm">
-                                    <div>
-                                        <div className="font-semibold">Long Run</div>
-                                        <div className="text-xs opacity-70">5 days ago</div>
-                                    </div>
-                                    <div className="text-right">
-                                        <div className="font-semibold">18.6 km</div>
-                                        <div className="text-xs opacity-70">1:45:22</div>
-                                    </div>
-                                </div>
+                                <ActivityItem activity={
+                                    {
+                                        name: "Morning Run",
+                                        startDateLocal: "2023-10-01 07:30",
+                                        distance: "5.2 km",
+                                        movingTime: "30:15",
+                                    }
+                                }/>
+                                <ActivityItem activity={
+                                    {
+                                        name: "Morning Run",
+                                        startDateLocal: "2023-10-01 07:30",
+                                        distance: "5.2 km",
+                                        movingTime: "30:15",
+                                    }
+                                }/>
                             </div>
                         </div>
 
@@ -191,7 +68,7 @@ export default function Dashboard() {
                                         <div className="text-xs opacity-70">May 12, 2023</div>
                                     </div>
                                     <div className="text-right font-semibold flex items-center gap-1">
-                                        <TrophyIcon className="w-4 h-4 text-warning" />
+                                        <TrophyIcon className="w-4 h-4 text-warning"/>
                                         <span>22:15</span>
                                     </div>
                                 </div>
@@ -201,7 +78,7 @@ export default function Dashboard() {
                                         <div className="text-xs opacity-70">April 3, 2023</div>
                                     </div>
                                     <div className="text-right font-semibold flex items-center gap-1">
-                                        <TrophyIcon className="w-4 h-4 text-warning" />
+                                        <TrophyIcon className="w-4 h-4 text-warning"/>
                                         <span>48:32</span>
                                     </div>
                                 </div>
@@ -211,7 +88,7 @@ export default function Dashboard() {
                                         <div className="text-xs opacity-70">March 15, 2023</div>
                                     </div>
                                     <div className="text-right font-semibold flex items-center gap-1">
-                                        <TrophyIcon className="w-4 h-4 text-warning" />
+                                        <TrophyIcon className="w-4 h-4 text-warning"/>
                                         <span>1:52:45</span>
                                     </div>
                                 </div>
@@ -221,7 +98,7 @@ export default function Dashboard() {
                                         <div className="text-xs opacity-70">November 5, 2022</div>
                                     </div>
                                     <div className="text-right font-semibold flex items-center gap-1">
-                                        <TrophyIcon className="w-4 h-4 text-warning" />
+                                        <TrophyIcon className="w-4 h-4 text-warning"/>
                                         <span>4:05:18</span>
                                     </div>
                                 </div>
@@ -231,7 +108,7 @@ export default function Dashboard() {
                                         <div className="text-xs opacity-70">July 22, 2023</div>
                                     </div>
                                     <div className="text-right font-semibold flex items-center gap-1">
-                                        <TrophyIcon className="w-4 h-4 text-warning" />
+                                        <TrophyIcon className="w-4 h-4 text-warning"/>
                                         <span>120.5 km</span>
                                     </div>
                                 </div>
@@ -418,51 +295,51 @@ export default function Dashboard() {
                             <div className="flex items-end justify-center gap-1 sm:gap-1.5 h-48 mb-4 px-2 sm:px-4">
                                 <div
                                     className="bg-orange-500 w-full rounded-t-sm"
-                                    style={{ height: "25%" }}
+                                    style={{height: "25%"}}
                                 ></div>
                                 <div
                                     className="bg-orange-500 w-full rounded-t-sm"
-                                    style={{ height: "35%" }}
+                                    style={{height: "35%"}}
                                 ></div>
                                 <div
                                     className="bg-orange-500 w-full rounded-t-sm"
-                                    style={{ height: "40%" }}
+                                    style={{height: "40%"}}
                                 ></div>
                                 <div
                                     className="bg-orange-500 w-full rounded-t-sm"
-                                    style={{ height: "50%" }}
+                                    style={{height: "50%"}}
                                 ></div>
                                 <div
                                     className="bg-orange-500 w-full rounded-t-sm"
-                                    style={{ height: "55%" }}
+                                    style={{height: "55%"}}
                                 ></div>
                                 <div
                                     className="bg-orange-500 w-full rounded-t-sm"
-                                    style={{ height: "65%" }}
+                                    style={{height: "65%"}}
                                 ></div>
                                 <div
                                     className="bg-orange-500 w-full rounded-t-sm"
-                                    style={{ height: "70%" }}
+                                    style={{height: "70%"}}
                                 ></div>
                                 <div
                                     className="bg-orange-500 w-full rounded-t-sm"
-                                    style={{ height: "78%" }}
+                                    style={{height: "78%"}}
                                 ></div>
                                 <div
                                     className="bg-orange-500 w-full rounded-t-sm"
-                                    style={{ height: "85%" }}
+                                    style={{height: "85%"}}
                                 ></div>
                                 <div
                                     className="bg-orange-500 w-full rounded-t-sm"
-                                    style={{ height: "88%" }}
+                                    style={{height: "88%"}}
                                 ></div>
                                 <div
                                     className="bg-orange-500 w-full rounded-t-sm"
-                                    style={{ height: "92%" }}
+                                    style={{height: "92%"}}
                                 ></div>
                                 <div
                                     className="bg-orange-500 w-full rounded-t-sm"
-                                    style={{ height: "98%" }}
+                                    style={{height: "98%"}}
                                 ></div>
                             </div>
                             <div className="text-center text-sm flex items-center justify-center gap-2">
@@ -507,7 +384,7 @@ export default function Dashboard() {
                                 <div className="avatar placeholder flex-shrink-0">
                                     <div className="bg-orange-600 text-neutral-content rounded-full w-12 h-12">
                                         <div className="flex justify-center items-center w-full h-full">
-                                            <CyclingIcon className="w-6 h-6" />
+                                            <CyclingIcon className="w-6 h-6"/>
                                         </div>
                                     </div>
                                 </div>
@@ -529,7 +406,7 @@ export default function Dashboard() {
                                 <div className="avatar placeholder flex-shrink-0">
                                     <div className="bg-orange-600 text-neutral-content rounded-full w-12 h-12">
                                         <div className="flex justify-center items-center w-full h-full">
-                                            <TrendingUpIcon className="w-6 h-6" />
+                                            <TrendingUpIcon className="w-6 h-6"/>
                                         </div>
                                     </div>
                                 </div>
@@ -548,7 +425,7 @@ export default function Dashboard() {
                                 <div className="avatar placeholder flex-shrink-0">
                                     <div className="bg-orange-600 text-neutral-content rounded-full w-12 h-12">
                                         <div className="flex justify-center items-center w-full h-full">
-                                            <SunriseIcon className="w-6 h-6" />
+                                            <SunriseIcon className="w-6 h-6"/>
                                         </div>
                                     </div>
                                 </div>
@@ -569,7 +446,7 @@ export default function Dashboard() {
                                 <div className="avatar placeholder flex-shrink-0">
                                     <div className="bg-orange-600 text-neutral-content rounded-full w-12 h-12">
                                         <div className="flex justify-center items-center w-full h-full">
-                                            <TrendingUpIcon className="w-6 h-6" />
+                                            <TrendingUpIcon className="w-6 h-6"/>
                                         </div>
                                     </div>
                                 </div>
@@ -592,7 +469,7 @@ export default function Dashboard() {
                                 <div className="avatar placeholder flex-shrink-0">
                                     <div className="bg-orange-600 text-neutral-content rounded-full w-12 h-12">
                                         <div className="flex justify-center items-center w-full h-full">
-                                            <CalendarIcon className="w-6 h-6" />
+                                            <CalendarIcon className="w-6 h-6"/>
                                         </div>
                                     </div>
                                 </div>
@@ -615,7 +492,7 @@ export default function Dashboard() {
                                 <div className="avatar placeholder flex-shrink-0">
                                     <div className="bg-orange-600 text-neutral-content rounded-full w-12 h-12">
                                         <div className="flex justify-center items-center w-full h-full">
-                                            <MapPinIcon className="w-6 h-6" />
+                                            <MapPinIcon className="w-6 h-6"/>
                                         </div>
                                     </div>
                                 </div>
@@ -640,7 +517,7 @@ export default function Dashboard() {
     );
 }
 
-const TrophyIcon = ({ className = "" }) => (
+const TrophyIcon = ({className = ""}) => (
     <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
@@ -655,7 +532,7 @@ const TrophyIcon = ({ className = "" }) => (
     </svg>
 );
 
-const CyclingIcon = ({ className = "" }) => (
+const CyclingIcon = ({className = ""}) => (
     <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -677,7 +554,7 @@ const CyclingIcon = ({ className = "" }) => (
     </svg>
 );
 
-const TrendingUpIcon = ({ className = "" }) => (
+const TrendingUpIcon = ({className = ""}) => (
     <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -694,7 +571,7 @@ const TrendingUpIcon = ({ className = "" }) => (
     </svg>
 );
 
-const SunriseIcon = ({ className = "" }) => (
+const SunriseIcon = ({className = ""}) => (
     <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -711,7 +588,7 @@ const SunriseIcon = ({ className = "" }) => (
     </svg>
 );
 
-const CalendarIcon = ({ className = "" }) => (
+const CalendarIcon = ({className = ""}) => (
     <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -728,7 +605,7 @@ const CalendarIcon = ({ className = "" }) => (
     </svg>
 );
 
-const MapPinIcon = ({ className = "" }) => (
+const MapPinIcon = ({className = ""}) => (
     <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
