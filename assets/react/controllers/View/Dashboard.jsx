@@ -5,6 +5,7 @@ import {faBolt, faClock, faFire, faLocationDot} from "@fortawesome/free-solid-sv
 import Card from "../components/Card";
 import RecordItem from "../components/RecordItem";
 import HearthRateZones from "../components/HearthRateZones";
+import FitnessTrendItem from "../components/FitnessTrendItem";
 
 export default function Dashboard() {
     return (
@@ -73,85 +74,11 @@ export default function Dashboard() {
                                              zones4percentage={8} zones5percentage={2}/>
                         </Card>
 
-                        <div className="card bg-neutral text-neutral-content p-4 md:p-6 flex-1 shadow-lg">
-                            <h2 className="card-title text-xl font-bold mb-1">
-                                Fitness Trend
-                            </h2>
-                            <p className="text-sm opacity-80 mb-4">
-                                Your fitness level over time
-                            </p>
-
-                            <div className="flex items-end justify-center gap-1 sm:gap-1.5 h-48 mb-4 px-2 sm:px-4">
-                                <div
-                                    className="bg-orange-500 w-full rounded-t-sm"
-                                    style={{height: "25%"}}
-                                ></div>
-                                <div
-                                    className="bg-orange-500 w-full rounded-t-sm"
-                                    style={{height: "35%"}}
-                                ></div>
-                                <div
-                                    className="bg-orange-500 w-full rounded-t-sm"
-                                    style={{height: "40%"}}
-                                ></div>
-                                <div
-                                    className="bg-orange-500 w-full rounded-t-sm"
-                                    style={{height: "50%"}}
-                                ></div>
-                                <div
-                                    className="bg-orange-500 w-full rounded-t-sm"
-                                    style={{height: "55%"}}
-                                ></div>
-                                <div
-                                    className="bg-orange-500 w-full rounded-t-sm"
-                                    style={{height: "65%"}}
-                                ></div>
-                                <div
-                                    className="bg-orange-500 w-full rounded-t-sm"
-                                    style={{height: "70%"}}
-                                ></div>
-                                <div
-                                    className="bg-orange-500 w-full rounded-t-sm"
-                                    style={{height: "78%"}}
-                                ></div>
-                                <div
-                                    className="bg-orange-500 w-full rounded-t-sm"
-                                    style={{height: "85%"}}
-                                ></div>
-                                <div
-                                    className="bg-orange-500 w-full rounded-t-sm"
-                                    style={{height: "88%"}}
-                                ></div>
-                                <div
-                                    className="bg-orange-500 w-full rounded-t-sm"
-                                    style={{height: "92%"}}
-                                ></div>
-                                <div
-                                    className="bg-orange-500 w-full rounded-t-sm"
-                                    style={{height: "98%"}}
-                                ></div>
-                            </div>
-                            <div className="text-center text-sm flex items-center justify-center gap-2">
-                                <span className="opacity-80">Last 12 weeks</span>
-                                <span className="text-success flex items-center gap-1 font-semibold">
-                  <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={3}
-                      stroke="currentColor"
-                      className="w-4 h-4"
-                  >
-                    <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M4.5 10.5 12 3m0 0 7.5 7.5M12 3v18"
-                    />
-                  </svg>
-                  Improving
-                </span>
-                            </div>
-                        </div>
+                        <Card title={"Fitness Trend"} subtitle={"Your fitness level over time"}>
+                            <FitnessTrendItem
+                                heights={["10%", "20%", "30%", "40%", "50%", "60%", "70%", "80%", "90%", "100%"]}
+                                period={"Last 12 weeks"} isImproving={true}/>
+                        </Card>
                     </div>
                 </div>
 
