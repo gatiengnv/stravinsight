@@ -1,7 +1,7 @@
 import React from "react";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
-export default function CardItem({icon, title, value, desc}) {
+export default function StatItem({icon, title, value, desc}) {
     return (
         <div className="stat">
             <div className="stat-figure text-secondary">

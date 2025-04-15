@@ -1,7 +1,8 @@
 import React from "react";
 import ActivityItem from "../components/ActivityItem";
-import CardItem from "../components/CardItem";
+import StatItem from "../components/StatItem";
 import {faBolt, faClock, faFire, faLocationDot} from "@fortawesome/free-solid-svg-icons";
+import Card from "../components/Card";
 
 export default function Dashboard() {
     return (
@@ -9,11 +10,11 @@ export default function Dashboard() {
             <h1 className={"m-3 text-2xl font-bold"}>Dashboard</h1>
 
             <div className="stats stats-vertical lg:stats-horizontal shadow mb-6 w-full">
-                <CardItem icon={faBolt} title={"Total Activities"} value={127} desc={"+5 from last month"}/>
-                <CardItem icon={faLocationDot} title={"Total Distance"} value={"1,248 km"}
+                <StatItem icon={faBolt} title={"Total Activities"} value={127} desc={"+5 from last month"}/>
+                <StatItem icon={faLocationDot} title={"Total Distance"} value={"1,248 km"}
                           desc={"+89 km from last month"}/>
-                <CardItem icon={faClock} title={"Total Time"} value={"87h 23m"} desc={"+7h from last month"}/>
-                <CardItem icon={faFire} title={"Calories Burned"} value={"48,302"} desc={"+4,120 from last month"}/>
+                <StatItem icon={faClock} title={"Total Time"} value={"87h 23m"} desc={"+7h from last month"}/>
+                <StatItem icon={faFire} title={"Calories Burned"} value={"48,302"} desc={"+4,120 from last month"}/>
             </div>
 
             <div className="tabs tabs-bordered">
@@ -31,30 +32,16 @@ export default function Dashboard() {
                     className="tab-content bg-base-200 border-base-300 rounded-box p-4 md:p-6 text-base-content mt-[-1px]"
                 >
                     <div className="flex flex-col lg:flex-row gap-6">
-                        <div className="card bg-neutral text-neutral-content p-4 md:p-6 flex-1 shadow-lg">
-                            <h2 className="card-title text-xl font-bold mb-1">
-                                Recent Activities
-                            </h2>
-                            <p className="text-sm opacity-80 mb-4">Your last 5 activities</p>
-                            <div className="space-y-4">
-                                <ActivityItem activity={
-                                    {
-                                        name: "Morning Run",
-                                        startDateLocal: "2023-10-01 07:30",
-                                        distance: "5.2 km",
-                                        movingTime: "30:15",
-                                    }
-                                }/>
-                                <ActivityItem activity={
-                                    {
-                                        name: "Morning Run",
-                                        startDateLocal: "2023-10-01 07:30",
-                                        distance: "5.2 km",
-                                        movingTime: "30:15",
-                                    }
-                                }/>
-                            </div>
-                        </div>
+                        <Card title={"Recent Activities"} subtitle={"Your last 5 activities"}>
+                            <ActivityItem activity={
+                                {
+                                    name: "Morning Run",
+                                    startDateLocal: "2023-10-01 07:30",
+                                    distance: "5.2 km",
+                                    movingTime: "30:15",
+                                }
+                            }/>
+                        </Card>
 
                         <div className="card bg-neutral text-neutral-content p-4 md:p-6 flex-1 shadow-lg">
                             <h2 className="card-title text-xl font-bold mb-1">
