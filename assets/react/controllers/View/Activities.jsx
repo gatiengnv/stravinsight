@@ -1,58 +1,34 @@
 import React from "react";
+import ActivityItem from "../components/ActivityItem";
+import Card from "../components/Card";
 
 export default function activities() {
     return (
-        <div className="space-y-4">
-            <div className="flex justify-between items-center text-sm">
-                <div>
-                    <div className="font-semibold">Morning Run</div>
-                    <div className="text-xs opacity-70">Today</div>
-                </div>
-                <div className="text-right">
-                    <div className="font-semibold">5.2 km</div>
-                    <div className="text-xs opacity-70">28:45</div>
-                </div>
-            </div>
-            <div className="flex justify-between items-center text-sm">
-                <div>
-                    <div className="font-semibold">Evening Ride</div>
-                    <div className="text-xs opacity-70">Yesterday</div>
-                </div>
-                <div className="text-right">
-                    <div className="font-semibold">12.7 km</div>
-                    <div className="text-xs opacity-70">42:18</div>
-                </div>
-            </div>
-            <div className="flex justify-between items-center text-sm">
-                <div>
-                    <div className="font-semibold">Trail Run</div>
-                    <div className="text-xs opacity-70">2 days ago</div>
-                </div>
-                <div className="text-right">
-                    <div className="font-semibold">8.4 km</div>
-                    <div className="text-xs opacity-70">52:30</div>
-                </div>
-            </div>
-            <div className="flex justify-between items-center text-sm">
-                <div>
-                    <div className="font-semibold">Recovery Ride</div>
-                    <div className="text-xs opacity-70">3 days ago</div>
-                </div>
-                <div className="text-right">
-                    <div className="font-semibold">15.3 km</div>
-                    <div className="text-xs opacity-70">55:12</div>
-                </div>
-            </div>
-            <div className="flex justify-between items-center text-sm">
-                <div>
-                    <div className="font-semibold">Long Run</div>
-                    <div className="text-xs opacity-70">5 days ago</div>
-                </div>
-                <div className="text-right">
-                    <div className="font-semibold">18.6 km</div>
-                    <div className="text-xs opacity-70">1:45:22</div>
-                </div>
-            </div>
-        </div>
+        <Card>
+            <ActivityItem activity={{
+                name: "Morning Run",
+                startDateLocal: "2023-10-01 07:30",
+                distance: "5.2 km",
+                movingTime: "30:15",
+            }}></ActivityItem>
+            <ActivityItem activity={{
+                name: "Evening Walk",
+                startDateLocal: "2023-10-02 18:00",
+                distance: "2.5 km",
+                movingTime: "25:00",
+            }}></ActivityItem>
+            <ActivityItem activity={{
+                name: "Cycling",
+                startDateLocal: "2023-10-03 09:00",
+                distance: "15.0 km",
+                movingTime: "45:00",
+            }}></ActivityItem>
+            <ActivityItem activity={{
+                name: "Swimming",
+                startDateLocal: "2023-10-04 10:00",
+                distance: "1.0 km",
+                movingTime: "30:00",
+            }}></ActivityItem>
+        </Card>
     );
 }
