@@ -3,6 +3,7 @@ import ActivityItem from "../components/ActivityItem";
 import StatItem from "../components/StatItem";
 import {faBolt, faClock, faFire, faLocationDot} from "@fortawesome/free-solid-svg-icons";
 import Card from "../components/Card";
+import RecordItem from "../components/RecordItem";
 
 export default function Dashboard() {
     return (
@@ -43,64 +44,13 @@ export default function Dashboard() {
                             }/>
                         </Card>
 
-                        <div className="card bg-neutral text-neutral-content p-4 md:p-6 flex-1 shadow-lg">
-                            <h2 className="card-title text-xl font-bold mb-1">
-                                Personal Records
-                            </h2>
-                            <p className="text-sm opacity-80 mb-4">Your best performances</p>
-                            <div className="space-y-4">
-                                <div className="flex justify-between items-center text-sm">
-                                    <div>
-                                        <div className="font-semibold">5K</div>
-                                        <div className="text-xs opacity-70">May 12, 2023</div>
-                                    </div>
-                                    <div className="text-right font-semibold flex items-center gap-1">
-                                        <TrophyIcon className="w-4 h-4 text-warning"/>
-                                        <span>22:15</span>
-                                    </div>
-                                </div>
-                                <div className="flex justify-between items-center text-sm">
-                                    <div>
-                                        <div className="font-semibold">10K</div>
-                                        <div className="text-xs opacity-70">April 3, 2023</div>
-                                    </div>
-                                    <div className="text-right font-semibold flex items-center gap-1">
-                                        <TrophyIcon className="w-4 h-4 text-warning"/>
-                                        <span>48:32</span>
-                                    </div>
-                                </div>
-                                <div className="flex justify-between items-center text-sm">
-                                    <div>
-                                        <div className="font-semibold">Half Marathon</div>
-                                        <div className="text-xs opacity-70">March 15, 2023</div>
-                                    </div>
-                                    <div className="text-right font-semibold flex items-center gap-1">
-                                        <TrophyIcon className="w-4 h-4 text-warning"/>
-                                        <span>1:52:45</span>
-                                    </div>
-                                </div>
-                                <div className="flex justify-between items-center text-sm">
-                                    <div>
-                                        <div className="font-semibold">Marathon</div>
-                                        <div className="text-xs opacity-70">November 5, 2022</div>
-                                    </div>
-                                    <div className="text-right font-semibold flex items-center gap-1">
-                                        <TrophyIcon className="w-4 h-4 text-warning"/>
-                                        <span>4:05:18</span>
-                                    </div>
-                                </div>
-                                <div className="flex justify-between items-center text-sm">
-                                    <div>
-                                        <div className="font-semibold">Longest Ride</div>
-                                        <div className="text-xs opacity-70">July 22, 2023</div>
-                                    </div>
-                                    <div className="text-right font-semibold flex items-center gap-1">
-                                        <TrophyIcon className="w-4 h-4 text-warning"/>
-                                        <span>120.5 km</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <Card title={"Personal Records"} subtitle={"Your best performances"}>
+                            <RecordItem title={"5K"} date={"May 12, 2023"} success={"22:15"}></RecordItem>
+                            <RecordItem title={"10K"} date={"May 12, 2023"} success={"48:32"}></RecordItem>
+                            <RecordItem title={"Half Marathon"} date={"May 12, 2023"} success={"1:52:45"}></RecordItem>
+                            <RecordItem title={"Marathon"} date={"May 12, 2023"} success={"4:05:18"}></RecordItem>
+                            <RecordItem title={"Longest Ride"} date={"May 12, 2023"} success={"120.5 km"}></RecordItem>
+                        </Card>
                     </div>
                 </div>
 
