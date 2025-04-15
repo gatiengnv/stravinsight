@@ -2,6 +2,7 @@
 
 namespace App\Strava\Client;
 
+use App\Entity\Activity;
 use App\Strava\Activities;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
@@ -38,12 +39,16 @@ class StravaClient implements Strava
             ]
         )->getContent();
 
-        $serializer = new Serializer(
+        /*
+         * $serializer = new Serializer(
             [new GetSetMethodNormalizer(), new ArrayDenormalizer()],
             [new JsonEncoder()]
         );
 
-        return $serializer->deserialize($responseBody, Activities::class.'[]', 'json');
+        return $serializer->deserialize($responseBody, Activity::class.'[]', 'json');
+         */
+
+        return json_decode($responseBody, true);
     }
 
     public function getUserInfo(): array
