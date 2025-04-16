@@ -1,4 +1,16 @@
 import React from "react";
+import Map from "../components/Map";
+import Card from "../components/Card";
+import StatItem from "../components/StatItem";
+import {
+    faChartLine,
+    faFire,
+    faHeart,
+    faLocationDot,
+    faPersonRunning,
+    faStopwatch
+} from "@fortawesome/free-solid-svg-icons";
+import Split from "../components/Split";
 
 const activityData = {
     id: 1,
@@ -14,17 +26,17 @@ const activityData = {
     avgHeartRate: 155,
     maxHeartRate: 175,
     splits: [
-        { km: 1, time: 340, hr: 145, elev_diff: 10 },
-        { km: 2, time: 345, hr: 150, elev_diff: 8 },
-        { km: 3, time: 342, hr: 152, elev_diff: 12 },
-        { km: 4, time: 348, hr: 155, elev_diff: 15 },
-        { km: 5, time: 340, hr: 158, elev_diff: 10 },
-        { km: 6, time: 345, hr: 160, elev_diff: 11 },
-        { km: 7, time: 350, hr: 162, elev_diff: 14 },
-        { km: 8, time: 342, hr: 165, elev_diff: 13 },
-        { km: 9, time: 338, hr: 168, elev_diff: 12 },
-        { km: 10, time: 335, hr: 170, elev_diff: 15 },
-        { km: 10.5, time: 175, hr: 172, elev_diff: 5 },
+        {km: 1, time: 340, hr: 145, elev_diff: 10},
+        {km: 2, time: 345, hr: 150, elev_diff: 8},
+        {km: 3, time: 342, hr: 152, elev_diff: 12},
+        {km: 4, time: 348, hr: 155, elev_diff: 15},
+        {km: 5, time: 340, hr: 158, elev_diff: 10},
+        {km: 6, time: 345, hr: 160, elev_diff: 11},
+        {km: 7, time: 350, hr: 162, elev_diff: 14},
+        {km: 8, time: 342, hr: 165, elev_diff: 13},
+        {km: 9, time: 338, hr: 168, elev_diff: 12},
+        {km: 10, time: 335, hr: 170, elev_diff: 15},
+        {km: 10.5, time: 175, hr: 172, elev_diff: 5},
     ],
     description:
         "Felt good today, pushed the pace a bit on the last few kilometers. Nice cool morning.",
@@ -41,14 +53,7 @@ const formatTime = (seconds) => {
     return parts.join(":");
 };
 
-const formatPace = (secondsPerKm) => {
-    if (!secondsPerKm || secondsPerKm === Infinity) return "--:--";
-    const m = Math.floor(secondsPerKm / 60);
-    const s = Math.floor(secondsPerKm % 60);
-    return `${m}:${s.toString().padStart(2, "0")}/km`;
-};
-
-const RunIcon = ({ className = "" }) => (
+const RunIcon = ({className = ""}) => (
     <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -84,7 +89,7 @@ const RunIcon = ({ className = "" }) => (
         />
     </svg>
 );
-const MapIcon = ({ className = "" }) => (
+const MapIcon = ({className = ""}) => (
     <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -105,7 +110,7 @@ const MapIcon = ({ className = "" }) => (
         />
     </svg>
 );
-const MountainIcon = ({ className = "" }) => (
+const MountainIcon = ({className = ""}) => (
     <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -121,7 +126,7 @@ const MountainIcon = ({ className = "" }) => (
         />
     </svg>
 );
-const FireIcon = ({ className = "" }) => (
+const FireIcon = ({className = ""}) => (
     <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -142,7 +147,7 @@ const FireIcon = ({ className = "" }) => (
         />
     </svg>
 );
-const HeartIcon = ({ className = "" }) => (
+const HeartIcon = ({className = ""}) => (
     <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -158,7 +163,7 @@ const HeartIcon = ({ className = "" }) => (
         />
     </svg>
 );
-const GaugeIcon = ({ className = "" }) => (
+const GaugeIcon = ({className = ""}) => (
     <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -180,7 +185,7 @@ const GaugeIcon = ({ className = "" }) => (
     </svg>
 );
 
-const ClockIcon = ({ className = "" }) => (
+const ClockIcon = ({className = ""}) => (
     <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -196,7 +201,7 @@ const ClockIcon = ({ className = "" }) => (
         />
     </svg>
 );
-const MapPinIcon = ({ className = "" }) => (
+const MapPinIcon = ({className = ""}) => (
     <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -235,7 +240,7 @@ export default function ActivityDetails() {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-6">
                 <div className="flex items-center gap-3">
                     {activityData.type === "Run" && (
-                        <RunIcon className="w-8 h-8 text-secondary flex-shrink-0" />
+                        <RunIcon className="w-8 h-8 text-secondary flex-shrink-0"/>
                     )}
 
                     <h1 className="text-2xl font-bold text-base-content">
@@ -249,114 +254,23 @@ export default function ActivityDetails() {
 
             <div className="flex flex-col lg:flex-row gap-6">
                 <div className="flex-grow lg:w-2/3">
-                    <div className="card bg-neutral text-neutral-content p-4 md:p-6 shadow-lg h-full">
-                        <h2 className="card-title text-xl font-bold mb-4">Route</h2>
-                        <div className="aspect-video bg-base-300 rounded-box flex items-center justify-center">
-                            <div className="text-center p-4">
-                                <MapIcon className="w-16 h-16 text-base-content opacity-30 mx-auto mb-2" />
-                                <p className="text-sm opacity-60">Map Area Placeholder</p>
-                            </div>
-                        </div>
-                    </div>
+                    <Card title={"Route"} subtitle={""}>
+                        <Map/>
+                    </Card>
                 </div>
 
                 <div className="flex-shrink-0 lg:w-1/3">
-                    <div className="stats stats-vertical shadow w-full mb-6">
-                        <div className="stat">
-                            <div className="stat-figure text-secondary">
-                                <MapPinIcon className="w-6 h-6" />
-                            </div>
-                            <div className="stat-title">Distance</div>
-                            <div className="stat-value">
-                                {activityData.distance.toFixed(2)} km
-                            </div>
-                        </div>
-                        <div className="stat">
-                            <div className="stat-figure text-secondary">
-                                <GaugeIcon className="w-6 h-6" />
-                            </div>
-                            <div className="stat-title">Avg Pace</div>
-                            <div className="stat-value">
-                                {formatPace(activityData.avgPace)}
-                            </div>
-                        </div>
-                        <div className="stat">
-                            <div className="stat-figure text-secondary">
-                                <ClockIcon className="w-6 h-6" />
-                            </div>
-                            <div className="stat-title">Moving Time</div>
-                            <div className="stat-value">
-                                {formatTime(activityData.movingTime)}
-                            </div>
-                        </div>
-                        <div className="stat">
-                            <div className="stat-figure text-secondary">
-                                <MountainIcon className="w-6 h-6" />
-                            </div>
-                            <div className="stat-title">Elevation Gain</div>
-                            <div className="stat-value">{activityData.elevationGain} m</div>
-                        </div>
-                        <div className="stat">
-                            <div className="stat-figure text-secondary">
-                                <FireIcon className="w-6 h-6" />
-                            </div>
-                            <div className="stat-title">Calories</div>
-                            <div className="stat-value">{activityData.calories}</div>
-                            <div className="stat-desc opacity-50">(estimated)</div>
-                        </div>
-                        <div className="stat">
-                            <div className="stat-figure text-secondary">
-                                <HeartIcon className="w-6 h-6" />
-                            </div>
-                            <div className="stat-title">Avg Heart Rate</div>
-                            <div className="stat-value">{activityData.avgHeartRate} bpm</div>
-                            <div className="stat-desc opacity-50">
-                                Max: {activityData.maxHeartRate} bpm
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="card bg-neutral text-neutral-content p-4 md:p-6 shadow-lg">
-                        <h2 className="card-title text-xl font-bold mb-4">
-                            Splits (per km)
-                        </h2>
-
-                        <div className="overflow-x-auto">
-                            <table className="table table-zebra table-sm w-full">
-                                <thead>
-                                <tr>
-                                    <th>KM</th>
-                                    <th>Pace</th>
-                                    <th>HR</th>
-                                    <th>Elev +/-</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {activityData.splits.map((split, index) => (
-                                    <tr key={index}>
-                                        <td>
-                                            {split.km % 1 === 0 ? split.km : split.km.toFixed(1)}
-                                        </td>
-                                        <td>
-                                            {formatPace(
-                                                split.time /
-                                                (split.km -
-                                                    (activityData.splits[index - 1]?.km || 0)),
-                                            )}
-                                        </td>
-                                        <td>{split.hr || "--"}</td>
-                                        <td>
-                                            {split.elev_diff > 0
-                                                ? `+${split.elev_diff}`
-                                                : split.elev_diff}
-                                            m
-                                        </td>
-                                    </tr>
-                                ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                    <Card>
+                        <StatItem title={"Distance"} value={"10.50 km"} icon={faLocationDot}/>
+                        <StatItem title={"Avg Pace"} value={"5:42/km"} icon={faPersonRunning}/>
+                        <StatItem title={"Moving Time"} value={"01:00:00"} icon={faStopwatch}/>
+                        <StatItem title={"Elevation Gain"} value={"120 m"} icon={faChartLine}/>
+                        <StatItem title={"Calories"} value={"550"} icon={faFire}/>
+                        <StatItem title={"Avg Heart Rate"} value={"155 bpm"} icon={faHeart}/>
+                    </Card>
+                    <Card title={"Splits (per km)"}>
+                        <Split activityData={activityData}/>
+                    </Card>
                 </div>
             </div>
 
