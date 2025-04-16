@@ -2,13 +2,9 @@
 
 namespace App\Strava\Client;
 
-use App\Entity\Activity;
 use App\Strava\Activities;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
-use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
-use Symfony\Component\Serializer\Serializer;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use function sprintf;
 
 class StravaClient implements Strava
 {
@@ -16,7 +12,8 @@ class StravaClient implements Strava
 
     public function __construct(
         private HttpClientInterface $httpClient,
-    ) {
+    )
+    {
     }
 
     public function setAccessToken(string $accessToken): void
@@ -31,10 +28,10 @@ class StravaClient implements Strava
     {
         $responseBody = $this->httpClient->request(
             'GET',
-            'https://www.strava.com/api/v3/athlete/activities',
+            'https://www.strava.com/api/v3/athlete/activities?per_page=200',
             [
                 'headers' => [
-                    'Authorization' => \sprintf('Bearer %s', $this->accessToken),
+                    'Authorization' => sprintf('Bearer %s', $this->accessToken),
                 ],
             ]
         )->getContent();
@@ -58,7 +55,7 @@ class StravaClient implements Strava
             'https://www.strava.com/api/v3/athlete',
             [
                 'headers' => [
-                    'Authorization' => \sprintf('Bearer %s', $this->accessToken),
+                    'Authorization' => sprintf('Bearer %s', $this->accessToken),
                 ],
             ]
         )->getContent();

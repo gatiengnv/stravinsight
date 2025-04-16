@@ -1,8 +1,8 @@
 import React from "react";
-import ActivityItem from "../components/ActivityItem";
-import Card from "../components/Card";
+import ActivityItem from "../../components/ActivityItem";
+import Card from "../../components/Card";
 
-export default function activities() {
+export default function list() {
     return (
         <Card>
             <ActivityItem activity={{
