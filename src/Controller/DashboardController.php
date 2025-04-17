@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Activity;
+use App\Entity\HearthRateZones;
 use App\Entity\User;
 use App\Repository\ActivityRepository;
 use App\Strava\Client\Strava;
@@ -68,6 +69,7 @@ final class DashboardController extends AbstractController
             $entityManager->flush();
         }
 
+        // add/update activities in database
         $activities = $this->client->getAllActivities();
         foreach ($activities as $activityData) {
             $existingActivity = $entityManager->getRepository(Activity::class)
@@ -134,6 +136,23 @@ final class DashboardController extends AbstractController
         }
 
         $entityManager->flush();
+
+        // add/update athlete zones in database
+        $existingAthleteZones = $entityManager->getRepository(HearthRateZones::class)
+            ->findOneBy(['stravaUser' => $user]);
+        if (!$existingAthleteZones) {
+            $athleteZonesData = $this->client->getAthleteZones();
+            $athleteZones = new HearthRateZones();
+            $athleteZones->setStravaUser($user);
+            $athleteZones->setZone1($athleteZonesData['heart_rate']['zones'][0]);
+            $athleteZones->setZone2($athleteZonesData['heart_rate']['zones'][1]);
+            $athleteZones->setZone3($athleteZonesData['heart_rate']['zones'][2]);
+            $athleteZones->setZone4($athleteZonesData['heart_rate']['zones'][3]);
+            $athleteZones->setZone5($athleteZonesData['heart_rate']['zones'][4]);
+
+            $entityManager->persist($athleteZones);
+            $entityManager->flush();
+        }
 
         // login with the user
         $this->security->login($user);

@@ -2,14 +2,16 @@
 
 namespace App\Strava\Client;
 
-use App\Strava\Activities;
+use App\Entity\Activity;
 
 interface Strava
 {
     public function setAccessToken(string $accessToken): void;
 
-    /** @return Activities[] */
+    /** @return Activity[] */
     public function getAllActivities(): array;
 
     public function getUserInfo(): array;
+
+    public function getAthleteZones(): array;
 }

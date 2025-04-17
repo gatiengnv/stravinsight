@@ -78,6 +78,9 @@ class User implements UserInterface
     #[ORM\OneToMany(targetEntity: Activity::class, mappedBy: 'stravaUser', orphanRemoval: true)]
     private Collection $activities;
 
+    #[ORM\OneToOne(mappedBy: 'stravaUser', cascade: ['persist', 'remove'])]
+    private ?HearthRateZones $hearthRateZones = null;
+
     public function __construct()
     {
         $this->activities = new ArrayCollection();
@@ -343,6 +346,28 @@ class User implements UserInterface
                 $activity->setStravaUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getHearthRateZones(): ?HearthRateZones
+    {
+        return $this->hearthRateZones;
+    }
+
+    public function setHearthRateZones(?HearthRateZones $hearthRateZones): static
+    {
+        // unset the owning side of the relation if necessary
+        if (null === $hearthRateZones && null !== $this->hearthRateZones) {
+            $this->hearthRateZones->setStravaUser(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if (null !== $hearthRateZones && $hearthRateZones->getStravaUser() !== $this) {
+            $hearthRateZones->setStravaUser($this);
+        }
+
+        $this->hearthRateZones = $hearthRateZones;
 
         return $this;
     }
