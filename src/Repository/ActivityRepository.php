@@ -3,7 +3,6 @@
 namespace App\Repository;
 
 use App\Entity\Activity;
-use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -45,11 +44,11 @@ class ActivityRepository extends ServiceEntityRepository
 
     public function getActivityDifferenceFromLastMonth(int $userId): array
     {
-        $currentMonthStart = (new DateTime('first day of this month'))->setTime(0, 0);
-        $currentMonthEnd = (new DateTime('last day of this month'))->setTime(23, 59, 59);
+        $currentMonthStart = (new \DateTime('first day of this month'))->setTime(0, 0);
+        $currentMonthEnd = (new \DateTime('last day of this month'))->setTime(23, 59, 59);
 
-        $lastMonthStart = (new DateTime('first day of last month'))->setTime(0, 0);
-        $lastMonthEnd = (new DateTime('last day of last month'))->setTime(23, 59, 59);
+        $lastMonthStart = (new \DateTime('first day of last month'))->setTime(0, 0);
+        $lastMonthEnd = (new \DateTime('last day of last month'))->setTime(23, 59, 59);
 
         $currentMonthData = $this->createQueryBuilder('a')
             ->select('COUNT(a.id) as activityCount, SUM(a.distance) as totalDistance, SUM(a.movingTime) as totalTime, AVG(a.averageSpeed) as avgSpeed')
@@ -72,10 +71,10 @@ class ActivityRepository extends ServiceEntityRepository
             ->getSingleResult();
 
         return [
-            'activityDifference' => (int)$currentMonthData['activityCount'] - (int)$lastMonthData['activityCount'],
-            'distanceDifference' => round(((float)$currentMonthData['totalDistance'] - (float)$lastMonthData['totalDistance']) / 1000, 2),
-            'timeDifference' => round(((int)$currentMonthData['totalTime'] - (int)$lastMonthData['totalTime']) / 3600, 2),
-            'speedDifference' => round(((float)$currentMonthData['avgSpeed'] - (float)$lastMonthData['avgSpeed']) * 3.6, 2),
+            'activityDifference' => (int) $currentMonthData['activityCount'] - (int) $lastMonthData['activityCount'],
+            'distanceDifference' => round(((float) $currentMonthData['totalDistance'] - (float) $lastMonthData['totalDistance']) / 1000, 2),
+            'timeDifference' => round(((int) $currentMonthData['totalTime'] - (int) $lastMonthData['totalTime']) / 3600, 2),
+            'speedDifference' => round(((float) $currentMonthData['avgSpeed'] - (float) $lastMonthData['avgSpeed']) * 3.6, 2),
         ];
     }
 
@@ -93,12 +92,54 @@ class ActivityRepository extends ServiceEntityRepository
             return [
                 'id' => $activity->getId(),
                 'name' => $activity->getName(),
-                'distance' => round($activity->getDistance() / 1000, 2) . ' km',
+                'distance' => round($activity->getDistance() / 1000, 2).' km',
                 'movingTime' => gmdate('H:i:s', $activity->getMovingTime()),
-                'averageSpeed' => round($activity->getAverageSpeed() * 3.6, 2) . ' km/h',
+                'averageSpeed' => round($activity->getAverageSpeed() * 3.6, 2).' km/h',
                 'startDateLocal' => $activity->getStartDateLocal()?->format('Y-m-d H:i:s'),
                 'type' => $activity->getType(),
             ];
         }, $activities);
+    }
+
+    public function getActivityRecords(int $userId): array
+    {
+        $result = $this->createQueryBuilder('a')
+            ->select(
+                'MAX(a.distance) as maxDistance',
+                '(SELECT a1.startDateLocal FROM App\Entity\Activity a1 WHERE a1.distance = MAX(a.distance) AND a1.stravaUser = :userId) as maxDistanceDate',
+                'MAX(a.averageSpeed) as maxAverageSpeed',
+                '(SELECT a2.startDateLocal FROM App\Entity\Activity a2 WHERE a2.averageSpeed = MAX(a.averageSpeed) AND a2.stravaUser = :userId) as maxAverageSpeedDate',
+                'MAX(a.movingTime) as maxMovingTime',
+                '(SELECT a3.startDateLocal FROM App\Entity\Activity a3 WHERE a3.movingTime = MAX(a.movingTime) AND a3.stravaUser = :userId) as maxMovingTimeDate',
+                'MAX(a.totalElevationGain) as maxElevationGain',
+                '(SELECT a4.startDateLocal FROM App\Entity\Activity a4 WHERE a4.totalElevationGain = MAX(a.totalElevationGain) AND a4.stravaUser = :userId) as maxElevationGainDate'
+            )
+            ->where('a.stravaUser = :userId')
+            ->setParameter('userId', $userId)
+            ->getQuery()
+            ->getSingleResult();
+
+        return [
+            [
+                'name' => 'Max distance',
+                'value' => round($result['maxDistance'] / 1000, 2).' km',
+                'date' => $result['maxDistanceDate'],
+            ],
+            [
+                'name' => 'Max average speed',
+                'value' => round($result['maxAverageSpeed'] * 3.6, 2).' km/h',
+                'date' => $result['maxAverageSpeedDate'],
+            ],
+            [
+                'name' => 'Max moving time',
+                'value' => $result['maxMovingTime'] ? gmdate('H:i:s', $result['maxMovingTime']) : '00:00:00',
+                'date' => $result['maxMovingTimeDate'],
+            ],
+            [
+                'name' => 'Max elevation gain',
+                'value' => $result['maxElevationGain'].' m',
+                'date' => $result['maxElevationGainDate'],
+            ],
+        ];
     }
 }

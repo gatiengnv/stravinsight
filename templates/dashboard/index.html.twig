@@ -6,7 +6,7 @@
         totalTime: (app.user.activities|reduce((carry, activity) => carry + activity.movingTime, 0) / 3600)|round(2),
         averageSpeed: ((app.user.activities|reduce((carry, activity) => carry + activity.averageSpeed, 0) / app.user.activities|length) * 3.6)|round(2)
     } %}
-    <div {{ react_component('view/Dashboard', {stats : stats, activityDifference: activityDifference, activities:activities    }) }}>
+    <div {{ react_component('view/Dashboard', {stats : stats, activityDifference: activityDifference, activities:activities, records:records}) }}>
         <div class="flex justify-center items-center h-screen">
             <span class="loading loading-spinner loading-xl text-primary"></span>
         </div>

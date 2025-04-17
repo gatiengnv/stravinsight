@@ -19,7 +19,8 @@ import HearthRateZones from "../components/HearthRateZones";
 import FitnessTrendItem from "../components/FitnessTrendItem";
 import AchievementItem from "../components/AchievementItem";
 
-export default function Dashboard({stats = 0, activityDifference, activities}) {
+export default function Dashboard({stats = 0, activityDifference, activities, records}) {
+    console.log(records)
     return (
         <div className="p-4 md:p-6">
             <h1 className={"m-3 text-2xl font-bold"}>Dashboard</h1>
@@ -60,11 +61,9 @@ export default function Dashboard({stats = 0, activityDifference, activities}) {
                         </Card>
 
                         <Card title={"Personal Records"} subtitle={"Your best performances"}>
-                            <RecordItem title={"5K"} date={"May 12, 2023"} success={"22:15"}></RecordItem>
-                            <RecordItem title={"10K"} date={"May 12, 2023"} success={"48:32"}></RecordItem>
-                            <RecordItem title={"Half Marathon"} date={"May 12, 2023"} success={"1:52:45"}></RecordItem>
-                            <RecordItem title={"Marathon"} date={"May 12, 2023"} success={"4:05:18"}></RecordItem>
-                            <RecordItem title={"Longest Ride"} date={"May 12, 2023"} success={"120.5 km"}></RecordItem>
+                            {records.map((record, index) => (
+                                <RecordItem key={index} record={record}/>
+                            ))}
                         </Card>
                     </div>
                 </div>

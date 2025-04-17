@@ -18,7 +18,7 @@ class StravaLoginController extends AbstractController
         return $clientRegistry
             ->getClient('strava')
             ->redirect([
-                'read_all,activity:read_all',
+                'read,read_all,profile:read_all,activity:read,activity:read_all',
             ]);
     }
 
