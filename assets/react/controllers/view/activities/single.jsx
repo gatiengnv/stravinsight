@@ -103,15 +103,6 @@ export default function ActivityDetails() {
                     </Card>
                 </div>
             </div>
-
-            {activityData.description && (
-                <div className="card bg-neutral text-neutral-content p-4 md:p-6 shadow-lg mt-6">
-                    <h2 className="card-title text-xl font-bold mb-2">Description</h2>
-                    <p className="text-sm opacity-90 whitespace-pre-wrap">
-                        {activityData.description}
-                    </p>
-                </div>
-            )}
         </div>
     );
 }

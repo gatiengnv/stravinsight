@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Activity;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -40,4 +41,41 @@ class ActivityRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+    // src/Repository/ActivityRepository.php
+
+    public function getActivityDifferenceFromLastMonth(int $userId): array
+    {
+        $currentMonthStart = (new DateTime('first day of this month'))->setTime(0, 0);
+        $currentMonthEnd = (new DateTime('last day of this month'))->setTime(23, 59, 59);
+
+        $lastMonthStart = (new DateTime('first day of last month'))->setTime(0, 0);
+        $lastMonthEnd = (new DateTime('last day of last month'))->setTime(23, 59, 59);
+
+        $currentMonthData = $this->createQueryBuilder('a')
+            ->select('COUNT(a.id) as activityCount, SUM(a.distance) as totalDistance, SUM(a.movingTime) as totalTime, AVG(a.averageSpeed) as avgSpeed')
+            ->where('a.stravaUser = :userId')
+            ->andWhere('a.startDateLocal BETWEEN :currentStart AND :currentEnd')
+            ->setParameter('userId', $userId)
+            ->setParameter('currentStart', $currentMonthStart)
+            ->setParameter('currentEnd', $currentMonthEnd)
+            ->getQuery()
+            ->getSingleResult();
+
+        $lastMonthData = $this->createQueryBuilder('a')
+            ->select('COUNT(a.id) as activityCount, SUM(a.distance) as totalDistance, SUM(a.movingTime) as totalTime, AVG(a.averageSpeed) as avgSpeed')
+            ->where('a.stravaUser = :userId')
+            ->andWhere('a.startDateLocal BETWEEN :lastStart AND :lastEnd')
+            ->setParameter('userId', $userId)
+            ->setParameter('lastStart', $lastMonthStart)
+            ->setParameter('lastEnd', $lastMonthEnd)
+            ->getQuery()
+            ->getSingleResult();
+
+        return [
+            'activityDifference' => (int)$currentMonthData['activityCount'] - (int)$lastMonthData['activityCount'],
+            'distanceDifference' => round(((float)$currentMonthData['totalDistance'] - (float)$lastMonthData['totalDistance']) / 1000, 2),
+            'timeDifference' => round(((int)$currentMonthData['totalTime'] - (int)$lastMonthData['totalTime']) / 3600, 2),
+            'speedDifference' => round(((float)$currentMonthData['avgSpeed'] - (float)$lastMonthData['avgSpeed']) * 3.6, 2),
+        ];
+    }
 }

@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Activity;
 use App\Entity\User;
+use App\Repository\ActivityRepository;
 use App\Strava\Client\Strava;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
@@ -16,7 +17,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class DashboardController extends AbstractController
 {
-    public function __construct(private readonly Strava $client, private readonly Security $security)
+    public function __construct(private readonly Strava $client, private readonly Security $security, private ActivityRepository $activityRepository)
     {
     }
 
@@ -26,9 +27,8 @@ final class DashboardController extends AbstractController
     #[Route('/dashboard', name: 'app_dashboard')]
     public function index(): Response
     {
-        $user = $this->security->getUser();
-        dump($user->getActivities());
-        return $this->render('dashboard/index.html.twig', ['activities']);
+        $activityDifference = $this->activityRepository->getActivityDifferenceFromLastMonth($this->security->getUser()->getId());
+        return $this->render('dashboard/index.html.twig', ['activityDifference' => $activityDifference]);
     }
 
     #[Route('/initialize', name: 'app_initialize')]

@@ -7,7 +7,7 @@ import {
     faCalendar,
     faCity,
     faClock,
-    faFire,
+    faGaugeHigh,
     faLocationDot,
     faMountain,
     faPersonRunning,
@@ -19,17 +19,20 @@ import HearthRateZones from "../components/HearthRateZones";
 import FitnessTrendItem from "../components/FitnessTrendItem";
 import AchievementItem from "../components/AchievementItem";
 
-export default function Dashboard() {
+export default function Dashboard({stats = 0, activityDifference}) {
     return (
         <div className="p-4 md:p-6">
             <h1 className={"m-3 text-2xl font-bold"}>Dashboard</h1>
 
             <div className="stats stats-vertical lg:stats-horizontal shadow mb-6 w-full">
-                <StatItem icon={faBolt} title={"Total Activities"} value={127} desc={"+5 from last month"}/>
-                <StatItem icon={faLocationDot} title={"Total Distance"} value={"1,248 km"}
-                          desc={"+89 km from last month"}/>
-                <StatItem icon={faClock} title={"Total Time"} value={"87h 23m"} desc={"+7h from last month"}/>
-                <StatItem icon={faFire} title={"Calories Burned"} value={"48,302"} desc={"+4,120 from last month"}/>
+                <StatItem icon={faBolt} title={"Total Activities"} value={stats.totalActivities}
+                          desc={(activityDifference.activityDifference > 0 ? "+" : "") + activityDifference.activityDifference + " from last month"}/>
+                <StatItem icon={faLocationDot} title={"Total Distance"} value={stats.totalDistance + " km"}
+                          desc={(activityDifference.distanceDifference > 0 ? "+" : "") + activityDifference.distanceDifference + " from last month"}/>
+                <StatItem icon={faClock} title={"Total Time"} value={stats.totalTime}
+                          desc={(activityDifference.timeDifference > 0 ? "+" : "") + activityDifference.timeDifference + " from last month"}/>
+                <StatItem icon={faGaugeHigh} title={"Average speed"} value={stats.averageSpeed}
+                          desc={(activityDifference.speedDifference > 0 ? "+" : "") + activityDifference.speedDifference + " from last month"}/>
             </div>
 
             <div className="tabs tabs-bordered">
