@@ -3,6 +3,8 @@
 namespace App\Repository;
 
 use App\Entity\Activity;
+use App\Entity\User;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -44,11 +46,11 @@ class ActivityRepository extends ServiceEntityRepository
 
     public function getActivityDifferenceFromLastMonth(int $userId): array
     {
-        $currentMonthStart = (new \DateTime('first day of this month'))->setTime(0, 0);
-        $currentMonthEnd = (new \DateTime('last day of this month'))->setTime(23, 59, 59);
+        $currentMonthStart = (new DateTime('first day of this month'))->setTime(0, 0);
+        $currentMonthEnd = (new DateTime('last day of this month'))->setTime(23, 59, 59);
 
-        $lastMonthStart = (new \DateTime('first day of last month'))->setTime(0, 0);
-        $lastMonthEnd = (new \DateTime('last day of last month'))->setTime(23, 59, 59);
+        $lastMonthStart = (new DateTime('first day of last month'))->setTime(0, 0);
+        $lastMonthEnd = (new DateTime('last day of last month'))->setTime(23, 59, 59);
 
         $currentMonthData = $this->createQueryBuilder('a')
             ->select('COUNT(a.id) as activityCount, SUM(a.distance) as totalDistance, SUM(a.movingTime) as totalTime, AVG(a.averageSpeed) as avgSpeed')
@@ -71,10 +73,10 @@ class ActivityRepository extends ServiceEntityRepository
             ->getSingleResult();
 
         return [
-            'activityDifference' => (int) $currentMonthData['activityCount'] - (int) $lastMonthData['activityCount'],
-            'distanceDifference' => round(((float) $currentMonthData['totalDistance'] - (float) $lastMonthData['totalDistance']) / 1000, 2),
-            'timeDifference' => round(((int) $currentMonthData['totalTime'] - (int) $lastMonthData['totalTime']) / 3600, 2),
-            'speedDifference' => round(((float) $currentMonthData['avgSpeed'] - (float) $lastMonthData['avgSpeed']) * 3.6, 2),
+            'activityDifference' => (int)$currentMonthData['activityCount'] - (int)$lastMonthData['activityCount'],
+            'distanceDifference' => round(((float)$currentMonthData['totalDistance'] - (float)$lastMonthData['totalDistance']) / 1000, 2),
+            'timeDifference' => round(((int)$currentMonthData['totalTime'] - (int)$lastMonthData['totalTime']) / 3600, 2),
+            'speedDifference' => round(((float)$currentMonthData['avgSpeed'] - (float)$lastMonthData['avgSpeed']) * 3.6, 2),
         ];
     }
 
@@ -92,9 +94,9 @@ class ActivityRepository extends ServiceEntityRepository
             return [
                 'id' => $activity->getId(),
                 'name' => $activity->getName(),
-                'distance' => round($activity->getDistance() / 1000, 2).' km',
+                'distance' => round($activity->getDistance() / 1000, 2) . ' km',
                 'movingTime' => gmdate('H:i:s', $activity->getMovingTime()),
-                'averageSpeed' => round($activity->getAverageSpeed() * 3.6, 2).' km/h',
+                'averageSpeed' => round($activity->getAverageSpeed() * 3.6, 2) . ' km/h',
                 'startDateLocal' => $activity->getStartDateLocal()?->format('Y-m-d H:i:s'),
                 'type' => $activity->getType(),
             ];
@@ -122,12 +124,12 @@ class ActivityRepository extends ServiceEntityRepository
         return [
             [
                 'name' => 'Max distance',
-                'value' => round($result['maxDistance'] / 1000, 2).' km',
+                'value' => round($result['maxDistance'] / 1000, 2) . ' km',
                 'date' => $result['maxDistanceDate'],
             ],
             [
                 'name' => 'Max average speed',
-                'value' => round($result['maxAverageSpeed'] * 3.6, 2).' km/h',
+                'value' => round($result['maxAverageSpeed'] * 3.6, 2) . ' km/h',
                 'date' => $result['maxAverageSpeedDate'],
             ],
             [
@@ -137,8 +139,96 @@ class ActivityRepository extends ServiceEntityRepository
             ],
             [
                 'name' => 'Max elevation gain',
-                'value' => $result['maxElevationGain'].' m',
+                'value' => $result['maxElevationGain'] . ' m',
                 'date' => $result['maxElevationGainDate'],
+            ],
+        ];
+    }
+
+    public function getHeartRateZoneDistribution(int $userId): array
+    {
+        $entityManager = $this->getEntityManager();
+        $user = $entityManager->getRepository(User::class)->find($userId);
+
+        if (!$user || !$user->getHearthRateZones()) {
+            return [
+                'zone1' => ['percentage' => 0, 'minmax' => '(0 - 0)'],
+                'zone2' => ['percentage' => 0, 'minmax' => '(0 - 0)'],
+                'zone3' => ['percentage' => 0, 'minmax' => '(0 - 0)'],
+                'zone4' => ['percentage' => 0, 'minmax' => '(0 - 0)'],
+                'zone5' => ['percentage' => 0, 'minmax' => '(0 - ∞)'],
+            ];
+        }
+
+        $zones = $user->getHearthRateZones();
+
+        $zone1 = $zones->getZone1();
+        $zone2 = $zones->getZone2();
+        $zone3 = $zones->getZone3();
+        $zone4 = $zones->getZone4();
+        $zone5 = $zones->getZone5();
+
+        $totalActivities = $this->createQueryBuilder('a')
+            ->select('COUNT(a.id) as total')
+            ->where('a.stravaUser = :userId')
+            ->andWhere('a.averageHeartrate IS NOT NULL')
+            ->setParameter('userId', $userId)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        if (0 == $totalActivities) {
+            return [
+                'zone1' => ['percentage' => 0, 'minmax' => '(0 - 0)'],
+                'zone2' => ['percentage' => 0, 'minmax' => '(0 - 0)'],
+                'zone3' => ['percentage' => 0, 'minmax' => '(0 - 0)'],
+                'zone4' => ['percentage' => 0, 'minmax' => '(0 - 0)'],
+                'zone5' => ['percentage' => 0, 'minmax' => '(0 - ∞)'],
+            ];
+        }
+
+        $zoneQuery = $this->createQueryBuilder('a')
+            ->select(
+                'SUM(CASE WHEN a.averageHeartrate BETWEEN :zone1Min AND :zone1Max THEN 1 ELSE 0 END) as zone1',
+                'SUM(CASE WHEN a.averageHeartrate BETWEEN :zone2Min AND :zone2Max THEN 1 ELSE 0 END) as zone2',
+                'SUM(CASE WHEN a.averageHeartrate BETWEEN :zone3Min AND :zone3Max THEN 1 ELSE 0 END) as zone3',
+                'SUM(CASE WHEN a.averageHeartrate BETWEEN :zone4Min AND :zone4Max THEN 1 ELSE 0 END) as zone4',
+                'SUM(CASE WHEN a.averageHeartrate >= :zone5Min THEN 1 ELSE 0 END) as zone5'
+            )
+            ->where('a.stravaUser = :userId')
+            ->andWhere('a.averageHeartrate IS NOT NULL')
+            ->setParameter('userId', $userId)
+            ->setParameter('zone1Min', $zone1['min'] ?? 0)
+            ->setParameter('zone1Max', $zone1['max'] ?? 0)
+            ->setParameter('zone2Min', $zone2['min'] ?? 0)
+            ->setParameter('zone2Max', $zone2['max'] ?? 0)
+            ->setParameter('zone3Min', $zone3['min'] ?? 0)
+            ->setParameter('zone3Max', $zone3['max'] ?? 0)
+            ->setParameter('zone4Min', $zone4['min'] ?? 0)
+            ->setParameter('zone4Max', $zone4['max'] ?? 0)
+            ->setParameter('zone5Min', $zone5['min'] ?? 0)
+            ->getQuery()
+            ->getSingleResult();
+
+        return [
+            'zone1' => [
+                'percentage' => round(($zoneQuery['zone1'] / $totalActivities) * 100, 2),
+                'minmax' => '(' . $zone1['min'] . ' - ' . $zone1['max'] . ')',
+            ],
+            'zone2' => [
+                'percentage' => round(($zoneQuery['zone2'] / $totalActivities) * 100, 2),
+                'minmax' => '(' . $zone2['min'] . ' - ' . $zone2['max'] . ')',
+            ],
+            'zone3' => [
+                'percentage' => round(($zoneQuery['zone3'] / $totalActivities) * 100, 2),
+                'minmax' => '(' . $zone3['min'] . ' - ' . $zone3['max'] . ')',
+            ],
+            'zone4' => [
+                'percentage' => round(($zoneQuery['zone4'] / $totalActivities) * 100, 2),
+                'minmax' => '(' . $zone4['min'] . ' - ' . $zone4['max'] . ')',
+            ],
+            'zone5' => [
+                'percentage' => round(($zoneQuery['zone5'] / $totalActivities) * 100, 2),
+                'minmax' => '(' . $zone5['min'] . ' - ∞)',
             ],
         ];
     }

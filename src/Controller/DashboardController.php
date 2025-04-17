@@ -7,6 +7,7 @@ use App\Entity\HearthRateZones;
 use App\Entity\User;
 use App\Repository\ActivityRepository;
 use App\Strava\Client\Strava;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\Exception\GuzzleException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -30,8 +31,9 @@ final class DashboardController extends AbstractController
         $activityDifference = $this->activityRepository->getActivityDifferenceFromLastMonth($this->security->getUser()->getId());
         $activity = $this->activityRepository->getActivity($this->security->getUser()->getId());
         $records = $this->activityRepository->getActivityRecords($this->security->getUser()->getId());
+        $hearthRatePercentage = $this->activityRepository->getHeartRateZoneDistribution($this->security->getUser()->getId());
 
-        return $this->render('dashboard/index.html.twig', ['activityDifference' => $activityDifference, 'activities' => $activity, 'records' => $records]);
+        return $this->render('dashboard/index.html.twig', ['activityDifference' => $activityDifference, 'activities' => $activity, 'records' => $records, 'hearthRatePercentage' => $hearthRatePercentage]);
     }
 
     #[Route('/initialize', name: 'app_initialize')]
@@ -58,8 +60,8 @@ final class DashboardController extends AbstractController
             $user->setSex($userInfo['sex']);
             $user->setPremium($userInfo['premium']);
             $user->setSummit($userInfo['summit']);
-            $user->setCreatedAt(new \DateTime($userInfo['created_at']));
-            $user->setUpdatedAt(new \DateTime($userInfo['updated_at']));
+            $user->setCreatedAt(new DateTime($userInfo['created_at']));
+            $user->setUpdatedAt(new DateTime($userInfo['updated_at']));
             $user->setBadgeTypeId($userInfo['badge_type_id']);
             $user->setWeight($userInfo['weight']);
             $user->setProfileMedium($userInfo['profile_medium']);
@@ -86,9 +88,9 @@ final class DashboardController extends AbstractController
             $activity->setName($activityData['name'] ?? null);
             $activity->setType($activityData['type'] ?? null);
             $activity->setSportType($activityData['sport_type'] ?? null);
-            $activity->setWorkoutType(isset($activityData['workout_type']) ? (int) $activityData['workout_type'] : null);
-            $activity->setStartDate(!empty($activityData['start_date']) ? new \DateTime($activityData['start_date']) : null);
-            $activity->setStartDateLocal(!empty($activityData['start_date_local']) ? new \DateTime($activityData['start_date_local']) : null);
+            $activity->setWorkoutType(isset($activityData['workout_type']) ? (int)$activityData['workout_type'] : null);
+            $activity->setStartDate(!empty($activityData['start_date']) ? new DateTime($activityData['start_date']) : null);
+            $activity->setStartDateLocal(!empty($activityData['start_date_local']) ? new DateTime($activityData['start_date_local']) : null);
             $activity->setTimezone($activityData['timezone'] ?? null);
             $activity->setUtcOffset($activityData['utc_offset'] ?? null);
             $activity->setMovingTime($activityData['moving_time'] ?? null);
@@ -130,7 +132,7 @@ final class DashboardController extends AbstractController
             $activity->setFromAcceptedTag($activityData['from_accepted_tag'] ?? null);
             $activity->setResourceState($activityData['resource_state'] ?? null);
             $activity->setExternalId($activityData['external_id'] ?? null);
-            $activity->setUploadId(isset($activityData['upload_id']) ? (string) $activityData['upload_id'] : null);
+            $activity->setUploadId(isset($activityData['upload_id']) ? (string)$activityData['upload_id'] : null);
             $user->addActivity($activity);
             $entityManager->persist($activity);
         }

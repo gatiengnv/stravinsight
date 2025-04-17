@@ -1,12 +1,6 @@
 import React from "react";
 
-export default function HearthRateZones({
-                                            zones1percentage,
-                                            zones2percentage,
-                                            zones3percentage,
-                                            zones4percentage,
-                                            zones5percentage,
-                                        }) {
+export default function HearthRateZones({hearthRatePercentage}) {
     return (
         <>
             <div className="flex items-center gap-3">
@@ -28,12 +22,14 @@ export default function HearthRateZones({
         </span>
                 <div className="flex-grow">
                     <div className="flex justify-between text-sm mb-1">
-                        <span>Zone 1 (Recovery)</span>
-                        <span className="font-semibold">{zones1percentage}%</span>
+                        <span>Zone 1 (Recovery) {hearthRatePercentage.zone1.minmax}</span>
+                        <span className="font-semibold">
+              {hearthRatePercentage.zone1.percentage}%
+            </span>
                     </div>
                     <progress
                         className="progress progress-success w-full h-2"
-                        value={zones1percentage}
+                        value={hearthRatePercentage.zone1.percentage}
                         max="100"
                     ></progress>
                 </div>
@@ -57,12 +53,14 @@ export default function HearthRateZones({
         </span>
                 <div className="flex-grow">
                     <div className="flex justify-between text-sm mb-1">
-                        <span>Zone 2 (Endurance)</span>
-                        <span className="font-semibold">{zones2percentage}%</span>
+                        <span>Zone 2 (Endurance) {hearthRatePercentage.zone2.minmax}</span>
+                        <span className="font-semibold">
+              {hearthRatePercentage.zone2.percentage}%
+            </span>
                     </div>
                     <progress
                         className="progress progress-info w-full h-2"
-                        value={zones2percentage}
+                        value={hearthRatePercentage.zone2.percentage}
                         max="100"
                     ></progress>
                 </div>
@@ -86,12 +84,14 @@ export default function HearthRateZones({
         </span>
                 <div className="flex-grow">
                     <div className="flex justify-between text-sm mb-1">
-                        <span>Zone 3 (Tempo)</span>
-                        <span className="font-semibold">{zones3percentage}%</span>
+                        <span>Zone 3 (Tempo) {hearthRatePercentage.zone3.minmax}</span>
+                        <span className="font-semibold">
+              {hearthRatePercentage.zone3.percentage}%
+            </span>
                     </div>
                     <progress
                         className="progress progress-warning w-full h-2"
-                        value={zones3percentage}
+                        value={hearthRatePercentage.zone3.percentage}
                         max="100"
                     ></progress>
                 </div>
@@ -115,12 +115,14 @@ export default function HearthRateZones({
         </span>
                 <div className="flex-grow">
                     <div className="flex justify-between text-sm mb-1">
-                        <span>Zone 4 (Threshold)</span>
-                        <span className="font-semibold">{zones4percentage}%</span>
+                        <span>Zone 4 (Threshold) {hearthRatePercentage.zone4.minmax}</span>
+                        <span className="font-semibold">
+              {hearthRatePercentage.zone4.percentage}%
+            </span>
                     </div>
                     <progress
                         className="progress progress-error w-full h-2"
-                        value={zones4percentage}
+                        value={hearthRatePercentage.zone4.percentage}
                         max="100"
                     ></progress>
                 </div>
@@ -144,12 +146,14 @@ export default function HearthRateZones({
         </span>
                 <div className="flex-grow">
                     <div className="flex justify-between text-sm mb-1">
-                        <span>Zone 5 (VO2 Max)</span>
-                        <span className="font-semibold">{zones5percentage}%</span>
+                        <span>Zone 5 (VO2 Max) {hearthRatePercentage.zone5.minmax}</span>
+                        <span className="font-semibold">
+              {hearthRatePercentage.zone5.percentage}%
+            </span>
                     </div>
                     <progress
                         className="progress progress-error w-full h-2"
-                        value={zones5percentage}
+                        value={hearthRatePercentage.zone5.percentage}
                         max="100"
                     ></progress>
                 </div>
