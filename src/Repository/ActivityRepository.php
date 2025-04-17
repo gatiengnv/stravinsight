@@ -78,4 +78,27 @@ class ActivityRepository extends ServiceEntityRepository
             'speedDifference' => round(((float)$currentMonthData['avgSpeed'] - (float)$lastMonthData['avgSpeed']) * 3.6, 2),
         ];
     }
+
+    public function getActivity(int $userId, int $limit = 5): array
+    {
+        $activities = $this->createQueryBuilder('a')
+            ->where('a.stravaUser = :userId')
+            ->setParameter('userId', $userId)
+            ->orderBy('a.startDateLocal', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+
+        return array_map(function (Activity $activity) {
+            return [
+                'id' => $activity->getId(),
+                'name' => $activity->getName(),
+                'distance' => round($activity->getDistance() / 1000, 2) . ' km',
+                'movingTime' => gmdate('H:i:s', $activity->getMovingTime()),
+                'averageSpeed' => round($activity->getAverageSpeed() * 3.6, 2) . ' km/h',
+                'startDateLocal' => $activity->getStartDateLocal()?->format('Y-m-d H:i:s'),
+                'type' => $activity->getType(),
+            ];
+        }, $activities);
+    }
 }

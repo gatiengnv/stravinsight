@@ -19,7 +19,7 @@ import HearthRateZones from "../components/HearthRateZones";
 import FitnessTrendItem from "../components/FitnessTrendItem";
 import AchievementItem from "../components/AchievementItem";
 
-export default function Dashboard({stats = 0, activityDifference}) {
+export default function Dashboard({stats = 0, activityDifference, activities}) {
     return (
         <div className="p-4 md:p-6">
             <h1 className={"m-3 text-2xl font-bold"}>Dashboard</h1>
@@ -51,12 +51,9 @@ export default function Dashboard({stats = 0, activityDifference}) {
                 >
                     <div className="flex flex-col lg:flex-row gap-6">
                         <Card title={"Recent Activities"} subtitle={"Your last 5 activities"}>
-                            <ActivityItem activity={{
-                                name: "Morning Run",
-                                startDateLocal: "2023-10-01 07:30",
-                                distance: "5.2 km",
-                                movingTime: "30:15",
-                            }}/>
+                            {activities.map((activity, index) => (
+                                <ActivityItem key={index} activity={activity}/>
+                            ))}
                             <div className="mt-4 text-center">
                                 <a href="/activity" className="btn btn-primary">See All Activities</a>
                             </div>

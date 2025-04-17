@@ -28,7 +28,8 @@ final class DashboardController extends AbstractController
     public function index(): Response
     {
         $activityDifference = $this->activityRepository->getActivityDifferenceFromLastMonth($this->security->getUser()->getId());
-        return $this->render('dashboard/index.html.twig', ['activityDifference' => $activityDifference]);
+        $activity = $this->activityRepository->getActivity($this->security->getUser()->getId());
+        return $this->render('dashboard/index.html.twig', ['activityDifference' => $activityDifference, 'activities' => $activity]);
     }
 
     #[Route('/initialize', name: 'app_initialize')]
