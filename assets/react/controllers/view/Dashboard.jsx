@@ -19,7 +19,14 @@ import HearthRateZones from "../components/HearthRateZones";
 import FitnessTrendItem from "../components/FitnessTrendItem";
 import AchievementItem from "../components/AchievementItem";
 
-export default function Dashboard({stats = 0, activityDifference, activities, records, hearthRatePercentage}) {
+export default function Dashboard({
+                                      stats = 0,
+                                      activityDifference,
+                                      activities,
+                                      records,
+                                      hearthRatePercentage,
+                                      fitnessTrend
+                                  }) {
     return (
         <div className="p-4 md:p-6">
             <h1 className={"m-3 text-2xl font-bold"}>Dashboard</h1>
@@ -83,11 +90,8 @@ export default function Dashboard({stats = 0, activityDifference, activities, re
                         <Card title={"Heart Rate Zones"} subtitle={"Time spent in each zone"}>
                             <HearthRateZones hearthRatePercentage={hearthRatePercentage}/>
                         </Card>
-
                         <Card title={"Fitness Trend"} subtitle={"Your fitness level over time"}>
-                            <FitnessTrendItem
-                                heights={["10%", "20%", "30%", "40%", "50%", "60%", "70%", "80%", "90%", "100%"]}
-                                period={"Last 12 weeks"} isImproving={true}/>
+                            <FitnessTrendItem heights={fitnessTrend}/>
                         </Card>
                     </div>
                 </div>

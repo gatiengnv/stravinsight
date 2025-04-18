@@ -3,5 +3,6 @@
 {% block title %}Hello HomeController!{% endblock %}
 
 {% block body %}
+    <img src="{{ asset('img/strava.png') }}" alt="Strava Logo" class="w-1/7"/>
     <a href="{{ path('connect_strava_start') }}">Login with Strava</a>
 {% endblock %}

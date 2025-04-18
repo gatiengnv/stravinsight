@@ -32,8 +32,15 @@ final class DashboardController extends AbstractController
         $activity = $this->activityRepository->getActivity($this->security->getUser()->getId());
         $records = $this->activityRepository->getActivityRecords($this->security->getUser()->getId());
         $hearthRatePercentage = $this->activityRepository->getHeartRateZoneDistribution($this->security->getUser()->getId());
+        $fitnessTrend = $this->activityRepository->getWeeklyFitnessData($this->security->getUser()->getId(), 10);
 
-        return $this->render('dashboard/index.html.twig', ['activityDifference' => $activityDifference, 'activities' => $activity, 'records' => $records, 'hearthRatePercentage' => $hearthRatePercentage]);
+        return $this->render('dashboard/index.html.twig',
+            [
+                'activityDifference' => $activityDifference,
+                'activities' => $activity, 'records' => $records,
+                'hearthRatePercentage' => $hearthRatePercentage,
+                'fitnessTrend' => $fitnessTrend
+            ]);
     }
 
     #[Route('/initialize', name: 'app_initialize')]

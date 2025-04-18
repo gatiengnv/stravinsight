@@ -1,6 +1,8 @@
 import React from "react";
 
-export default function FitnessTrendItem({heights, period, isImproving}) {
+export default function FitnessTrendItem({heights}) {
+    const isImproving = heights[heights.length - 1] > heights[0];
+
     return (
         <>
             <div className="flex items-end justify-center gap-1 sm:gap-1.5 h-48 mb-4 px-2 sm:px-4">
@@ -8,12 +10,12 @@ export default function FitnessTrendItem({heights, period, isImproving}) {
                     <div
                         key={index}
                         className="bg-orange-500 w-full rounded-t-sm"
-                        style={{height: height}}
+                        style={{height: height / 10}}
                     ></div>
                 ))}
             </div>
             <div className="text-center text-sm flex items-center justify-center gap-2">
-                <span className="opacity-80">{period}</span>
+                <span className="opacity-80">Last {heights.length} weeks</span>
                 <span
                     className={`flex items-center gap-1 font-semibold ${
                         isImproving ? "text-success" : "text-error"

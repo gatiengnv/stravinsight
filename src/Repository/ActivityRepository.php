@@ -18,32 +18,6 @@ class ActivityRepository extends ServiceEntityRepository
         parent::__construct($registry, Activity::class);
     }
 
-    //    /**
-    //     * @return Activity[] Returns an array of Activity objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('a')
-    //            ->andWhere('a.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('a.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?Activity
-    //    {
-    //        return $this->createQueryBuilder('a')
-    //            ->andWhere('a.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
-    // src/Repository/ActivityRepository.php
-
     public function getActivityDifferenceFromLastMonth(int $userId): array
     {
         $currentMonthStart = (new DateTime('first day of this month'))->setTime(0, 0);
@@ -232,4 +206,54 @@ class ActivityRepository extends ServiceEntityRepository
             ],
         ];
     }
+
+    public function getWeeklyFitnessData(int $userId, int $weeks): array
+    {
+        $endDate = new DateTime();
+        $startDate = (new DateTime())->modify("-{$weeks} weeks");
+
+        $activities = $this->createQueryBuilder('a')
+            ->where('a.stravaUser = :userId')
+            ->andWhere('a.startDateLocal BETWEEN :startDate AND :endDate')
+            ->setParameter('userId', $userId)
+            ->setParameter('startDate', $startDate)
+            ->setParameter('endDate', $endDate)
+            ->getQuery()
+            ->getResult();
+
+        $weeklyData = [];
+
+        foreach ($activities as $activity) {
+            $week = $activity->getStartDateLocal()->format('o-W');
+            if (!isset($weeklyData[$week])) {
+                $weeklyData[$week] = 0;
+            }
+
+            if ($activity->getAverageHeartrate()) {
+                $weeklyData[$week] += $this->calculateRelativeEffort($activity->getAverageHeartrate(), $activity->getMovingTime());
+            } elseif ($activity->getAverageWatts()) {
+                $weeklyData[$week] += $this->calculatePowerEffort($activity->getAverageWatts(), $activity->getMovingTime());
+            }
+        }
+
+        $formattedData = [];
+        for ($i = 0; $i < $weeks; $i++) {
+            $week = (new DateTime())->modify("-{$i} weeks")->format('o-W');
+            $formattedData[] = $weeklyData[$week] ?? 0;
+        }
+
+        return array_reverse($formattedData);
+    }
+
+    private function calculateRelativeEffort(float $averageHeartrate, int $movingTime): float
+    {
+        return $averageHeartrate * $movingTime / 1000;
+    }
+
+    private function calculatePowerEffort(float $averageWatts, int $movingTime): float
+    {
+        return $averageWatts * $movingTime / 3600;
+    }
+
+
 }
