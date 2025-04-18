@@ -2,16 +2,22 @@ import React from "react";
 import ActivityItem from "../components/ActivityItem";
 import StatItem from "../components/StatItem";
 import {
-    faBiking,
+    faArrows,
     faBolt,
-    faCalendar,
-    faCity,
+    faBuilding,
+    faCalendarCheck,
     faClock,
+    faEarth,
     faGaugeHigh,
+    faKiwiBird,
     faLocationDot,
+    faMoon,
     faMountain,
+    faMountainCity,
+    faMultiply,
+    faPersonBiking,
     faPersonRunning,
-    faSun
+    faRunning
 } from "@fortawesome/free-solid-svg-icons";
 import Card from "../components/Card";
 import RecordItem from "../components/RecordItem";
@@ -25,7 +31,8 @@ export default function Dashboard({
                                       activities,
                                       records,
                                       hearthRatePercentage,
-                                      fitnessTrend
+                                      fitnessTrend,
+                                      achievements
                                   }) {
     return (
         <div className="p-4 md:p-6">
@@ -109,21 +116,12 @@ export default function Dashboard({
                     className="tab-content bg-base-200 border-base-300 rounded-box p-4 md:p-6 text-base-content mt-[-1px]"
                 >
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <AchievementItem icon={faBiking} title={"Century Ride"} desc={"Complete a 100 km ride"}
-                                         achieved={true} date={"July 22, 2023"}/>
-                        <AchievementItem icon={faPersonRunning} title={"Marathon Finisher"} desc={"Complete a marathon"}
-                                         achieved={true} date={"November 5, 2022"}/>
-                        <AchievementItem icon={faSun} title={"Early Bird"}
-                                         desc={"Complete 10 activities before 7 AM"} achieved={false}
-                                         date={"Ongoing (8/10)"}/>
-                        <AchievementItem icon={faMountain} title={"Elevation Gain"}
-                                         desc={"Climb 5,000 meters in a month"} achieved={false}
-                                         date={"3,245m / 5,000m"}/>
-                        <AchievementItem icon={faCalendar} title={"Consistent Runner"}
-                                         desc={"Run 3 times a week for 4 weeks"} achieved={false} date={"Week 2/4"}/>
-                        <AchievementItem icon={faCity} title={"Explorer"}
-                                         desc={"Complete activities in 5 different cities"} achieved={false}
-                                         date={"3/5 cities"}/>
+                        {achievements.map((achievement, index) => {
+                            const icons = [faPersonBiking, faPersonRunning, faArrows, faRunning, faKiwiBird, faMountain, faBolt, faBuilding, faEarth, faMountainCity, faMoon, faCalendarCheck, faMultiply];
+                            return (
+                                <AchievementItem key={index} icon={icons[index]} achievement={achievement}/>
+                            );
+                        })}
                     </div>
                 </div>
             </div>

@@ -1,7 +1,7 @@
 import React from "react";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
-export default function AchievementItem({icon, title, desc, achieved, date}) {
+export default function AchievementItem({icon, achievement}) {
     return (
         <div className="card bg-neutral text-neutral-content p-4 shadow-md">
             <div className="flex items-start gap-4">
@@ -14,14 +14,14 @@ export default function AchievementItem({icon, title, desc, achieved, date}) {
                 </div>
 
                 <div className="flex-grow min-w-0">
-                    <h3 className="font-semibold text-md">{title}</h3>
+                    <h3 className="font-semibold text-md">{achievement.name}</h3>
                     <p className="text-xs opacity-80 mb-2">
-                        {desc}
+                        {achievement.description}
                     </p>
                     <div className="flex justify-between items-center text-xs">
-                        {achieved ? (<span className="font-semibold text-success">Achieved</span>) : (
+                        {achievement.achieved ? (<span className="font-semibold text-success">Achieved</span>) : (
                             <span className="font-semibold text-warning">In Progress</span>)}
-                        <span className="opacity-70">{date}</span>
+                        <span className="opacity-70">{achievement.progression}</span>
                     </div>
                 </div>
             </div>
