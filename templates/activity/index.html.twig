@@ -3,7 +3,7 @@
 {% block title %}Hello ActivityController!{% endblock %}
 
 {% block body %}
-    <div {{ react_component('view/activities/list') }}>
+    <div {{ react_component('view/activities/list', {activities:activities}) }}>
         <div class="flex justify-center items-center h-screen">
             <span class="loading loading-spinner loading-xl text-primary"></span>
         </div>

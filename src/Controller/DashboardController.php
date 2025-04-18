@@ -29,7 +29,7 @@ final class DashboardController extends AbstractController
     public function index(): Response
     {
         $activityDifference = $this->activityRepository->getActivityDifferenceFromLastMonth($this->security->getUser()->getId());
-        $activity = $this->activityRepository->getActivity($this->security->getUser()->getId());
+        $activity = $this->activityRepository->getActivities($this->security->getUser()->getId());
         $records = $this->activityRepository->getActivityRecords($this->security->getUser()->getId());
         $hearthRatePercentage = $this->activityRepository->getHeartRateZoneDistribution($this->security->getUser()->getId());
         $fitnessTrend = $this->activityRepository->getWeeklyFitnessData($this->security->getUser()->getId(), 10);

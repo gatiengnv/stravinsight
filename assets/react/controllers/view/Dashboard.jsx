@@ -69,7 +69,7 @@ export default function Dashboard({
                                 <ActivityItem key={index} activity={activity}/>
                             ))}
                             <div className="mt-4 text-center">
-                                <a href="/activity" className="btn btn-primary">See All Activities</a>
+                                <a href="/activities" className="btn btn-primary">See All Activities</a>
                             </div>
                         </Card>
 

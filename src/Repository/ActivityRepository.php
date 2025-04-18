@@ -55,7 +55,7 @@ class ActivityRepository extends ServiceEntityRepository
         ];
     }
 
-    public function getActivity(int $userId, int $limit = 5): array
+    public function getActivities(int $userId, int $limit = 5): array
     {
         $activities = $this->createQueryBuilder('a')
             ->where('a.stravaUser = :userId')
