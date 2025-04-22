@@ -78,6 +78,32 @@ class ActivityRepository extends ServiceEntityRepository
         }, $activities);
     }
 
+    public function getActivity(int $activityId): ?array
+    {
+        $activity = $this->createQueryBuilder('a')
+            ->where('a.id = :activityId')
+            ->setParameter('activityId', $activityId)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        if (!$activity) {
+            return null;
+        }
+
+        return [
+            'id' => $activity->getId(),
+            'name' => $activity->getName(),
+            'distance' => round($activity->getDistance() / 1000, 2),
+            'movingTime' => gmdate('H:i:s', $activity->getMovingTime()),
+            'averagePace' => gmdate('i:s', $activity->getMovingTime() / ($activity->getDistance() / 1000)),
+            'averageSpeed' => round($activity->getAverageSpeed() * 3.6, 2),
+            'startDateLocal' => $activity->getStartDateLocal()?->format('Y-m-d H:i:s'),
+            'totalElevationGain' => $activity->getTotalElevationGain(),
+            'averageHeartrate' => $activity->getAverageHeartrate(),
+            'type' => $activity->getType(),
+        ];
+    }
+
     public function getActivityRecords(int $userId): array
     {
         $result = $this->createQueryBuilder('a')

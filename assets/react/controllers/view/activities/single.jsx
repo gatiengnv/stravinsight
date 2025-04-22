@@ -53,8 +53,8 @@ const formatTime = (seconds) => {
     parts.push(s.toString().padStart(2, "0"));
     return parts.join(":");
 };
-export default function ActivityDetails() {
-    const activityDate = new Date(activityData.date);
+export default function ActivityDetails({activity}) {
+    const activityDate = new Date(activity.startDateLocal);
     const formattedDate = activityDate.toLocaleDateString(undefined, {
         year: "numeric",
         month: "long",
@@ -69,12 +69,12 @@ export default function ActivityDetails() {
         <div className="p-4 md:p-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-6">
                 <div className="flex items-center gap-3">
-                    {activityData.type === "Run" && (
+                    {activity.type === "Run" && (
                         <FontAwesomeIcon icon={faPersonRunning}/>
                     )}
 
                     <h1 className="text-2xl font-bold text-base-content">
-                        {activityData.title}
+                        {activity.name}
                     </h1>
                 </div>
                 <div className="text-sm text-base-content opacity-80 text-left sm:text-right">
@@ -91,12 +91,15 @@ export default function ActivityDetails() {
 
                 <div className="flex-shrink-0 lg:w-1/3">
                     <Card>
-                        <StatItem title={"Distance"} value={"10.50 km"} icon={faLocationDot}/>
-                        <StatItem title={"Avg Pace"} value={"5:42/km"} icon={faPersonRunning}/>
-                        <StatItem title={"Moving Time"} value={"01:00:00"} icon={faStopwatch}/>
-                        <StatItem title={"Elevation Gain"} value={"120 m"} icon={faChartLine}/>
+                        <StatItem title={"Distance"} value={activity.distance + " km"} icon={faLocationDot}/>
+                        <StatItem title={"Avg Pace"}
+                                  value={activity.averagePace + "/km"}
+                                  icon={faPersonRunning}/>
+                        <StatItem title={"Moving Time"} value={activity.movingTime} icon={faStopwatch}/>
+                        <StatItem title={"Elevation Gain"} value={activity.totalElevationGain + " m"}
+                                  icon={faChartLine}/>
                         <StatItem title={"Calories"} value={"550"} icon={faFire}/>
-                        <StatItem title={"Avg Heart Rate"} value={"155 bpm"} icon={faHeart}/>
+                        <StatItem title={"Avg Heart Rate"} value={activity.averageHeartrate + " bpm"} icon={faHeart}/>
                     </Card>
                     <Card title={"Splits (per km)"}>
                         <Split activityData={activityData}/>
