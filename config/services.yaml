@@ -25,4 +25,6 @@ services:
 
     App\Controller\DashboardController:
         arguments:
-            - '@App\Strava\Client\StravaClient'
+            $client: '@App\Strava\Client\StravaClient'
+            $security: '@security.helper'
+            $activityRepository: '@App\Repository\ActivityRepository'

@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Repository\ActivityRepository;
+use App\Strava\Client\Strava;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Response;
@@ -10,7 +11,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class ActivityController extends AbstractController
 {
-    public function __construct(private readonly Security $security, private readonly ActivityRepository $activityRepository)
+    public function __construct(private readonly Strava $client, private readonly Security $security, private readonly ActivityRepository $activityRepository)
     {
     }
 
@@ -29,6 +30,9 @@ final class ActivityController extends AbstractController
     ): Response
     {
         $activity = $this->activityRepository->getActivity($id);
+
+        $details = $this->client->getActivityDetails($id);
+        var_dump($details);
         return $this->render('activity/show.html.twig', [
             'activity' => $activity
         ]);

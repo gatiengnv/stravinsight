@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\ActivityRepository;
+use DateTimeInterface;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -35,10 +36,10 @@ class Activity
     private ?int $workoutType = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $startDate = null;
+    private ?DateTimeInterface $startDate = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $startDateLocal = null;
+    private ?DateTimeInterface $startDateLocal = null;
 
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     private ?string $timezone = null;
@@ -166,6 +167,9 @@ class Activity
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     private ?string $uploadId = null;
 
+    #[ORM\OneToOne(mappedBy: 'activity', cascade: ['persist', 'remove'])]
+    private ?ActivityDetails $activityDetails = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -250,24 +254,24 @@ class Activity
         return $this;
     }
 
-    public function getStartDate(): ?\DateTimeInterface
+    public function getStartDate(): ?DateTimeInterface
     {
         return $this->startDate;
     }
 
-    public function setStartDate(?\DateTimeInterface $startDate): static
+    public function setStartDate(?DateTimeInterface $startDate): static
     {
         $this->startDate = $startDate;
 
         return $this;
     }
 
-    public function getStartDateLocal(): ?\DateTimeInterface
+    public function getStartDateLocal(): ?DateTimeInterface
     {
         return $this->startDateLocal;
     }
 
-    public function setStartDateLocal(?\DateTimeInterface $startDateLocal): static
+    public function setStartDateLocal(?DateTimeInterface $startDateLocal): static
     {
         $this->startDateLocal = $startDateLocal;
 
@@ -774,6 +778,26 @@ class Activity
     public function setUploadId(?string $uploadId): static
     {
         $this->uploadId = $uploadId;
+
+        return $this;
+    }
+
+    public function getActivityDetails(): ?ActivityDetails
+    {
+        return $this->activityDetails;
+    }
+
+    public function setActivityDetails(?ActivityDetails $activityDetails): static
+    {
+        if ($activityDetails === null && $this->activityDetails !== null) {
+            $this->activityDetails->setActivity(null);
+        }
+
+        if ($activityDetails !== null && $activityDetails->getActivity() !== $this) {
+            $activityDetails->setActivity($this);
+        }
+
+        $this->activityDetails = $activityDetails;
 
         return $this;
     }
