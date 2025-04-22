@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 class ActivityDetails
 {
     #[ORM\Id]
-    #[ORM\OneToOne(targetEntity: Activity::class, inversedBy: 'details')]
+    #[ORM\OneToOne(targetEntity: Activity::class, inversedBy: 'activityDetails')]
     #[ORM\JoinColumn(name: 'activity_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
     private ?Activity $activity = null;
 
