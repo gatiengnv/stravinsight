@@ -12,6 +12,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Split from "../../components/Split";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import SegmentEfforts from "../../components/SegmentEfforts";
+import StandardSplits from "../../components/StandardSplit";
 
 export default function ActivityDetails({activity, activityDetail}) {
     const activityDate = new Date(activity.startDateLocal);
@@ -47,6 +49,9 @@ export default function ActivityDetails({activity, activityDetail}) {
                     <Card title={"Route"} subtitle={""}>
                         <Map encodedPolyline={activityDetail.mapPolyline} averagePace={activity.averagePace}/>
                     </Card>
+                    <Card title={"Segments Efforts"}>
+                        <SegmentEfforts segmentEfforts={activityDetail.segmentEfforts}/>
+                    </Card>
                 </div>
 
                 <div className="flex-shrink-0 lg:w-1/3">
@@ -63,6 +68,9 @@ export default function ActivityDetails({activity, activityDetail}) {
                     </Card>
                     <Card title={"Splits (per km)"}>
                         <Split splitsMetric={activityDetail.splitsMetric}/>
+                    </Card>
+                    <Card title={"Standard Splits"}>
+                        <StandardSplits splitsStandard={activityDetail.splitsStandard}/>
                     </Card>
                 </div>
             </div>
