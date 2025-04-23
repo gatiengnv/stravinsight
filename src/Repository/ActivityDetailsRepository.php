@@ -30,6 +30,7 @@ class ActivityDetailsRepository extends ServiceEntityRepository
 
         return [
             'splitsMetric' => $activityDetails->getSplitsMetric(),
+            'mapPolyline' => $activityDetails->getMapPolyline()
         ];
     }
 }

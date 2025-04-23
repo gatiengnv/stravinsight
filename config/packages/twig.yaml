@@ -2,6 +2,8 @@ twig:
     file_name_pattern: '*.twig'
     cache: false
     debug: true
+    globals:
+        google_map_api_key: '%env(GOOGLE_MAP_API_KEY)%'
 
 when@test:
     twig:

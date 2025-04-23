@@ -85,7 +85,7 @@ export default function ActivityDetails({activity, activityDetail}) {
             <div className="flex flex-col lg:flex-row gap-6">
                 <div className="flex-grow lg:w-2/3">
                     <Card title={"Route"} subtitle={""}>
-                        <Map/>
+                        <Map encodedPolyline={activityDetail.mapPolyline}/>
                     </Card>
                 </div>
 
