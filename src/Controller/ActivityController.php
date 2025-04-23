@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Activity;
 use App\Entity\ActivityDetails;
+use App\Repository\ActivityDetailsRepository;
 use App\Repository\ActivityRepository;
 use App\Strava\Client\Strava;
 use Doctrine\ORM\EntityManagerInterface;
@@ -14,7 +15,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class ActivityController extends AbstractController
 {
-    public function __construct(private readonly Strava $client, private readonly Security $security, private readonly ActivityRepository $activityRepository)
+    public function __construct(private readonly Strava $client, private readonly Security $security, private readonly ActivityRepository $activityRepository, private readonly ActivityDetailsRepository $activityDetailsRepository)
     {
     }
 
@@ -33,12 +34,15 @@ final class ActivityController extends AbstractController
         EntityManagerInterface $entityManager
     ): Response
     {
+        // retrieve the activity
         $activity = $this->activityRepository->getActivity($id);
-        $activityEntity = $entityManager->getRepository(Activity::class)->find($id);
 
         // check if details already exist
-        $details = $entityManager->getRepository(ActivityDetails::class)->findOneBy(['activity' => $activityEntity]);
-        if (!$details) {
+        $activityDetail = $this->activityDetailsRepository->getActivityDetails($id);
+
+        // if the activity doesn't exist
+        if (!$activityDetail) {
+            $activityEntity = $entityManager->getRepository(Activity::class)->find($id);
             $detailsData = $this->client->getActivityDetails($id);
             $details = new ActivityDetails();
             $details->setActivity($activityEntity);
@@ -69,10 +73,13 @@ final class ActivityController extends AbstractController
 
             $entityManager->persist($details);
             $entityManager->flush();
-        }
 
+            $activityDetail = $this->activityDetailsRepository->getActivityDetails($id);
+        }
+        
         return $this->render('activity/show.html.twig', [
-            'activity' => $activity
+            'activity' => $activity,
+            'activityDetail' => $activityDetail
         ]);
     }
 }

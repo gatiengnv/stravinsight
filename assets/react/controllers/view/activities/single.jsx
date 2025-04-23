@@ -53,7 +53,7 @@ const formatTime = (seconds) => {
     parts.push(s.toString().padStart(2, "0"));
     return parts.join(":");
 };
-export default function ActivityDetails({activity}) {
+export default function ActivityDetails({activity, activityDetail}) {
     const activityDate = new Date(activity.startDateLocal);
     const formattedDate = activityDate.toLocaleDateString(undefined, {
         year: "numeric",
@@ -102,7 +102,7 @@ export default function ActivityDetails({activity}) {
                         <StatItem title={"Avg Heart Rate"} value={activity.averageHeartrate + " bpm"} icon={faHeart}/>
                     </Card>
                     <Card title={"Splits (per km)"}>
-                        <Split activityData={activityData}/>
+                        <Split splitsMetric={activityDetail.splitsMetric}/>
                     </Card>
                 </div>
             </div>

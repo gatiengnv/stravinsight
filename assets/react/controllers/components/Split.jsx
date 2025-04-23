@@ -1,12 +1,13 @@
 import React from "react";
 
-export default function Split({activityData}) {
+export default function Split({splitsMetric}) {
     const formatPace = (secondsPerKm) => {
         if (!secondsPerKm || secondsPerKm === Infinity) return "--:--";
         const m = Math.floor(secondsPerKm / 60);
         const s = Math.floor(secondsPerKm % 60);
         return `${m}:${s.toString().padStart(2, "0")}/km`;
     };
+
     return (
         <div className="overflow-x-auto">
             <table className="table table-zebra table-sm w-full">
@@ -19,23 +20,17 @@ export default function Split({activityData}) {
                 </tr>
                 </thead>
                 <tbody>
-                {activityData.splits.map((split, index) => (
+                {splitsMetric.map((split, index) => (
                     <tr key={index}>
+                        <td>{split.split}</td>
                         <td>
-                            {split.km % 1 === 0 ? split.km : split.km.toFixed(1)}
+                            {formatPace(split.elapsed_time / (split.distance / 1000))}
                         </td>
+                        <td>{split.average_heartrate ? split.average_heartrate.toFixed(1) : "--"}</td>
                         <td>
-                            {formatPace(
-                                split.time /
-                                (split.km -
-                                    (activityData.splits[index - 1]?.km || 0)),
-                            )}
-                        </td>
-                        <td>{split.hr || "--"}</td>
-                        <td>
-                            {split.elev_diff > 0
-                                ? `+${split.elev_diff}`
-                                : split.elev_diff}
+                            {split.elevation_difference > 0
+                                ? `+${split.elevation_difference}`
+                                : split.elevation_difference}
                             m
                         </td>
                     </tr>
@@ -43,5 +38,5 @@ export default function Split({activityData}) {
                 </tbody>
             </table>
         </div>
-    )
+    );
 }
