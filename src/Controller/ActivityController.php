@@ -33,9 +33,10 @@ final class ActivityController extends AbstractController
 
     #[Route('/activities/{id}', requirements: ['id' => '\d+'])]
     public function show(
-        int $id,
+        int                    $id,
         EntityManagerInterface $entityManager,
-    ): Response {
+    ): Response
+    {
         // retrieve the activity
         $activity = $this->activityRepository->getActivity($id);
 
@@ -68,6 +69,8 @@ final class ActivityController extends AbstractController
 
             $entityManager->persist($stream);
             $entityManager->flush();
+
+            $activityStream = $this->activityStreamRepository->getActivityStreams($id);
         }
 
         // if the activity doesn't exist
@@ -110,6 +113,7 @@ final class ActivityController extends AbstractController
         return $this->render('activity/show.html.twig', [
             'activity' => $activity,
             'activityDetail' => $activityDetail,
+            'activityStream' => $activityStream
         ]);
     }
 }

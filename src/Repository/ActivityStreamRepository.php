@@ -29,12 +29,16 @@ class ActivityStreamRepository extends ServiceEntityRepository
         }
 
         return [
-            'latlng' => $activityStreams->getLatlngData(),
-            'velocity' => $activityStreams->getVelocityData(),
-            'grade' => $activityStreams->getGradeData(),
-            'cadence' => $activityStreams->getCadenceData(),
-            'distance' => $activityStreams->getDistanceData(),
-            'altitude' => $activityStreams->getAltitudeData(),
+            'latlngData' => $activityStreams->getLatlngData(),
+            'velocityData' => $activityStreams->getVelocityData(),
+            'gradeData' => $activityStreams->getGradeData(),
+            'cadenceData' => $activityStreams->getCadenceData(),
+            'distanceData' => $activityStreams->getDistanceData(),
+            'altitudeData' => $activityStreams->getAltitudeData(),
+            'heartrateData' => $activityStreams->getHeartrateData(),
+            'timeData' => $activityStreams->getTimeData(),
+            'originalSize' => $activityStreams->getOriginalSize(),
+            'resolution' => $activityStreams->getResolution(),
         ];
     }
 }

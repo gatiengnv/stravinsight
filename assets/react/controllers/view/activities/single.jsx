@@ -6,6 +6,7 @@ import {
     faChartLine,
     faFire,
     faHeart,
+    faLineChart,
     faLocationDot,
     faMap,
     faPersonRunning,
@@ -17,12 +18,13 @@ import Split from "../../components/Split";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import SegmentEfforts from "../../components/SegmentEfforts";
 import StandardSplits from "../../components/StandardSplit";
+import Graphics from "../../components/Graphics";
 
-export default function ActivityDetails({activity, activityDetail}) {
+export default function ActivityDetails({activity, activityDetail, activityStream}) {
     const [activeTab, setActiveTab] = useState('map');
 
     if (!activity) {
-        return <div className="p-4 md:p-6">Aucune donnée d'activité disponible</div>;
+        return <div className="p-4 md:p-6">No activity data available</div>;
     }
 
     const activityDate = activity.startDateLocal && new Date(activity.startDateLocal);
@@ -51,7 +53,6 @@ export default function ActivityDetails({activity, activityDetail}) {
 
     return (
         <div className="p-4 md:p-6">
-            {/* En-tête */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-6">
                 <div className="flex items-center gap-3">
                     {activity.type === "Run" && <FontAwesomeIcon icon={faPersonRunning}/>}
@@ -64,12 +65,11 @@ export default function ActivityDetails({activity, activityDetail}) {
                 </div>
             </div>
 
-            {/* Statistiques principales */}
             {hasStats && (
                 <Card className="mb-6">
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                         {activity.distance && (
-                            <StatItem title="Distance" value={activity.distance + "km"} icon={faLocationDot}/>
+                            <StatItem title="Distance" value={activity.distance + " km"} icon={faLocationDot}/>
                         )}
                         {activity.averagePace && (
                             <StatItem title="Avg Pace" value={activity.averagePace + " /km"} icon={faPersonRunning}/>
@@ -78,20 +78,19 @@ export default function ActivityDetails({activity, activityDetail}) {
                             <StatItem title="Moving Time" value={activity.movingTime} icon={faStopwatch}/>
                         )}
                         {activity.totalElevationGain && (
-                            <StatItem title="Elevation Gain" value={activity.totalElevationGain + "m"}
+                            <StatItem title="Elevation Gain" value={activity.totalElevationGain + " m"}
                                       icon={faChartLine}/>
                         )}
                         {activityDetail && activityDetail.calories && (
                             <StatItem title="Calories" value={activityDetail.calories} icon={faFire}/>
                         )}
                         {activity.averageHeartrate && (
-                            <StatItem title="Avg Heart Rate" value={activity.averageHeartrate + "bpm"} icon={faHeart}/>
+                            <StatItem title="Avg Heart Rate" value={activity.averageHeartrate + " bpm"} icon={faHeart}/>
                         )}
                     </div>
                 </Card>
             )}
 
-            {/* Navigation par onglets */}
             {(hasMap || hasSegments || hasSplitsMetric || hasSplitsStandard) && (
                 <div className="mb-4">
                     <div className="tabs">
@@ -127,11 +126,16 @@ export default function ActivityDetails({activity, activityDetail}) {
                                 <FontAwesomeIcon icon={faTableCells} className="mr-2"/> Standard Splits
                             </button>
                         )}
+                        <button
+                            className={`tab tab-bordered ${activeTab === 'Charts' ? 'tab-active' : ''}`}
+                            onClick={() => setActiveTab('charts')}
+                        >
+                            <FontAwesomeIcon icon={faLineChart} className="mr-2"/> Charts
+                        </button>
                     </div>
                 </div>
             )}
 
-            {/* Contenu des onglets */}
             <div className="mt-4">
                 {activeTab === 'map' && hasMap && (
                     <Card>
@@ -157,6 +161,11 @@ export default function ActivityDetails({activity, activityDetail}) {
                 {activeTab === 'splitsStandard' && hasSplitsStandard && (
                     <Card title="Standard Splits">
                         <StandardSplits splitsStandard={activityDetail.splitsStandard}/>
+                    </Card>
+                )}
+                {activeTab === 'charts' && activityStream && (
+                    <Card title="Chart">
+                        <Graphics activityStream={activityStream}/>
                     </Card>
                 )}
             </div>
