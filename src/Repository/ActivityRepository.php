@@ -4,8 +4,6 @@ namespace App\Repository;
 
 use App\Entity\Activity;
 use App\Entity\User;
-use DateTime;
-use DateTimeInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -21,11 +19,11 @@ class ActivityRepository extends ServiceEntityRepository
 
     public function getActivityDifferenceFromLastMonth(int $userId): array
     {
-        $currentMonthStart = (new DateTime('first day of this month'))->setTime(0, 0);
-        $currentMonthEnd = (new DateTime('last day of this month'))->setTime(23, 59, 59);
+        $currentMonthStart = (new \DateTime('first day of this month'))->setTime(0, 0);
+        $currentMonthEnd = (new \DateTime('last day of this month'))->setTime(23, 59, 59);
 
-        $lastMonthStart = (new DateTime('first day of last month'))->setTime(0, 0);
-        $lastMonthEnd = (new DateTime('last day of last month'))->setTime(23, 59, 59);
+        $lastMonthStart = (new \DateTime('first day of last month'))->setTime(0, 0);
+        $lastMonthEnd = (new \DateTime('last day of last month'))->setTime(23, 59, 59);
 
         $currentMonthData = $this->createQueryBuilder('a')
             ->select('COUNT(a.id) as activityCount, SUM(a.distance) as totalDistance, SUM(a.movingTime) as totalTime, AVG(a.averageSpeed) as avgSpeed')
@@ -48,10 +46,10 @@ class ActivityRepository extends ServiceEntityRepository
             ->getSingleResult();
 
         return [
-            'activityDifference' => (int)$currentMonthData['activityCount'] - (int)$lastMonthData['activityCount'],
-            'distanceDifference' => round(((float)$currentMonthData['totalDistance'] - (float)$lastMonthData['totalDistance']) / 1000, 2),
-            'timeDifference' => round(((int)$currentMonthData['totalTime'] - (int)$lastMonthData['totalTime']) / 3600, 2),
-            'speedDifference' => round(((float)$currentMonthData['avgSpeed'] - (float)$lastMonthData['avgSpeed']) * 3.6, 2),
+            'activityDifference' => (int) $currentMonthData['activityCount'] - (int) $lastMonthData['activityCount'],
+            'distanceDifference' => round(((float) $currentMonthData['totalDistance'] - (float) $lastMonthData['totalDistance']) / 1000, 2),
+            'timeDifference' => round(((int) $currentMonthData['totalTime'] - (int) $lastMonthData['totalTime']) / 3600, 2),
+            'speedDifference' => round(((float) $currentMonthData['avgSpeed'] - (float) $lastMonthData['avgSpeed']) * 3.6, 2),
         ];
     }
 
@@ -69,9 +67,9 @@ class ActivityRepository extends ServiceEntityRepository
             return [
                 'id' => $activity->getId(),
                 'name' => $activity->getName(),
-                'distance' => round($activity->getDistance() / 1000, 2) . ' km',
+                'distance' => round($activity->getDistance() / 1000, 2).' km',
                 'movingTime' => gmdate('H:i:s', $activity->getMovingTime()),
-                'averageSpeed' => round($activity->getAverageSpeed() * 3.6, 2) . ' km/h',
+                'averageSpeed' => round($activity->getAverageSpeed() * 3.6, 2).' km/h',
                 'startDateLocal' => $activity->getStartDateLocal()?->format('Y-m-d H:i:s'),
                 'type' => $activity->getType(),
             ];
@@ -125,12 +123,12 @@ class ActivityRepository extends ServiceEntityRepository
         return [
             [
                 'name' => 'Max distance',
-                'value' => round($result['maxDistance'] / 1000, 2) . ' km',
+                'value' => round($result['maxDistance'] / 1000, 2).' km',
                 'date' => $result['maxDistanceDate'],
             ],
             [
                 'name' => 'Max average speed',
-                'value' => round($result['maxAverageSpeed'] * 3.6, 2) . ' km/h',
+                'value' => round($result['maxAverageSpeed'] * 3.6, 2).' km/h',
                 'date' => $result['maxAverageSpeedDate'],
             ],
             [
@@ -140,7 +138,7 @@ class ActivityRepository extends ServiceEntityRepository
             ],
             [
                 'name' => 'Max elevation gain',
-                'value' => $result['maxElevationGain'] . ' m',
+                'value' => $result['maxElevationGain'].' m',
                 'date' => $result['maxElevationGainDate'],
             ],
         ];
@@ -213,31 +211,31 @@ class ActivityRepository extends ServiceEntityRepository
         return [
             'zone1' => [
                 'percentage' => round(($zoneQuery['zone1'] / $totalActivities) * 100, 2),
-                'minmax' => '(' . $zone1['min'] . ' - ' . $zone1['max'] . ')',
+                'minmax' => '('.$zone1['min'].' - '.$zone1['max'].')',
             ],
             'zone2' => [
                 'percentage' => round(($zoneQuery['zone2'] / $totalActivities) * 100, 2),
-                'minmax' => '(' . $zone2['min'] . ' - ' . $zone2['max'] . ')',
+                'minmax' => '('.$zone2['min'].' - '.$zone2['max'].')',
             ],
             'zone3' => [
                 'percentage' => round(($zoneQuery['zone3'] / $totalActivities) * 100, 2),
-                'minmax' => '(' . $zone3['min'] . ' - ' . $zone3['max'] . ')',
+                'minmax' => '('.$zone3['min'].' - '.$zone3['max'].')',
             ],
             'zone4' => [
                 'percentage' => round(($zoneQuery['zone4'] / $totalActivities) * 100, 2),
-                'minmax' => '(' . $zone4['min'] . ' - ' . $zone4['max'] . ')',
+                'minmax' => '('.$zone4['min'].' - '.$zone4['max'].')',
             ],
             'zone5' => [
                 'percentage' => round(($zoneQuery['zone5'] / $totalActivities) * 100, 2),
-                'minmax' => '(' . $zone5['min'] . ' - ∞)',
+                'minmax' => '('.$zone5['min'].' - ∞)',
             ],
         ];
     }
 
     public function getWeeklyFitnessData(int $userId, int $weeks): array
     {
-        $endDate = new DateTime();
-        $startDate = (new DateTime())->modify("-{$weeks} weeks");
+        $endDate = new \DateTime();
+        $startDate = (new \DateTime())->modify("-{$weeks} weeks");
 
         $activities = $this->createQueryBuilder('a')
             ->where('a.stravaUser = :userId')
@@ -264,8 +262,8 @@ class ActivityRepository extends ServiceEntityRepository
         }
 
         $formattedData = [];
-        for ($i = 0; $i < $weeks; $i++) {
-            $week = (new DateTime())->modify("-{$i} weeks")->format('o-W');
+        for ($i = 0; $i < $weeks; ++$i) {
+            $week = (new \DateTime())->modify("-{$i} weeks")->format('o-W');
             $formattedData[] = $weeklyData[$week] ?? 0;
         }
 
@@ -286,7 +284,8 @@ class ActivityRepository extends ServiceEntityRepository
      * Calculates various achievements based on a user's activities.
      *
      * @param int $userId The ID of the User entity
-     * @return array An array of achievement statuses.
+     *
+     * @return array an array of achievement statuses
      */
     public function getAchievements(int $userId): array
     {
@@ -311,8 +310,8 @@ class ActivityRepository extends ServiceEntityRepository
             'description' => 'Complete a 100 km ride',
             'achieved' => !empty($centuryRide['achievedDate']),
             'progression' => !empty($centuryRide['achievedDate'])
-                ? 'Achieved on: ' . (new DateTime($centuryRide['achievedDate']))->format('Y-m-d')
-                : $this->getMaxDistanceProgression($userId, 100000) . '/100 km',
+                ? 'Achieved on: '.(new \DateTime($centuryRide['achievedDate']))->format('Y-m-d')
+                : $this->getMaxDistanceProgression($userId, 100000).'/100 km',
         ];
 
         $ultraDistance = $this->createQueryBuilder('a')
@@ -328,8 +327,8 @@ class ActivityRepository extends ServiceEntityRepository
             'description' => 'Complete an activity of 200 km or more',
             'achieved' => !empty($ultraDistance['achievedDate']),
             'progression' => !empty($ultraDistance['achievedDate'])
-                ? 'Achieved on: ' . (new DateTime($ultraDistance['achievedDate']))->format('Y-m-d')
-                : $this->getMaxDistanceProgression($userId, 200000) . '/200 km',
+                ? 'Achieved on: '.(new \DateTime($ultraDistance['achievedDate']))->format('Y-m-d')
+                : $this->getMaxDistanceProgression($userId, 200000).'/200 km',
         ];
 
         $streakActivities = $this->createQueryBuilder('a')
@@ -345,16 +344,16 @@ class ActivityRepository extends ServiceEntityRepository
         $previousDate = null;
 
         foreach ($streakActivities as $activity) {
-            if (!$activity['startDateLocal'] instanceof DateTimeInterface) {
+            if (!$activity['startDateLocal'] instanceof \DateTimeInterface) {
                 continue;
             }
             $currentDate = $activity['startDateLocal'];
 
-            if ($previousDate &&
-                $currentDate->format('Y-m-d') !== $previousDate->format('Y-m-d') &&
-                $currentDate->diff($previousDate)->days === 1) {
-                $currentStreak++;
-            } else if ($previousDate && $currentDate->format('Y-m-d') === $previousDate->format('Y-m-d')) {
+            if ($previousDate
+                && $currentDate->format('Y-m-d') !== $previousDate->format('Y-m-d')
+                && 1 === $currentDate->diff($previousDate)->days) {
+                ++$currentStreak;
+            } elseif ($previousDate && $currentDate->format('Y-m-d') === $previousDate->format('Y-m-d')) {
                 // Do nothing
             } else {
                 $currentStreak = 1;
@@ -368,7 +367,7 @@ class ActivityRepository extends ServiceEntityRepository
             'name' => 'Streak Master',
             'description' => 'Complete activities for 7 consecutive days',
             'achieved' => $maxStreak >= $streakGoal,
-            'progression' => $maxStreak . '/' . $streakGoal . ' days',
+            'progression' => $maxStreak.'/'.$streakGoal.' days',
         ];
 
         $marathon = $this->createQueryBuilder('a')
@@ -386,8 +385,8 @@ class ActivityRepository extends ServiceEntityRepository
             'description' => 'Complete a marathon (42.195 km run)',
             'achieved' => !empty($marathon['achievedDate']),
             'progression' => !empty($marathon['achievedDate'])
-                ? 'Achieved on: ' . (new DateTime($marathon['achievedDate']))->format('Y-m-d')
-                : $this->getMaxDistanceProgression($userId, 42195, 'Run') . '/42.2 km',
+                ? 'Achieved on: '.(new \DateTime($marathon['achievedDate']))->format('Y-m-d')
+                : $this->getMaxDistanceProgression($userId, 42195, 'Run').'/42.2 km',
         ];
 
         $earlyBirdActivities = $this->createQueryBuilder('a')
@@ -400,9 +399,9 @@ class ActivityRepository extends ServiceEntityRepository
 
         $earlyBirdCount = 0;
         foreach ($earlyBirdActivities as $activity) {
-            if ($activity['startDateLocal'] instanceof DateTimeInterface) {
-                if ((int)$activity['startDateLocal']->format('H') < 7) {
-                    $earlyBirdCount++;
+            if ($activity['startDateLocal'] instanceof \DateTimeInterface) {
+                if ((int) $activity['startDateLocal']->format('H') < 7) {
+                    ++$earlyBirdCount;
                 }
             }
         }
@@ -412,11 +411,11 @@ class ActivityRepository extends ServiceEntityRepository
             'name' => 'Early Bird',
             'description' => 'Complete 10 activities starting before 7 AM',
             'achieved' => $earlyBirdCount >= $earlyBirdGoal,
-            'progression' => $earlyBirdCount . '/' . $earlyBirdGoal,
+            'progression' => $earlyBirdCount.'/'.$earlyBirdGoal,
         ];
 
-        $startOfMonth = (new DateTime('first day of this month'))->setTime(0, 0, 0);
-        $endOfMonth = (new DateTime('last day of this month'))->setTime(23, 59, 59);
+        $startOfMonth = (new \DateTime('first day of this month'))->setTime(0, 0, 0);
+        $endOfMonth = (new \DateTime('last day of this month'))->setTime(23, 59, 59);
 
         $elevationGain = $this->createQueryBuilder('a')
             ->select('SUM(a.totalElevationGain) as totalGain')
@@ -434,11 +433,11 @@ class ActivityRepository extends ServiceEntityRepository
             'name' => 'Monthly Climb Challenge',
             'description' => 'Climb 5,000 meters in the current calendar month',
             'achieved' => $elevationGain >= $elevationGoal,
-            'progression' => round($elevationGain) . '/' . $elevationGoal . ' m',
+            'progression' => round($elevationGain).'/'.$elevationGoal.' m',
         ];
 
-        $endDate = new DateTime();
-        $startDate = (new DateTime())->modify('-28 days')->setTime(0, 0, 0);
+        $endDate = new \DateTime();
+        $startDate = (new \DateTime())->modify('-28 days')->setTime(0, 0, 0);
 
         $recentRuns = $this->createQueryBuilder('a')
             ->select('a.startDateLocal')
@@ -455,22 +454,22 @@ class ActivityRepository extends ServiceEntityRepository
 
         $runsPerWeek = [];
         foreach ($recentRuns as $run) {
-            if ($run['startDateLocal'] instanceof DateTimeInterface) {
+            if ($run['startDateLocal'] instanceof \DateTimeInterface) {
                 $weekNumber = $run['startDateLocal']->format('o-W');
                 if (!isset($runsPerWeek[$weekNumber])) {
                     $runsPerWeek[$weekNumber] = 0;
                 }
-                $runsPerWeek[$weekNumber]++;
+                ++$runsPerWeek[$weekNumber];
             }
         }
 
         $completedWeeksCount = 0;
-        $today = new DateTime();
-        for ($i = 0; $i < 4; $i++) {
+        $today = new \DateTime();
+        for ($i = 0; $i < 4; ++$i) {
             $checkDate = (clone $today)->modify("-$i week");
             $checkWeekNumber = $checkDate->format('o-W');
             if (isset($runsPerWeek[$checkWeekNumber]) && $runsPerWeek[$checkWeekNumber] >= 3) {
-                $completedWeeksCount++;
+                ++$completedWeeksCount;
             }
         }
         $consistencyGoalWeeks = 4;
@@ -478,7 +477,7 @@ class ActivityRepository extends ServiceEntityRepository
             'name' => 'Consistent Runner',
             'description' => 'Run 3 times a week for 4 consecutive weeks',
             'achieved' => $completedWeeksCount >= $consistencyGoalWeeks,
-            'progression' => $completedWeeksCount . '/' . $consistencyGoalWeeks . ' weeks',
+            'progression' => $completedWeeksCount.'/'.$consistencyGoalWeeks.' weeks',
         ];
 
         $explorerCities = $this->createQueryBuilder('a')
@@ -496,7 +495,7 @@ class ActivityRepository extends ServiceEntityRepository
             'name' => 'Explorer',
             'description' => 'Complete activities in 5 different cities',
             'achieved' => $explorerCities >= $explorerGoal,
-            'progression' => $explorerCities . '/' . $explorerGoal . ' cities',
+            'progression' => $explorerCities.'/'.$explorerGoal.' cities',
         ];
 
         $totalDistanceResult = $this->createQueryBuilder('a')
@@ -512,7 +511,7 @@ class ActivityRepository extends ServiceEntityRepository
             'name' => 'Global Trotter',
             'description' => 'Accumulate a total distance of 1,000 km across all activities',
             'achieved' => $achievedTotalDistance,
-            'progression' => round($totalDistance / 1000) . '/' . round($goalDistance / 1000) . ' km',
+            'progression' => round($totalDistance / 1000).'/'.round($goalDistance / 1000).' km',
         ];
 
         $totalElevationResult = $this->createQueryBuilder('a')
@@ -528,7 +527,7 @@ class ActivityRepository extends ServiceEntityRepository
             'name' => 'Everest Climber',
             'description' => 'Accumulate a total elevation gain equivalent to Mount Everest (8,848 m)',
             'achieved' => $achievedEverest,
-            'progression' => round($totalElevation) . '/' . $goalElevationEverest . ' m',
+            'progression' => round($totalElevation).'/'.$goalElevationEverest.' m',
         ];
 
         $nightOwlActivities = $this->createQueryBuilder('a')
@@ -541,9 +540,9 @@ class ActivityRepository extends ServiceEntityRepository
 
         $nightOwlCount = 0;
         foreach ($nightOwlActivities as $activity) {
-            if ($activity['startDateLocal'] instanceof DateTimeInterface) {
-                if ((int)$activity['startDateLocal']->format('H') >= 21) {
-                    $nightOwlCount++;
+            if ($activity['startDateLocal'] instanceof \DateTimeInterface) {
+                if ((int) $activity['startDateLocal']->format('H') >= 21) {
+                    ++$nightOwlCount;
                 }
             }
         }
@@ -553,7 +552,7 @@ class ActivityRepository extends ServiceEntityRepository
             'name' => 'Night Owl',
             'description' => 'Complete 10 activities starting after 9 PM local time',
             'achieved' => $achievedNightOwl,
-            'progression' => $nightOwlCount . '/' . $goalNightOwl,
+            'progression' => $nightOwlCount.'/'.$goalNightOwl,
         ];
 
         $weekendActivities = $this->createQueryBuilder('a')
@@ -566,10 +565,10 @@ class ActivityRepository extends ServiceEntityRepository
 
         $weekendDistance = 0;
         foreach ($weekendActivities as $activity) {
-            if ($activity['startDateLocal'] instanceof DateTimeInterface && $activity['distance'] > 0) {
-                $dayOfWeek = (int)$activity['startDateLocal']->format('N');
-                if ($dayOfWeek === 6 || $dayOfWeek === 7) {
-                    $weekendDistance += (float)$activity['distance'];
+            if ($activity['startDateLocal'] instanceof \DateTimeInterface && $activity['distance'] > 0) {
+                $dayOfWeek = (int) $activity['startDateLocal']->format('N');
+                if (6 === $dayOfWeek || 7 === $dayOfWeek) {
+                    $weekendDistance += (float) $activity['distance'];
                 }
             }
         }
@@ -579,7 +578,7 @@ class ActivityRepository extends ServiceEntityRepository
             'name' => 'Weekend Warrior',
             'description' => 'Accumulate 500 km on weekend activities (Sat/Sun)',
             'achieved' => $achievedWeekendWarrior,
-            'progression' => round($weekendDistance / 1000) . '/' . round($goalWeekendDistance / 1000) . ' km',
+            'progression' => round($weekendDistance / 1000).'/'.round($goalWeekendDistance / 1000).' km',
         ];
 
         $sportTypes = $this->createQueryBuilder('a')
@@ -600,7 +599,7 @@ class ActivityRepository extends ServiceEntityRepository
             'name' => 'Multi-Sport Athlete',
             'description' => 'Log activities of at least 3 different types (e.g., Run, Ride, Swim)',
             'achieved' => $achievedMultiSport,
-            'progression' => $validSportTypesCount . '/' . $goalTypes . ' types',
+            'progression' => $validSportTypesCount.'/'.$goalTypes.' types',
         ];
 
         return $achievements;
@@ -608,11 +607,6 @@ class ActivityRepository extends ServiceEntityRepository
 
     /**
      * Helper function to get max distance for progression display.
-     *
-     * @param int $userId
-     * @param int $goalDistanceMeters
-     * @param string|null $activityType
-     * @return string
      */
     private function getMaxDistanceProgression(int $userId, int $goalDistanceMeters, ?string $activityType = null): string
     {
@@ -621,7 +615,7 @@ class ActivityRepository extends ServiceEntityRepository
             ->where('a.stravaUser = :userId')
             ->setParameter('userId', $userId);
 
-        if ($activityType !== null) {
+        if (null !== $activityType) {
             $qb->andWhere('a.type = :type OR a.sportType = :type')
                 ->setParameter('type', $activityType);
         }

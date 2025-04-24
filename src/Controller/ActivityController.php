@@ -4,8 +4,10 @@ namespace App\Controller;
 
 use App\Entity\Activity;
 use App\Entity\ActivityDetails;
+use App\Entity\ActivityStream;
 use App\Repository\ActivityDetailsRepository;
 use App\Repository\ActivityRepository;
+use App\Repository\ActivityStreamRepository;
 use App\Strava\Client\Strava;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -15,7 +17,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class ActivityController extends AbstractController
 {
-    public function __construct(private readonly Strava $client, private readonly Security $security, private readonly ActivityRepository $activityRepository, private readonly ActivityDetailsRepository $activityDetailsRepository)
+    public function __construct(private readonly Strava $client, private readonly Security $security, private readonly ActivityRepository $activityRepository, private readonly ActivityDetailsRepository $activityDetailsRepository, private readonly ActivityStreamRepository $activityStreamRepository)
     {
     }
 
@@ -23,22 +25,50 @@ final class ActivityController extends AbstractController
     public function index(): Response
     {
         $activities = $this->activityRepository->getActivities($this->security->getUser()->getId(), 200);
+
         return $this->render('activity/index.html.twig', [
             'activities' => $activities,
         ]);
     }
 
-    #[Route('/activity/{id}', requirements: ['id' => '\d+'])]
+    #[Route('/activities/{id}', requirements: ['id' => '\d+'])]
     public function show(
-        int                    $id,
-        EntityManagerInterface $entityManager
-    ): Response
-    {
+        int $id,
+        EntityManagerInterface $entityManager,
+    ): Response {
         // retrieve the activity
         $activity = $this->activityRepository->getActivity($id);
 
         // check if details already exist
         $activityDetail = $this->activityDetailsRepository->getActivityDetails($id);
+
+        // check if streams already exist
+        $activityStream = $this->activityStreamRepository->getActivityStreams($id);
+
+        // if the streams don't exist
+        if (!$activityStream) {
+            $activityEntity = $entityManager->getRepository(Activity::class)->find($id);
+            $streamsData = $this->client->getActivityStreams($id);
+            $stream = new ActivityStream();
+            $stream->setActivity($activityEntity);
+            $stream->setLatlngData($streamsData['latlng']['data'] ?? null);
+            $stream->setVelocityData($streamsData['velocity_smooth']['data'] ?? ($streamsData['velocity']['data'] ?? null));
+            $stream->setGradeData($streamsData['grade_smooth']['data'] ?? ($streamsData['grade']['data'] ?? null));
+            $stream->setCadenceData($streamsData['cadence']['data'] ?? null);
+            $stream->setDistanceData($streamsData['distance']['data'] ?? null);
+            $stream->setAltitudeData($streamsData['altitude']['data'] ?? null);
+            $stream->setHeartrateData($streamsData['heartrate']['data'] ?? null);
+            $stream->setTimeData($streamsData['time']['data'] ?? null);
+
+            $firstStreamKey = array_key_first($streamsData);
+            if (null !== $firstStreamKey && isset($streamsData[$firstStreamKey])) {
+                $stream->setOriginalSize($streamsData[$firstStreamKey]['original_size'] ?? null);
+                $stream->setResolution($streamsData[$firstStreamKey]['resolution'] ?? null);
+            }
+
+            $entityManager->persist($stream);
+            $entityManager->flush();
+        }
 
         // if the activity doesn't exist
         if (!$activityDetail) {
@@ -76,10 +106,10 @@ final class ActivityController extends AbstractController
 
             $activityDetail = $this->activityDetailsRepository->getActivityDetails($id);
         }
-        
+
         return $this->render('activity/show.html.twig', [
             'activity' => $activity,
-            'activityDetail' => $activityDetail
+            'activityDetail' => $activityDetail,
         ]);
     }
 }

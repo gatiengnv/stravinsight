@@ -14,4 +14,8 @@ interface Strava
     public function getUserInfo(): array;
 
     public function getAthleteZones(): array;
+
+    public function getActivityDetails(int $activityId): array;
+
+    public function getActivityStreams(int $activityId): array;
 }

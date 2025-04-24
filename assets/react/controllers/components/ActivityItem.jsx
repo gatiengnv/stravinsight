@@ -2,7 +2,7 @@ import React from "react";
 
 export default function ActivityItem({activity}) {
     return (
-        <a href={"/activity/" + activity.id}>
+        <a href={"/activities/" + activity.id}>
             <div className="flex justify-between items-center text-sm">
                 <div>
                     <div className="font-semibold">{activity.name}</div>

@@ -87,7 +87,6 @@ class ActivityDetails
     #[ORM\Column(type: Types::JSON, nullable: true)]
     private ?array $availableZones = null;
 
-
     public function getId(): ?int
     {
         return $this->activity?->getId();
@@ -101,6 +100,7 @@ class ActivityDetails
     public function setActivity(?Activity $activity): static
     {
         $this->activity = $activity;
+
         return $this;
     }
 
@@ -112,6 +112,7 @@ class ActivityDetails
     public function setMapPolyline(?string $mapPolyline): static
     {
         $this->mapPolyline = $mapPolyline;
+
         return $this;
     }
 
@@ -123,6 +124,7 @@ class ActivityDetails
     public function setVisibility(?string $visibility): static
     {
         $this->visibility = $visibility;
+
         return $this;
     }
 
@@ -134,6 +136,7 @@ class ActivityDetails
     public function setHeartrateOptOut(?bool $heartrateOptOut): static
     {
         $this->heartrateOptOut = $heartrateOptOut;
+
         return $this;
     }
 
@@ -145,6 +148,7 @@ class ActivityDetails
     public function setDisplayHideHeartrateOption(?bool $displayHideHeartrateOption): static
     {
         $this->displayHideHeartrateOption = $displayHideHeartrateOption;
+
         return $this;
     }
 
@@ -156,6 +160,7 @@ class ActivityDetails
     public function setElevationHigh(?float $elevationHigh): static
     {
         $this->elevationHigh = $elevationHigh;
+
         return $this;
     }
 
@@ -167,6 +172,7 @@ class ActivityDetails
     public function setElevationLow(?float $elevationLow): static
     {
         $this->elevationLow = $elevationLow;
+
         return $this;
     }
 
@@ -178,6 +184,7 @@ class ActivityDetails
     public function setUploadIdStr(?string $uploadIdStr): static
     {
         $this->uploadIdStr = $uploadIdStr;
+
         return $this;
     }
 
@@ -189,6 +196,7 @@ class ActivityDetails
     public function setDescription(?string $description): static
     {
         $this->description = $description;
+
         return $this;
     }
 
@@ -200,6 +208,7 @@ class ActivityDetails
     public function setCalories(?float $calories): static
     {
         $this->calories = $calories;
+
         return $this;
     }
 
@@ -211,6 +220,7 @@ class ActivityDetails
     public function setPerceivedExertion(?int $perceivedExertion): static
     {
         $this->perceivedExertion = $perceivedExertion;
+
         return $this;
     }
 
@@ -222,6 +232,7 @@ class ActivityDetails
     public function setPreferPerceivedExertion(?bool $preferPerceivedExertion): static
     {
         $this->preferPerceivedExertion = $preferPerceivedExertion;
+
         return $this;
     }
 
@@ -233,6 +244,7 @@ class ActivityDetails
     public function setSegmentEfforts(?array $segmentEfforts): static
     {
         $this->segmentEfforts = $segmentEfforts;
+
         return $this;
     }
 
@@ -244,6 +256,7 @@ class ActivityDetails
     public function setSplitsMetric(?array $splitsMetric): static
     {
         $this->splitsMetric = $splitsMetric;
+
         return $this;
     }
 
@@ -255,6 +268,7 @@ class ActivityDetails
     public function setSplitsStandard(?array $splitsStandard): static
     {
         $this->splitsStandard = $splitsStandard;
+
         return $this;
     }
 
@@ -266,6 +280,7 @@ class ActivityDetails
     public function setLaps(?array $laps): static
     {
         $this->laps = $laps;
+
         return $this;
     }
 
@@ -277,6 +292,7 @@ class ActivityDetails
     public function setBestEfforts(?array $bestEfforts): static
     {
         $this->bestEfforts = $bestEfforts;
+
         return $this;
     }
 
@@ -288,6 +304,7 @@ class ActivityDetails
     public function setGearDetails(?array $gearDetails): static
     {
         $this->gearDetails = $gearDetails;
+
         return $this;
     }
 
@@ -299,6 +316,7 @@ class ActivityDetails
     public function setPhotosDetails(?array $photosDetails): static
     {
         $this->photosDetails = $photosDetails;
+
         return $this;
     }
 
@@ -310,6 +328,7 @@ class ActivityDetails
     public function setStatsVisibility(?array $statsVisibility): static
     {
         $this->statsVisibility = $statsVisibility;
+
         return $this;
     }
 
@@ -321,6 +340,7 @@ class ActivityDetails
     public function setHideFromHome(?bool $hideFromHome): static
     {
         $this->hideFromHome = $hideFromHome;
+
         return $this;
     }
 
@@ -332,6 +352,7 @@ class ActivityDetails
     public function setDeviceName(?string $deviceName): static
     {
         $this->deviceName = $deviceName;
+
         return $this;
     }
 
@@ -343,6 +364,7 @@ class ActivityDetails
     public function setEmbedToken(?string $embedToken): static
     {
         $this->embedToken = $embedToken;
+
         return $this;
     }
 
@@ -354,6 +376,7 @@ class ActivityDetails
     public function setSimilarActivities(?array $similarActivities): static
     {
         $this->similarActivities = $similarActivities;
+
         return $this;
     }
 
@@ -365,6 +388,7 @@ class ActivityDetails
     public function setAvailableZones(?array $availableZones): static
     {
         $this->availableZones = $availableZones;
+
         return $this;
     }
 }
