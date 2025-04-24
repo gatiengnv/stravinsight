@@ -18,4 +18,6 @@ interface Strava
     public function getActivityDetails(int $activityId): array;
 
     public function getActivityStreams(int $activityId): array;
+
+    public function logout(): void;
 }

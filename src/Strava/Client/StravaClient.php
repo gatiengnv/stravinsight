@@ -9,6 +9,7 @@ use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use function sprintf;
 
 class StravaClient implements Strava
 {
@@ -16,8 +17,9 @@ class StravaClient implements Strava
 
     public function __construct(
         private HttpClientInterface $httpClient,
-        private RequestStack $requestStack,
-    ) {
+        private RequestStack        $requestStack,
+    )
+    {
         $session = $this->requestStack->getSession();
         if ($session->has('access_token')) {
             $this->accessToken = $session->get('access_token');
@@ -40,7 +42,7 @@ class StravaClient implements Strava
             'https://www.strava.com/api/v3/athlete/activities?per_page=200',
             [
                 'headers' => [
-                    'Authorization' => \sprintf('Bearer %s', $this->accessToken),
+                    'Authorization' => sprintf('Bearer %s', $this->accessToken),
                 ],
             ]
         )->getContent();
@@ -58,10 +60,10 @@ class StravaClient implements Strava
     {
         $responseBody = $this->httpClient->request(
             'GET',
-            \sprintf('https://www.strava.com/api/v3/activities/%s?include_all_efforts=', $activityId),
+            sprintf('https://www.strava.com/api/v3/activities/%s?include_all_efforts=', $activityId),
             [
                 'headers' => [
-                    'Authorization' => \sprintf('Bearer %s', $this->accessToken),
+                    'Authorization' => sprintf('Bearer %s', $this->accessToken),
                 ],
             ]
         )->getContent();
@@ -82,7 +84,7 @@ class StravaClient implements Strava
             'https://www.strava.com/api/v3/athlete',
             [
                 'headers' => [
-                    'Authorization' => \sprintf('Bearer %s', $this->accessToken),
+                    'Authorization' => sprintf('Bearer %s', $this->accessToken),
                 ],
             ]
         )->getContent();
@@ -103,7 +105,7 @@ class StravaClient implements Strava
             'https://www.strava.com/api/v3/athlete/zones',
             [
                 'headers' => [
-                    'Authorization' => \sprintf('Bearer %s', $this->accessToken),
+                    'Authorization' => sprintf('Bearer %s', $this->accessToken),
                 ],
             ]
         )->getContent();
@@ -115,14 +117,27 @@ class StravaClient implements Strava
     {
         $responseBody = $this->httpClient->request(
             'GET',
-            \sprintf('https://www.strava.com/api/v3/activities/%s/streams?keys=time,distance,latlng,altitude,velocity_smooth,heartrate,cadence,watts,temp,grade_smooth&key_by_type=true', $activityId),
+            sprintf('https://www.strava.com/api/v3/activities/%s/streams?keys=time,distance,latlng,altitude,velocity_smooth,heartrate,cadence,watts,temp,grade_smooth&key_by_type=true', $activityId),
             [
                 'headers' => [
-                    'Authorization' => \sprintf('Bearer %s', $this->accessToken),
+                    'Authorization' => sprintf('Bearer %s', $this->accessToken),
                 ],
             ]
         )->getContent();
 
         return json_decode($responseBody, true);
+    }
+
+    public function logout(): void
+    {
+        $responseBody = $this->httpClient->request(
+            'POST',
+            'https://www.strava.com/oauth/deauthorize',
+            [
+                'headers' => [
+                    'Authorization' => sprintf('Bearer %s', $this->accessToken),
+                ],
+            ]
+        );
     }
 }
