@@ -1,6 +1,9 @@
 import React from "react";
 
 export default function StandardSplits({splitsStandard}) {
+    if (!splitsStandard || !Array.isArray(splitsStandard)) {
+        return <div className="text-gray-400">No splits data available</div>;
+    }
 
     const getPaceZoneClass = (zone) => {
         switch (zone) {
@@ -38,20 +41,23 @@ export default function StandardSplits({splitsStandard}) {
                 <tbody>
                 {splitsStandard.map((split, index) => (
                     <tr key={index}>
-                        <td>{split.split}</td>
-                        <td>{split.distance.toFixed(1)}</td>
-                        <td>{split.elapsed_time}</td>
-                        <td>{split.moving_time}</td>
-                        <td className={split.elevation_difference > 0 ? "text-green-400" : "text-red-400"}>
-                            {split.elevation_difference > 0
-                                ? `+${split.elevation_difference.toFixed(1)}`
-                                : split.elevation_difference.toFixed(1)}
+                        <td>{split.split || '-'}</td>
+                        <td>{split.distance && split.distance.toFixed(1) || '-'}</td>
+                        <td>{split.elapsed_time || '-'}</td>
+                        <td>{split.moving_time || '-'}</td>
+                        <td className={(split.elevation_difference > 0 && "text-green-400") ||
+                            (split.elevation_difference < 0 && "text-red-400") || ""}>
+                            {split.elevation_difference !== undefined ?
+                                ((split.elevation_difference > 0 ?
+                                    `+${split.elevation_difference.toFixed(1)}` :
+                                    split.elevation_difference.toFixed(1))) :
+                                '-'}
                         </td>
-                        <td>{split.average_speed.toFixed(2)}</td>
-                        <td>{split.average_grade_adjusted_speed.toFixed(2)}</td>
-                        <td>{split.average_heartrate.toFixed(1)}</td>
-                        <td className={getPaceZoneClass(split.pace_zone)}>
-                            {split.pace_zone}
+                        <td>{split.average_speed && split.average_speed.toFixed(2) || '-'}</td>
+                        <td>{split.average_grade_adjusted_speed && split.average_grade_adjusted_speed.toFixed(2) || '-'}</td>
+                        <td>{split.average_heartrate && split.average_heartrate.toFixed(1) || '-'}</td>
+                        <td className={split.pace_zone && getPaceZoneClass(split.pace_zone) || "text-gray-400"}>
+                            {split.pace_zone || '-'}
                         </td>
                     </tr>
                 ))}

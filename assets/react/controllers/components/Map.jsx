@@ -12,6 +12,7 @@ export default function Map({encodedPolyline, averagePace}) {
     const polylineRef = useRef(null);
     const fullPathRef = useRef(null);
     const googlePathRef = useRef(null);
+    const animateMarkerFnRef = useRef(null);
     const animationStateRef = useRef({
         currentIndex: 0,
         progressivePathPoints: [],
@@ -142,7 +143,8 @@ export default function Map({encodedPolyline, averagePace}) {
 
         const animateMarker = (timestamp) => {
             if (!state.lastTimestamp) state.lastTimestamp = timestamp;
-            const elapsed = timestamp - state.lastTimestamp;
+
+            const elapsed = Math.min(timestamp - state.lastTimestamp, 100);
 
             state.interpolationFactor += elapsed / animationSpeed;
 
@@ -216,6 +218,8 @@ export default function Map({encodedPolyline, averagePace}) {
             state.lastTimestamp = timestamp;
         };
 
+        animateMarkerFnRef.current = animateMarker;
+
         fullPathRef.current.setOptions({strokeOpacity: 0.15});
         polylineRef.current.setOptions({strokeOpacity: 1.0});
         markerRef.current.setVisible(true);
@@ -240,6 +244,28 @@ export default function Map({encodedPolyline, averagePace}) {
         };
     }, [isAnimating, averagePace]);
 
+    useEffect(() => {
+        if (!isAnimating) return;
+
+        const handleVisibilityChange = () => {
+            if (document.hidden) {
+                if (animationRef.current) {
+                    cancelAnimationFrame(animationRef.current);
+                    animationRef.current = null;
+                }
+            } else if (isAnimating && animateMarkerFnRef.current) {
+                animationStateRef.current.lastTimestamp = 0;
+                animationRef.current = requestAnimationFrame(animateMarkerFnRef.current);
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        return () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
+    }, [isAnimating]);
+
     const startAnimation = () => {
         setIsAnimating(true);
     };
@@ -254,6 +280,23 @@ export default function Map({encodedPolyline, averagePace}) {
 
         if (mapInstanceRef.current && googlePathRef.current) {
             const googlePath = googlePathRef.current;
+
+            animationStateRef.current = {
+                currentIndex: 0,
+                progressivePathPoints: [googlePath[0]],
+                lastTimestamp: 0,
+                interpolationFactor: 0,
+                fromPoint: googlePath[0],
+                toPoint: googlePath[1] || googlePath[0]
+            };
+
+            if (markerRef.current) {
+                markerRef.current.setPosition(googlePath[0]);
+            }
+
+            if (polylineRef.current) {
+                polylineRef.current.setPath([googlePath[0]]);
+            }
 
             const bounds = new window.google.maps.LatLngBounds();
             googlePath.forEach(point => bounds.extend(point));
@@ -295,13 +338,12 @@ export default function Map({encodedPolyline, averagePace}) {
     };
 
     return (
-        <div className="relative">
+        <div className="relative w-full">
             <div
                 ref={mapRef}
-                className="aspect-video bg-base-300 rounded-box"
-                style={{height: "400px"}}
+                className="w-full h-[50vh] min-h-[300px] max-h-[600px] bg-base-300 rounded-box"
             ></div>
-            <div className="absolute bottom-4 right-4 flex gap-2">
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
                 {isAnimating && (
                     <button
                         onClick={stopAnimation}

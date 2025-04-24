@@ -32,7 +32,8 @@ class ActivityDetailsRepository extends ServiceEntityRepository
             'splitsMetric' => $activityDetails->getSplitsMetric(),
             'splitsStandard' => $activityDetails->getSplitsStandard(),
             'segmentEfforts' => $activityDetails->getSegmentEfforts(),
-            'mapPolyline' => $activityDetails->getMapPolyline()
+            'mapPolyline' => $activityDetails->getMapPolyline(),
+            'calories' => $activityDetails->getCalories(),
         ];
     }
 }
