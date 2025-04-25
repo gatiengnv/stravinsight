@@ -77,11 +77,11 @@ export default function ActivityDetails({activity, activityDetail, activityStrea
                         {activity.movingTime && (
                             <StatItem title="Moving Time" value={activity.movingTime} icon={faStopwatch}/>
                         )}
-                        {activity.totalElevationGain && (
+                        {(activity.totalElevationGain > 0) && (
                             <StatItem title="Elevation Gain" value={activity.totalElevationGain + " m"}
                                       icon={faChartLine}/>
                         )}
-                        {activityDetail && activityDetail.calories && (
+                        {activityDetail && (activityDetail.calories > 0) && (
                             <StatItem title="Calories" value={activityDetail.calories} icon={faFire}/>
                         )}
                         {activity.averageHeartrate && (

@@ -14,6 +14,7 @@ use function sprintf;
 class StravaClient implements Strava
 {
     private string $accessToken = '';
+    private string $refreshToken = '';
 
     public function __construct(
         private HttpClientInterface $httpClient,
@@ -24,6 +25,61 @@ class StravaClient implements Strava
         if ($session->has('access_token')) {
             $this->accessToken = $session->get('access_token');
         }
+        if ($session->has('refresh_token')) {
+            $this->refreshToken = $session->get('refresh_token');
+        }
+    }
+
+    /**
+     * @return Activity[]
+     */
+    public function getAllActivities(): array
+    {
+        return $this->executeRequest(
+            'GET',
+            'https://www.strava.com/api/v3/athlete/activities?per_page=200'
+        );
+    }
+
+    private function executeRequest(string $method, string $url, array $options = []): array
+    {
+        if (!isset($options['headers'])) {
+            $options['headers'] = [];
+        }
+        $options['headers']['Authorization'] = sprintf('Bearer %s', $this->accessToken);
+
+        try {
+            $response = $this->httpClient->request($method, $url, $options);
+            return json_decode($response->getContent(), true);
+        } catch (ClientExceptionInterface $e) {
+            if (in_array($e->getResponse()->getStatusCode(), [401, 403])) {
+                $this->refreshTokens();
+                $options['headers']['Authorization'] = sprintf('Bearer %s', $this->accessToken);
+                $response = $this->httpClient->request($method, $url, $options);
+                return json_decode($response->getContent(), true);
+            }
+            throw $e;
+        }
+    }
+
+    public function refreshTokens(): void
+    {
+        $responseBody = $this->httpClient->request(
+            'POST',
+            'https://www.strava.com/oauth/token',
+            [
+                'body' => [
+                    'client_id' => $_ENV['OAUTH_STRAVA_CLIENT_ID'],
+                    'client_secret' => $_ENV['OAUTH_STRAVA_CLIENT_SECRET'],
+                    'refresh_token' => $this->refreshToken,
+                    'grant_type' => 'refresh_token',
+                ],
+            ]
+        )->getContent();
+
+        $response = json_decode($responseBody, true);
+        $this->setAccessToken($response['access_token']);
+        $this->setRefreshToken($response['refresh_token']);
     }
 
     public function setAccessToken(string $accessToken): void
@@ -32,22 +88,10 @@ class StravaClient implements Strava
         $this->requestStack->getSession()->set('access_token', $accessToken);
     }
 
-    /**
-     * @return Activity[]
-     */
-    public function getAllActivities(): array
+    public function setRefreshToken(string $refreshToken): void
     {
-        $responseBody = $this->httpClient->request(
-            'GET',
-            'https://www.strava.com/api/v3/athlete/activities?per_page=200',
-            [
-                'headers' => [
-                    'Authorization' => sprintf('Bearer %s', $this->accessToken),
-                ],
-            ]
-        )->getContent();
-
-        return json_decode($responseBody, true);
+        $this->refreshToken = $refreshToken;
+        $this->requestStack->getSession()->set('refresh_token', $refreshToken);
     }
 
     /**
@@ -58,17 +102,10 @@ class StravaClient implements Strava
      */
     public function getActivityDetails(int $activityId): array
     {
-        $responseBody = $this->httpClient->request(
+        return $this->executeRequest(
             'GET',
-            sprintf('https://www.strava.com/api/v3/activities/%s?include_all_efforts=', $activityId),
-            [
-                'headers' => [
-                    'Authorization' => sprintf('Bearer %s', $this->accessToken),
-                ],
-            ]
-        )->getContent();
-
-        return json_decode($responseBody, true);
+            sprintf('https://www.strava.com/api/v3/activities/%s?include_all_efforts=', $activityId)
+        );
     }
 
     /**
@@ -79,17 +116,10 @@ class StravaClient implements Strava
      */
     public function getUserInfo(): array
     {
-        $responseBody = $this->httpClient->request(
+        return $this->executeRequest(
             'GET',
-            'https://www.strava.com/api/v3/athlete',
-            [
-                'headers' => [
-                    'Authorization' => sprintf('Bearer %s', $this->accessToken),
-                ],
-            ]
-        )->getContent();
-
-        return json_decode($responseBody, true);
+            'https://www.strava.com/api/v3/athlete'
+        );
     }
 
     /**
@@ -100,37 +130,23 @@ class StravaClient implements Strava
      */
     public function getAthleteZones(): array
     {
-        $responseBody = $this->httpClient->request(
+        return $this->executeRequest(
             'GET',
-            'https://www.strava.com/api/v3/athlete/zones',
-            [
-                'headers' => [
-                    'Authorization' => sprintf('Bearer %s', $this->accessToken),
-                ],
-            ]
-        )->getContent();
-
-        return json_decode($responseBody, true);
+            'https://www.strava.com/api/v3/athlete/zones'
+        );
     }
 
     public function getActivityStreams(int $activityId): array
     {
-        $responseBody = $this->httpClient->request(
+        return $this->executeRequest(
             'GET',
-            sprintf('https://www.strava.com/api/v3/activities/%s/streams?keys=time,distance,latlng,altitude,velocity_smooth,heartrate,cadence,watts,temp,grade_smooth&key_by_type=true', $activityId),
-            [
-                'headers' => [
-                    'Authorization' => sprintf('Bearer %s', $this->accessToken),
-                ],
-            ]
-        )->getContent();
-
-        return json_decode($responseBody, true);
+            sprintf('https://www.strava.com/api/v3/activities/%s/streams?keys=time,distance,latlng,altitude,velocity_smooth,heartrate,cadence,watts,temp,grade_smooth&key_by_type=true', $activityId)
+        );
     }
 
     public function logout(): void
     {
-        $responseBody = $this->httpClient->request(
+        $this->httpClient->request(
             'POST',
             'https://www.strava.com/oauth/deauthorize',
             [

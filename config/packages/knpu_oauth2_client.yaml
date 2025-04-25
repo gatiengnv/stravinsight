@@ -6,4 +6,4 @@ knpu_oauth2_client:
             client_id: '%env(OAUTH_STRAVA_CLIENT_ID)%'
             client_secret: '%env(OAUTH_STRAVA_CLIENT_SECRET)%'
             redirect_route: connect_strava_check
-            redirect_params: {}
+            redirect_params: { }

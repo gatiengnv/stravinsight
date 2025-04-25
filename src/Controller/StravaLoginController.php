@@ -29,7 +29,8 @@ class StravaLoginController extends AbstractController
         $client = $clientRegistry->getClient('strava');
         try {
             $accessToken = $client->getAccessToken();
-            $request->getSession()->set('access_token', $accessToken);
+            $request->getSession()->set('access_token', $accessToken->getToken());
+            $request->getSession()->set('refresh_token', $accessToken->getRefreshToken());
         } catch (IdentityProviderException $e) {
             var_dump($e->getMessage());
             exit;
