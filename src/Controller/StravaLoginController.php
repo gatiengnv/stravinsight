@@ -2,10 +2,12 @@
 
 namespace App\Controller;
 
+use App\Repository\UserRepository;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use KnpU\OAuth2ClientBundle\Client\Provider\StravaClient;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -37,5 +39,20 @@ class StravaLoginController extends AbstractController
         }
 
         return $this->redirectToRoute('app_initialize');
+    }
+
+    #[Route('/login/test', name: 'app_login_test')]
+    public function loginTest(Security $security, UserRepository $userRepository): RedirectResponse
+    {
+        $env = getenv('APP_ENV');
+        if ($env != 'dev') {
+            $this->redirectToRoute('app_home');
+        }
+
+        $users = $userRepository->findAll();
+
+        $security->login($users[array_rand($users)]);
+
+        return $this->redirectToRoute('app_dashboard');
     }
 }
