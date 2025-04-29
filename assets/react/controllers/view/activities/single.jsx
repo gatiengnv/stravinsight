@@ -2,6 +2,7 @@ import React, {useState} from "react";
 import Map from "../../components/Map";
 import Card from "../../components/Card";
 import StatItem from "../../components/StatItem";
+import Drawer from "../../components/Drawer";
 import {
     faChartLine,
     faFire,
@@ -52,123 +53,127 @@ export default function ActivityDetails({activity, activityDetail, activityStrea
     }, [hasMap, hasSegments, hasSplitsMetric, hasSplitsStandard]);
 
     return (
-        <div className="p-4 md:p-6">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-6">
-                <div className="flex items-center gap-3">
-                    {activity.type === "Run" && <FontAwesomeIcon icon={faPersonRunning}/>}
-                    <h1 className="text-2xl font-bold text-base-content">
-                        {activity.name || 'Activité sans nom'}
-                    </h1>
-                </div>
-                <div className="text-sm text-base-content opacity-80 text-left sm:text-right">
-                    {formattedDate} {formattedTime && `at ${formattedTime}`}
-                </div>
-            </div>
-
-            {hasStats && (
-                <Card className="mb-6">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                        {activity.distance && (
-                            <StatItem title="Distance" value={activity.distance + " km"} icon={faLocationDot}/>
-                        )}
-                        {activity.averagePace && (
-                            <StatItem title="Avg Pace" value={activity.averagePace + " /km"} icon={faPersonRunning}/>
-                        )}
-                        {activity.movingTime && (
-                            <StatItem title="Moving Time" value={activity.movingTime} icon={faStopwatch}/>
-                        )}
-                        {(activity.totalElevationGain > 0) && (
-                            <StatItem title="Elevation Gain" value={activity.totalElevationGain + " m"}
-                                      icon={faChartLine}/>
-                        )}
-                        {activityDetail && (activityDetail.calories > 0) && (
-                            <StatItem title="Calories" value={activityDetail.calories} icon={faFire}/>
-                        )}
-                        {activity.averageHeartrate && (
-                            <StatItem title="Avg Heart Rate" value={activity.averageHeartrate + " bpm"} icon={faHeart}/>
-                        )}
+        <Drawer>
+            <div className="p-4 md:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-6">
+                    <div className="flex items-center gap-3">
+                        {activity.type === "Run" && <FontAwesomeIcon icon={faPersonRunning}/>}
+                        <h1 className="text-2xl font-bold text-base-content">
+                            {activity.name || 'Activité sans nom'}
+                        </h1>
                     </div>
-                </Card>
-            )}
-
-            {(hasMap || hasSegments || hasSplitsMetric || hasSplitsStandard) && (
-                <div className="mb-4">
-                    <div className="tabs">
-                        {hasMap && (
-                            <button
-                                className={`tab tab-bordered ${activeTab === 'map' ? 'tab-active' : ''}`}
-                                onClick={() => setActiveTab('map')}
-                            >
-                                <FontAwesomeIcon icon={faMap} className="mr-2"/> Map
-                            </button>
-                        )}
-                        {hasSegments && (
-                            <button
-                                className={`tab tab-bordered ${activeTab === 'segments' ? 'tab-active' : ''}`}
-                                onClick={() => setActiveTab('segments')}
-                            >
-                                <FontAwesomeIcon icon={faRulerHorizontal} className="mr-2"/> Segments
-                            </button>
-                        )}
-                        {hasSplitsMetric && (
-                            <button
-                                className={`tab tab-bordered ${activeTab === 'splitsMetric' ? 'tab-active' : ''}`}
-                                onClick={() => setActiveTab('splitsMetric')}
-                            >
-                                <FontAwesomeIcon icon={faTableCells} className="mr-2"/> Splits (km)
-                            </button>
-                        )}
-                        {hasSplitsStandard && (
-                            <button
-                                className={`tab tab-bordered ${activeTab === 'splitsStandard' ? 'tab-active' : ''}`}
-                                onClick={() => setActiveTab('splitsStandard')}
-                            >
-                                <FontAwesomeIcon icon={faTableCells} className="mr-2"/> Standard Splits
-                            </button>
-                        )}
-                        <button
-                            className={`tab tab-bordered ${activeTab === 'Charts' ? 'tab-active' : ''}`}
-                            onClick={() => setActiveTab('charts')}
-                        >
-                            <FontAwesomeIcon icon={faLineChart} className="mr-2"/> Charts
-                        </button>
+                    <div className="text-sm text-base-content opacity-80 text-left sm:text-right">
+                        {formattedDate} {formattedTime && `at ${formattedTime}`}
                     </div>
                 </div>
-            )}
 
-            <div className="mt-4">
-                {activeTab === 'map' && hasMap && (
-                    <Card>
-                        <Map
-                            encodedPolyline={activityDetail.mapPolyline}
-                            averagePace={activity.averagePace || ""}
-                        />
+                {hasStats && (
+                    <Card className="mb-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                            {activity.distance && (
+                                <StatItem title="Distance" value={activity.distance + " km"} icon={faLocationDot}/>
+                            )}
+                            {activity.averagePace && (
+                                <StatItem title="Avg Pace" value={activity.averagePace + " /km"}
+                                          icon={faPersonRunning}/>
+                            )}
+                            {activity.movingTime && (
+                                <StatItem title="Moving Time" value={activity.movingTime} icon={faStopwatch}/>
+                            )}
+                            {(activity.totalElevationGain > 0) && (
+                                <StatItem title="Elevation Gain" value={activity.totalElevationGain + " m"}
+                                          icon={faChartLine}/>
+                            )}
+                            {activityDetail && (activityDetail.calories > 0) && (
+                                <StatItem title="Calories" value={activityDetail.calories} icon={faFire}/>
+                            )}
+                            {activity.averageHeartrate && (
+                                <StatItem title="Avg Heart Rate" value={activity.averageHeartrate + " bpm"}
+                                          icon={faHeart}/>
+                            )}
+                        </div>
                     </Card>
                 )}
 
-                {activeTab === 'segments' && hasSegments && (
-                    <Card title="Segments Efforts">
-                        <SegmentEfforts segmentEfforts={activityDetail.segmentEfforts}/>
-                    </Card>
+                {(hasMap || hasSegments || hasSplitsMetric || hasSplitsStandard) && (
+                    <div className="mb-4">
+                        <div className="tabs">
+                            {hasMap && (
+                                <button
+                                    className={`tab tab-bordered ${activeTab === 'map' ? 'tab-active' : ''}`}
+                                    onClick={() => setActiveTab('map')}
+                                >
+                                    <FontAwesomeIcon icon={faMap} className="mr-2"/> Map
+                                </button>
+                            )}
+                            {hasSegments && (
+                                <button
+                                    className={`tab tab-bordered ${activeTab === 'segments' ? 'tab-active' : ''}`}
+                                    onClick={() => setActiveTab('segments')}
+                                >
+                                    <FontAwesomeIcon icon={faRulerHorizontal} className="mr-2"/> Segments
+                                </button>
+                            )}
+                            {hasSplitsMetric && (
+                                <button
+                                    className={`tab tab-bordered ${activeTab === 'splitsMetric' ? 'tab-active' : ''}`}
+                                    onClick={() => setActiveTab('splitsMetric')}
+                                >
+                                    <FontAwesomeIcon icon={faTableCells} className="mr-2"/> Splits (km)
+                                </button>
+                            )}
+                            {hasSplitsStandard && (
+                                <button
+                                    className={`tab tab-bordered ${activeTab === 'splitsStandard' ? 'tab-active' : ''}`}
+                                    onClick={() => setActiveTab('splitsStandard')}
+                                >
+                                    <FontAwesomeIcon icon={faTableCells} className="mr-2"/> Standard Splits
+                                </button>
+                            )}
+                            <button
+                                className={`tab tab-bordered ${activeTab === 'Charts' ? 'tab-active' : ''}`}
+                                onClick={() => setActiveTab('charts')}
+                            >
+                                <FontAwesomeIcon icon={faLineChart} className="mr-2"/> Charts
+                            </button>
+                        </div>
+                    </div>
                 )}
 
-                {activeTab === 'splitsMetric' && hasSplitsMetric && (
-                    <Card title="Splits (per km)">
-                        <Split splitsMetric={activityDetail.splitsMetric}/>
-                    </Card>
-                )}
+                <div className="mt-4">
+                    {activeTab === 'map' && hasMap && (
+                        <Card>
+                            <Map
+                                encodedPolyline={activityDetail.mapPolyline}
+                                averagePace={activity.averagePace || ""}
+                            />
+                        </Card>
+                    )}
 
-                {activeTab === 'splitsStandard' && hasSplitsStandard && (
-                    <Card title="Standard Splits">
-                        <StandardSplits splitsStandard={activityDetail.splitsStandard}/>
-                    </Card>
-                )}
-                {activeTab === 'charts' && activityStream && (
-                    <Card title="Chart">
-                        <Graphics activityStream={activityStream}/>
-                    </Card>
-                )}
+                    {activeTab === 'segments' && hasSegments && (
+                        <Card title="Segments Efforts">
+                            <SegmentEfforts segmentEfforts={activityDetail.segmentEfforts}/>
+                        </Card>
+                    )}
+
+                    {activeTab === 'splitsMetric' && hasSplitsMetric && (
+                        <Card title="Splits (per km)">
+                            <Split splitsMetric={activityDetail.splitsMetric}/>
+                        </Card>
+                    )}
+
+                    {activeTab === 'splitsStandard' && hasSplitsStandard && (
+                        <Card title="Standard Splits">
+                            <StandardSplits splitsStandard={activityDetail.splitsStandard}/>
+                        </Card>
+                    )}
+                    {activeTab === 'charts' && activityStream && (
+                        <Card title="Chart">
+                            <Graphics activityStream={activityStream}/>
+                        </Card>
+                    )}
+                </div>
             </div>
-        </div>
+        </Drawer>
     );
 }
