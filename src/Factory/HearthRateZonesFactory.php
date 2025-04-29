@@ -17,6 +17,7 @@ final class HearthRateZonesFactory extends PersistentProxyObjectFactory
      */
     public function __construct()
     {
+        parent::__construct();
     }
 
     public static function class(): string
@@ -46,6 +47,6 @@ final class HearthRateZonesFactory extends PersistentProxyObjectFactory
     protected function initialize(): static
     {
         return $this// ->afterInstantiate(function(HearthRateZones $hearthRateZones): void {})
-            ;
+        ;
     }
 }

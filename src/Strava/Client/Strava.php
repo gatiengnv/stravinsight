@@ -13,7 +13,7 @@ interface Strava
     public function refreshTokens(): void;
 
     /** @return Activity[] */
-    public function getAllActivities(): array;
+    public function getAllActivities(int $pageNumber = 1): array;
 
     public function getUserInfo(): array;
 

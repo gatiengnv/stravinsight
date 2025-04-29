@@ -13,7 +13,7 @@ class ActivityFixtures extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
-        for ($i = 0; $i < 100; $i++) {
+        for ($i = 0; $i < 100; ++$i) {
             $activity = ActivityFactory::createOne();
             ActivityDetailsFactory::createOne([
                 'activity' => $activity,

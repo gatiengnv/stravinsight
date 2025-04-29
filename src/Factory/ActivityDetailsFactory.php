@@ -17,6 +17,7 @@ final class ActivityDetailsFactory extends PersistentProxyObjectFactory
      */
     public function __construct()
     {
+        parent::__construct();
     }
 
     public static function class(): string
@@ -28,13 +29,13 @@ final class ActivityDetailsFactory extends PersistentProxyObjectFactory
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories
      *
      * @todo add your default values here
-     * @return array|callable
      */
     protected function defaults(): array|callable
     {
         $distanceInKm = mt_rand(1, 30);
         $runPoints = $this->generateRandomRun($distanceInKm);
         $encodedPolyline = $this->encodePolyline($runPoints);
+
         return [
             'visibility' => 'everyone',
             'mapPolyline' => $encodedPolyline,
@@ -53,7 +54,7 @@ final class ActivityDetailsFactory extends PersistentProxyObjectFactory
             'deviceName' => self::faker()->randomElement(['Samsung Health', 'Strava', 'Apple Health', 'Garmin Connect', 'Fitbit']),
             'embedToken' => self::faker()->uuid(),
             'similarActivities' => $this->generateRandomEffortData(self::faker()->numberBetween(1, 10)),
-            'availableZones' => ["heartrate", "pace"]
+            'availableZones' => ['heartrate', 'pace'],
         ];
     }
 
@@ -65,7 +66,7 @@ final class ActivityDetailsFactory extends PersistentProxyObjectFactory
 
         $points[] = ['lat' => $currentLat, 'lng' => $currentLng];
 
-        for ($i = 0; $i < $distanceInKm * 10; $i++) {
+        for ($i = 0; $i < $distanceInKm * 10; ++$i) {
             $currentLat += mt_rand(-10, 10) / 10000;
             $currentLng += mt_rand(-10, 10) / 10000;
             $points[] = ['lat' => $currentLat, 'lng' => $currentLng];
@@ -81,8 +82,8 @@ final class ActivityDetailsFactory extends PersistentProxyObjectFactory
         $prevLng = 0;
 
         foreach ($points as $point) {
-            $lat = (int)round($point['lat'] * 1e5);
-            $lng = (int)round($point['lng'] * 1e5);
+            $lat = (int) round($point['lat'] * 1e5);
+            $lng = (int) round($point['lng'] * 1e5);
 
             $dLat = $lat - $prevLat;
             $dLng = $lng - $prevLng;
@@ -97,9 +98,10 @@ final class ActivityDetailsFactory extends PersistentProxyObjectFactory
         return $encoded;
     }
 
-    function encodeSignedNumber(int $num): string
+    public function encodeSignedNumber(int $num): string
     {
         $num = $num < 0 ? ~($num << 1) : ($num << 1);
+
         return $this->encodeNumber($num);
     }
 
@@ -107,10 +109,11 @@ final class ActivityDetailsFactory extends PersistentProxyObjectFactory
     {
         $encoded = '';
         while ($num >= 0x20) {
-            $encoded .= chr((0x20 | ($num & 0x1f)) + 63);
+            $encoded .= chr((0x20 | ($num & 0x1F)) + 63);
             $num >>= 5;
         }
         $encoded .= chr($num + 63);
+
         return $encoded;
     }
 
@@ -118,7 +121,7 @@ final class ActivityDetailsFactory extends PersistentProxyObjectFactory
     {
         $segments = [];
 
-        for ($i = 0; $i < $count; $i++) {
+        for ($i = 0; $i < $count; ++$i) {
             $segments[] = [
                 'id' => self::faker()->unique()->randomNumber(9, true),
                 'resource_state' => 2,
@@ -184,7 +187,7 @@ final class ActivityDetailsFactory extends PersistentProxyObjectFactory
     {
         $splits = [];
 
-        for ($i = 1; $i <= $count; $i++) {
+        for ($i = 1; $i <= $count; ++$i) {
             $splits[] = [
                 'distance' => self::faker()->randomFloat(1, 900, 1100),
                 'elapsed_time' => self::faker()->numberBetween(300, 400),
@@ -205,7 +208,7 @@ final class ActivityDetailsFactory extends PersistentProxyObjectFactory
     {
         $mileSplits = [];
 
-        for ($i = 1; $i <= $count; $i++) {
+        for ($i = 1; $i <= $count; ++$i) {
             $mileSplits[] = [
                 'distance' => self::faker()->randomFloat(1, 1600, 1620),
                 'elapsed_time' => self::faker()->numberBetween(500, 600),
@@ -226,11 +229,11 @@ final class ActivityDetailsFactory extends PersistentProxyObjectFactory
     {
         $laps = [];
 
-        for ($i = 1; $i <= $count; $i++) {
+        for ($i = 1; $i <= $count; ++$i) {
             $laps[] = [
                 'id' => self::faker()->unique()->randomNumber(8, true),
                 'resource_state' => 2,
-                'name' => 'Lap ' . $i,
+                'name' => 'Lap '.$i,
                 'activity' => [
                     'id' => self::faker()->unique()->randomNumber(8, true),
                     'visibility' => self::faker()->randomElement(['everyone', 'only_me']),
@@ -257,7 +260,6 @@ final class ActivityDetailsFactory extends PersistentProxyObjectFactory
                 'average_heartrate' => self::faker()->randomFloat(1, 120, 180),
                 'max_heartrate' => self::faker()->randomFloat(1, 150, 200),
                 'pace_zone' => self::faker()->numberBetween(1, 5),
-
             ];
         }
 
@@ -268,7 +270,7 @@ final class ActivityDetailsFactory extends PersistentProxyObjectFactory
     {
         $bestEfforts = [];
 
-        for ($i = 1; $i <= $count; $i++) {
+        for ($i = 1; $i <= $count; ++$i) {
             $bestEfforts[] = [
                 'id' => self::faker()->unique()->randomNumber(8, true),
                 'resource_state' => 2,
@@ -301,9 +303,9 @@ final class ActivityDetailsFactory extends PersistentProxyObjectFactory
     {
         $gears = [];
 
-        for ($i = 0; $i < $count; $i++) {
+        for ($i = 0; $i < $count; ++$i) {
             $gears[] = [
-                'id' => 'g' . self::faker()->unique()->randomNumber(8, true),
+                'id' => 'g'.self::faker()->unique()->randomNumber(8, true),
                 'primary' => self::faker()->boolean(),
                 'name' => self::faker()->randomElement(['ASICS Gel-Glorify 5', 'Nike Air Zoom Pegasus', 'Adidas Ultraboost']),
                 'nickname' => self::faker()->optional()->word(),
@@ -321,7 +323,7 @@ final class ActivityDetailsFactory extends PersistentProxyObjectFactory
     {
         $statsVisibility = [];
 
-        for ($i = 0; $i < $count; $i++) {
+        for ($i = 0; $i < $count; ++$i) {
             $statsVisibility[] = [
                 'type' => self::faker()->randomElement(['heart_rate', 'pace', 'power', 'speed', 'calories']),
                 'visibility' => self::faker()->randomElement(['everyone', 'only_me', 'followers']),
@@ -335,7 +337,7 @@ final class ActivityDetailsFactory extends PersistentProxyObjectFactory
     {
         $effortData = [];
 
-        for ($i = 0; $i < $count; $i++) {
+        for ($i = 0; $i < $count; ++$i) {
             $averageSpeed = self::faker()->randomFloat(6, 2.5, 4.0);
             $effortData[] = [
                 'effort_count' => self::faker()->numberBetween(1, 10),
@@ -366,14 +368,14 @@ final class ActivityDetailsFactory extends PersistentProxyObjectFactory
     protected function initialize(): static
     {
         return $this// ->afterInstantiate(function(ActivityDetails $activityDetails): void {})
-            ;
+        ;
     }
 
     private function generateRandomPrimaryCount(int $count = 1): array
     {
         $primaryCounts = [];
 
-        for ($i = 0; $i < $count; $i++) {
+        for ($i = 0; $i < $count; ++$i) {
             $primaryCounts[] = [
                 'primary' => self::faker()->optional()->boolean(null),
                 'count' => self::faker()->numberBetween(0, 100),
@@ -382,5 +384,4 @@ final class ActivityDetailsFactory extends PersistentProxyObjectFactory
 
         return $primaryCounts;
     }
-
 }

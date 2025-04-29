@@ -45,7 +45,7 @@ class StravaLoginController extends AbstractController
     public function loginTest(Security $security, UserRepository $userRepository): RedirectResponse
     {
         $env = getenv('APP_ENV');
-        if ($env != 'dev') {
+        if ('dev' != $env) {
             $this->redirectToRoute('app_home');
         }
 

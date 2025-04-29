@@ -17,6 +17,7 @@ final class ActivityFactory extends PersistentProxyObjectFactory
      */
     public function __construct()
     {
+        parent::__construct();
     }
 
     public static function class(): string
@@ -34,20 +35,20 @@ final class ActivityFactory extends PersistentProxyObjectFactory
         $sport = self::faker()->randomElement([
             [
                 'type' => 'Run',
-                'name' => 'My Run'
+                'name' => 'My Run',
             ],
             [
                 'type' => 'Swim',
-                'name' => 'My Swim'
+                'name' => 'My Swim',
             ],
             [
                 'type' => 'Ride',
-                'name' => 'My Ride'
+                'name' => 'My Ride',
             ],
             [
                 'type' => 'Walk',
-                'name' => 'My Walk'
-            ]
+                'name' => 'My Walk',
+            ],
         ]);
 
         $startDate = self::faker()->dateTimeBetween('-1 years', 'now');
@@ -57,7 +58,6 @@ final class ActivityFactory extends PersistentProxyObjectFactory
         $distanceInKm = mt_rand(1, 30);
         $runPoints = $this->generateRandomRun($distanceInKm);
         $encodedPolyline = $this->encodePolyline($runPoints);
-
 
         return [
             'stravaUser' => UserFactory::random(),
@@ -86,7 +86,7 @@ final class ActivityFactory extends PersistentProxyObjectFactory
             'locationCity' => self::faker()->city(),
             'locationState' => 'Marne',
             'locationCountry' => self::faker()->country(),
-            'mapId' => 'a' . self::faker()->unique()->numberBetween(1, 100000),
+            'mapId' => 'a'.self::faker()->unique()->numberBetween(1, 100000),
             'summaryPolyline' => $encodedPolyline,
             'achievementCount' => self::faker()->numberBetween(0, 10),
             'kudosCount' => self::faker()->numberBetween(0, 1000),
@@ -94,7 +94,7 @@ final class ActivityFactory extends PersistentProxyObjectFactory
             'athleteCount' => self::faker()->numberBetween(0, 100),
             'photoCount' => self::faker()->numberBetween(0, 10),
             'totalPhotoCount' => self::faker()->numberBetween(0, 10),
-            'prCount' => self::faker()->numberBetween(0, 5)
+            'prCount' => self::faker()->numberBetween(0, 5),
         ];
     }
 
@@ -106,7 +106,7 @@ final class ActivityFactory extends PersistentProxyObjectFactory
 
         $points[] = ['lat' => $currentLat, 'lng' => $currentLng];
 
-        for ($i = 0; $i < $distanceInKm * 10; $i++) {
+        for ($i = 0; $i < $distanceInKm * 10; ++$i) {
             $currentLat += mt_rand(-10, 10) / 10000;
             $currentLng += mt_rand(-10, 10) / 10000;
             $points[] = ['lat' => $currentLat, 'lng' => $currentLng];
@@ -122,8 +122,8 @@ final class ActivityFactory extends PersistentProxyObjectFactory
         $prevLng = 0;
 
         foreach ($points as $point) {
-            $lat = (int)round($point['lat'] * 1e5);
-            $lng = (int)round($point['lng'] * 1e5);
+            $lat = (int) round($point['lat'] * 1e5);
+            $lng = (int) round($point['lng'] * 1e5);
 
             $dLat = $lat - $prevLat;
             $dLng = $lng - $prevLng;
@@ -138,9 +138,10 @@ final class ActivityFactory extends PersistentProxyObjectFactory
         return $encoded;
     }
 
-    function encodeSignedNumber(int $num): string
+    public function encodeSignedNumber(int $num): string
     {
         $num = $num < 0 ? ~($num << 1) : ($num << 1);
+
         return $this->encodeNumber($num);
     }
 
@@ -148,10 +149,11 @@ final class ActivityFactory extends PersistentProxyObjectFactory
     {
         $encoded = '';
         while ($num >= 0x20) {
-            $encoded .= chr((0x20 | ($num & 0x1f)) + 63);
+            $encoded .= chr((0x20 | ($num & 0x1F)) + 63);
             $num >>= 5;
         }
         $encoded .= chr($num + 63);
+
         return $encoded;
     }
 
@@ -161,6 +163,6 @@ final class ActivityFactory extends PersistentProxyObjectFactory
     protected function initialize(): static
     {
         return $this// ->afterInstantiate(function(Activity $activity): void {})
-            ;
+        ;
     }
 }

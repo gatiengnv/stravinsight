@@ -18,6 +18,7 @@ final class ActivityStreamFactory extends PersistentProxyObjectFactory
      */
     public function __construct()
     {
+        parent::__construct();
     }
 
     public static function class(): string
@@ -29,11 +30,11 @@ final class ActivityStreamFactory extends PersistentProxyObjectFactory
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories
      *
      * @todo add your default values here
-     * @return array|callable
      */
     protected function defaults(): array|callable
     {
         $data = $this->generateRandomActivityData();
+
         return [
             'latlngData' => $data['lating_data'],
             'velocityData' => $data['velocity_data'],
@@ -44,7 +45,7 @@ final class ActivityStreamFactory extends PersistentProxyObjectFactory
             'heartrateData' => $data['heartrate_data'],
             'timeData' => $data['time_data'],
             'originalSize' => 4075,
-            'resolution' => self::faker()->randomElement(['high', 'medium', 'low'])
+            'resolution' => self::faker()->randomElement(['high', 'medium', 'low']),
         ];
     }
 
@@ -53,48 +54,48 @@ final class ActivityStreamFactory extends PersistentProxyObjectFactory
         $faker = Factory::create();
 
         $latingData = [];
-        for ($i = 0; $i < 8; $i++) {
+        for ($i = 0; $i < 8; ++$i) {
             $latingData[] = [
                 $faker->latitude(49.0, 50.0),
-                $faker->longitude(4.0, 5.0)
+                $faker->longitude(4.0, 5.0),
             ];
         }
 
         $velocityData = [];
-        for ($i = 0; $i < 100; $i++) {
+        for ($i = 0; $i < 100; ++$i) {
             $velocityData[] = $faker->randomFloat(3, 0.0, 5.0);
         }
 
         $gradeData = [];
-        for ($i = 0; $i < 100; $i++) {
+        for ($i = 0; $i < 100; ++$i) {
             $gradeData[] = $faker->randomFloat(1, -5.0, 5.0);
         }
 
         $cadenceData = [];
-        for ($i = 0; $i < 100; $i++) {
+        for ($i = 0; $i < 100; ++$i) {
             $cadenceData[] = $faker->numberBetween(60, 100);
         }
 
         $distanceData = [];
         $distance = 0.0;
-        for ($i = 0; $i < 100; $i++) {
+        for ($i = 0; $i < 100; ++$i) {
             $distance += $faker->randomFloat(1, 0.5, 5.0);
             $distanceData[] = $distance;
         }
 
         $altitudeData = [];
-        for ($i = 0; $i < 100; $i++) {
+        for ($i = 0; $i < 100; ++$i) {
             $altitudeData[] = $faker->randomFloat(1, 100.0, 200.0);
         }
 
         $heartrateData = [];
-        for ($i = 0; $i < 100; $i++) {
+        for ($i = 0; $i < 100; ++$i) {
             $heartrateData[] = $faker->numberBetween(100, 180);
         }
 
         $timeData = [];
         $time = 0;
-        for ($i = 0; $i < 100; $i++) {
+        for ($i = 0; $i < 100; ++$i) {
             $time += $faker->numberBetween(1, 5);
             $timeData[] = $time;
         }
@@ -117,6 +118,6 @@ final class ActivityStreamFactory extends PersistentProxyObjectFactory
     protected function initialize(): static
     {
         return $this// ->afterInstantiate(function(ActivityStream $activityStream): void {})
-            ;
+        ;
     }
 }
