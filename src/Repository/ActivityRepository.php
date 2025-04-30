@@ -59,13 +59,14 @@ use Symfony\Component\HttpFoundation\RequestStack;
         ];
     }
 
-    public function getActivities(int $userId, int $limit = 5): array
+    public function getActivities(int $userId, int $limit = 10, int $offset = 0): array
     {
         $activities = $this->createQueryBuilder('a')
             ->where('a.stravaUser = :userId')
             ->setParameter('userId', $userId)
             ->orderBy('a.startDateLocal', 'DESC')
             ->setMaxResults($limit)
+            ->setFirstResult($offset)
             ->getQuery()
             ->getResult();
 
