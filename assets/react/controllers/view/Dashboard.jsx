@@ -37,10 +37,11 @@ export default function Dashboard({
                                       fitnessTrend,
                                       achievements,
                                       weeklyDistance,
-                                      activityCountBySport
+                                      activityCountBySport,
+                                      userSports
                                   }) {
     return (
-        <Drawer title={"Dashboard"} showDateRangePicker={true}>
+        <Drawer title={"Dashboard"} showDateRangePicker={true} showSportPicker={true} userSports={userSports}>
             <div className="p-4 md:p-6">
                 <div className="stats stats-vertical lg:stats-horizontal shadow mb-6 w-full">
                     <StatItem icon={faBolt} title={"Total Activities"} value={stats.totalActivities}

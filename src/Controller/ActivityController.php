@@ -14,17 +14,16 @@ use Symfony\Component\Routing\Attribute\Route;
 final class ActivityController extends AbstractController
 {
     public function __construct(
-        private readonly Security            $security,
-        private readonly ActivityRepository  $activityRepository,
+        private readonly Security $security,
+        private readonly ActivityRepository $activityRepository,
         private readonly StravaImportService $stravaImportService,
-    )
-    {
+    ) {
     }
 
     #[Route('/activities', name: 'app_activity')]
     public function index(Request $request): Response
     {
-        $page = max(1, (int)$request->query->get('page', 1));
+        $page = max(1, (int) $request->query->get('page', 1));
         $limit = 25;
         $offset = ($page - 1) * $limit;
 
@@ -38,7 +37,7 @@ final class ActivityController extends AbstractController
             return $this->json([
                 'activities' => $activities,
                 'hasMore' => count($activities) == $limit,
-                'nextPage' => $page + 1
+                'nextPage' => $page + 1,
             ]);
         }
 
@@ -50,10 +49,9 @@ final class ActivityController extends AbstractController
 
     #[Route('/activities/{id}', requirements: ['id' => '\d+'])]
     public function show(
-        int                    $id,
+        int $id,
         EntityManagerInterface $entityManager,
-    ): Response
-    {
+    ): Response {
         $details = $this->stravaImportService->importUserActivityDetails($id, $entityManager);
 
         return $this->render('activity/show.html.twig', [

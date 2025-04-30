@@ -2,11 +2,8 @@
 
 namespace App\Repository;
 
-use AllowDynamicProperties;
 use App\Entity\Activity;
 use App\Entity\User;
-use DateTime;
-use DateTimeInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -15,7 +12,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 /**
  * @extends ServiceEntityRepository<Activity>
  */
-#[AllowDynamicProperties] class ActivityRepository extends ServiceEntityRepository
+#[\AllowDynamicProperties] class ActivityRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry, RequestStack $requestStack)
     {
@@ -25,37 +22,63 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
     public function getActivityDifferenceFromLastMonth(int $userId): array
     {
-        $currentMonthStart = (new DateTime('first day of this month'))->setTime(0, 0);
-        $currentMonthEnd = (new DateTime('last day of this month'))->setTime(23, 59, 59);
+        $request = $this->requestStack->getCurrentRequest();
+        $startDate = $request?->query->get('startDate');
+        $endDate = $request?->query->get('endDate');
+        $sport = $request?->query->get('sport');
 
-        $lastMonthStart = (new DateTime('first day of last month'))->setTime(0, 0);
-        $lastMonthEnd = (new DateTime('last day of last month'))->setTime(23, 59, 59);
+        if ($startDate && $endDate) {
+            $currentPeriodStart = new \DateTime($startDate);
+            $currentPeriodEnd = new \DateTime($endDate);
 
-        $currentMonthData = $this->createQueryBuilder('a')
+            $interval = $currentPeriodStart->diff($currentPeriodEnd);
+            $previousPeriodEnd = clone $currentPeriodStart;
+            $previousPeriodEnd->modify('-1 day');
+            $previousPeriodStart = clone $previousPeriodEnd;
+            $previousPeriodStart->sub($interval);
+        } else {
+            $currentPeriodStart = (new \DateTime('first day of this month'))->setTime(0, 0);
+            $currentPeriodEnd = (new \DateTime('last day of this month'))->setTime(23, 59, 59);
+
+            $previousPeriodStart = (new \DateTime('first day of last month'))->setTime(0, 0);
+            $previousPeriodEnd = (new \DateTime('last day of last month'))->setTime(23, 59, 59);
+        }
+
+        $currentPeriodQuery = $this->createQueryBuilder('a')
             ->select('COUNT(a.id) as activityCount, SUM(a.distance) as totalDistance, SUM(a.movingTime) as totalTime, AVG(a.averageSpeed) as avgSpeed')
             ->where('a.stravaUser = :userId')
             ->andWhere('a.startDateLocal BETWEEN :currentStart AND :currentEnd')
             ->setParameter('userId', $userId)
-            ->setParameter('currentStart', $currentMonthStart)
-            ->setParameter('currentEnd', $currentMonthEnd)
-            ->getQuery()
-            ->getSingleResult();
+            ->setParameter('currentStart', $currentPeriodStart)
+            ->setParameter('currentEnd', $currentPeriodEnd);
 
-        $lastMonthData = $this->createQueryBuilder('a')
+        if ($sport) {
+            $currentPeriodQuery->andWhere('a.sportType = :sport')
+                ->setParameter('sport', $sport);
+        }
+
+        $currentPeriodData = $currentPeriodQuery->getQuery()->getSingleResult();
+
+        $previousPeriodQuery = $this->createQueryBuilder('a')
             ->select('COUNT(a.id) as activityCount, SUM(a.distance) as totalDistance, SUM(a.movingTime) as totalTime, AVG(a.averageSpeed) as avgSpeed')
             ->where('a.stravaUser = :userId')
-            ->andWhere('a.startDateLocal BETWEEN :lastStart AND :lastEnd')
+            ->andWhere('a.startDateLocal BETWEEN :previousStart AND :previousEnd')
             ->setParameter('userId', $userId)
-            ->setParameter('lastStart', $lastMonthStart)
-            ->setParameter('lastEnd', $lastMonthEnd)
-            ->getQuery()
-            ->getSingleResult();
+            ->setParameter('previousStart', $previousPeriodStart)
+            ->setParameter('previousEnd', $previousPeriodEnd);
+
+        if ($sport) {
+            $previousPeriodQuery->andWhere('a.sportType = :sport')
+                ->setParameter('sport', $sport);
+        }
+
+        $previousPeriodData = $previousPeriodQuery->getQuery()->getSingleResult();
 
         return [
-            'activityDifference' => (int)$currentMonthData['activityCount'] - (int)$lastMonthData['activityCount'],
-            'distanceDifference' => round(((float)$currentMonthData['totalDistance'] - (float)$lastMonthData['totalDistance']) / 1000, 2),
-            'timeDifference' => round(((int)$currentMonthData['totalTime'] - (int)$lastMonthData['totalTime']) / 3600, 2),
-            'speedDifference' => round(((float)$currentMonthData['avgSpeed'] - (float)$lastMonthData['avgSpeed']) * 3.6, 2),
+            'activityDifference' => (int) $currentPeriodData['activityCount'] - (int) $previousPeriodData['activityCount'],
+            'distanceDifference' => round(((float) $currentPeriodData['totalDistance'] - (float) $previousPeriodData['totalDistance']) / 1000, 2),
+            'timeDifference' => round(((int) $currentPeriodData['totalTime'] - (int) $previousPeriodData['totalTime']) / 3600, 2),
+            'speedDifference' => round(((float) $currentPeriodData['avgSpeed'] - (float) $previousPeriodData['avgSpeed']) * 3.6, 2),
         ];
     }
 
@@ -74,9 +97,9 @@ use Symfony\Component\HttpFoundation\RequestStack;
             return [
                 'id' => $activity->getId(),
                 'name' => $activity->getName(),
-                'distance' => round($activity->getDistance() / 1000, 2) . ' km',
+                'distance' => round($activity->getDistance() / 1000, 2).' km',
                 'movingTime' => gmdate('H:i:s', $activity->getMovingTime()),
-                'averageSpeed' => round($activity->getAverageSpeed() * 3.6, 2) . ' km/h',
+                'averageSpeed' => round($activity->getAverageSpeed() * 3.6, 2).' km/h',
                 'startDateLocal' => $activity->getStartDateLocal()?->format('Y-m-d H:i:s'),
                 'type' => $activity->getType(),
             ];
@@ -111,44 +134,97 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
     public function getActivityRecords(int $userId): array
     {
-        $result = $this->createQueryBuilder('a')
-            ->select(
-                'MAX(a.distance) as maxDistance',
-                '(SELECT a1.startDateLocal FROM App\Entity\Activity a1 WHERE a1.distance = MAX(a.distance) AND a1.stravaUser = :userId) as maxDistanceDate',
-                'MAX(a.averageSpeed) as maxAverageSpeed',
-                '(SELECT a2.startDateLocal FROM App\Entity\Activity a2 WHERE a2.averageSpeed = MAX(a.averageSpeed) AND a2.stravaUser = :userId) as maxAverageSpeedDate',
-                'MAX(a.movingTime) as maxMovingTime',
-                '(SELECT a3.startDateLocal FROM App\Entity\Activity a3 WHERE a3.movingTime = MAX(a.movingTime) AND a3.stravaUser = :userId) as maxMovingTimeDate',
-                'MAX(a.totalElevationGain) as maxElevationGain',
-                '(SELECT a4.startDateLocal FROM App\Entity\Activity a4 WHERE a4.totalElevationGain = MAX(a.totalElevationGain) AND a4.stravaUser = :userId) as maxElevationGainDate'
-            )
+        $maxDistanceRecord = $this->createQueryBuilder('a')
+            ->select('a.distance, a.startDateLocal')
             ->where('a.stravaUser = :userId')
+            ->orderBy('a.distance', 'DESC')
             ->setParameter('userId', $userId)
-            ->getQuery()
-            ->getSingleResult();
+            ->setMaxResults(1);
+        $this->applyFilter($maxDistanceRecord);
+        $maxDistanceRecord = $maxDistanceRecord->getQuery()
+            ->getOneOrNullResult();
+
+        $maxSpeedRecord = $this->createQueryBuilder('a')
+            ->select('a.averageSpeed, a.startDateLocal')
+            ->where('a.stravaUser = :userId')
+            ->orderBy('a.averageSpeed', 'DESC')
+            ->setParameter('userId', $userId)
+            ->setMaxResults(1);
+        $this->applyFilter($maxSpeedRecord);
+        $maxSpeedRecord = $maxSpeedRecord->getQuery()
+            ->getOneOrNullResult();
+
+        $maxTimeRecord = $this->createQueryBuilder('a')
+            ->select('a.movingTime, a.startDateLocal')
+            ->where('a.stravaUser = :userId')
+            ->orderBy('a.movingTime', 'DESC')
+            ->setParameter('userId', $userId)
+            ->setMaxResults(1);
+        $this->applyFilter($maxTimeRecord);
+        $maxTimeRecord = $maxTimeRecord->getQuery()
+            ->getOneOrNullResult();
+
+        $maxElevationRecord = $this->createQueryBuilder('a')
+            ->select('a.totalElevationGain, a.startDateLocal')
+            ->where('a.stravaUser = :userId')
+            ->orderBy('a.totalElevationGain', 'DESC')
+            ->setParameter('userId', $userId)
+            ->setMaxResults(1);
+        $this->applyFilter($maxElevationRecord);
+        $maxElevationRecord = $maxElevationRecord->getQuery()
+            ->getOneOrNullResult();
 
         return [
             [
                 'name' => 'Max distance',
-                'value' => round($result['maxDistance'] / 1000, 2) . ' km',
-                'date' => $result['maxDistanceDate'],
+                'value' => round(($maxDistanceRecord['distance'] ?? 0) / 1000, 2).' km',
+                'date' => $maxDistanceRecord['startDateLocal']->format('Y-m-d H:i:s') ?? null,
             ],
             [
                 'name' => 'Max average speed',
-                'value' => round($result['maxAverageSpeed'] * 3.6, 2) . ' km/h',
-                'date' => $result['maxAverageSpeedDate'],
+                'value' => round(($maxSpeedRecord['averageSpeed'] ?? 0) * 3.6, 2).' km/h',
+                'date' => $maxSpeedRecord['startDateLocal']->format('Y-m-d H:i:s') ?? null,
             ],
             [
                 'name' => 'Max moving time',
-                'value' => $result['maxMovingTime'] ? gmdate('H:i:s', $result['maxMovingTime']) : '00:00:00',
-                'date' => $result['maxMovingTimeDate'],
+                'value' => isset($maxTimeRecord['movingTime']) ? gmdate('H:i:s', $maxTimeRecord['movingTime']) : '00:00:00',
+                'date' => $maxTimeRecord['startDateLocal']->format('Y-m-d H:i:s') ?? null,
             ],
             [
                 'name' => 'Max elevation gain',
-                'value' => $result['maxElevationGain'] . ' m',
-                'date' => $result['maxElevationGainDate'],
+                'value' => ($maxElevationRecord['totalElevationGain'] ?? 0).' m',
+                'date' => $maxElevationRecord['startDateLocal']->format('Y-m-d H:i:s') ?? null,
             ],
         ];
+    }
+
+    private function applyFilter($qb): void
+    {
+        if (!$qb instanceof QueryBuilder) {
+            return;
+        }
+
+        $request = $this->requestStack->getCurrentRequest();
+        $startDate = $request?->query->get('startDate');
+        $endDate = $request?->query->get('endDate');
+        $sport = $request?->query->get('sport');
+
+        if ($startDate) {
+            $startDate = new \DateTime($startDate);
+            $qb->andWhere('a.startDateLocal >= :startDate')
+                ->setParameter('startDate', $startDate);
+        }
+
+        if ($endDate) {
+            $endDate = new \DateTime($endDate);
+            $qb->andWhere('a.startDateLocal <= :endDate')
+                ->setParameter('endDate', $endDate);
+        }
+
+        if ($sport) {
+            $qb->andWhere('a.sportType = :sport')
+                ->setParameter('sport', $sport);
+        }
     }
 
     public function getHeartRateZoneDistribution(int $userId): array
@@ -221,48 +297,25 @@ use Symfony\Component\HttpFoundation\RequestStack;
         return [
             'zone1' => [
                 'percentage' => round(($zoneQuery['zone1'] / $totalActivities) * 100, 2),
-                'minmax' => '(' . $zone1['min'] . ' - ' . $zone1['max'] . ')',
+                'minmax' => '('.$zone1['min'].' - '.$zone1['max'].')',
             ],
             'zone2' => [
                 'percentage' => round(($zoneQuery['zone2'] / $totalActivities) * 100, 2),
-                'minmax' => '(' . $zone2['min'] . ' - ' . $zone2['max'] . ')',
+                'minmax' => '('.$zone2['min'].' - '.$zone2['max'].')',
             ],
             'zone3' => [
                 'percentage' => round(($zoneQuery['zone3'] / $totalActivities) * 100, 2),
-                'minmax' => '(' . $zone3['min'] . ' - ' . $zone3['max'] . ')',
+                'minmax' => '('.$zone3['min'].' - '.$zone3['max'].')',
             ],
             'zone4' => [
                 'percentage' => round(($zoneQuery['zone4'] / $totalActivities) * 100, 2),
-                'minmax' => '(' . $zone4['min'] . ' - ' . $zone4['max'] . ')',
+                'minmax' => '('.$zone4['min'].' - '.$zone4['max'].')',
             ],
             'zone5' => [
                 'percentage' => round(($zoneQuery['zone5'] / $totalActivities) * 100, 2),
-                'minmax' => '(' . $zone5['min'] . ' - ∞)',
+                'minmax' => '('.$zone5['min'].' - ∞)',
             ],
         ];
-    }
-
-    private function applyFilter($qb): void
-    {
-        if (!$qb instanceof QueryBuilder) {
-            return;
-        }
-
-        $request = $this->requestStack->getCurrentRequest();
-        $startDate = $request?->query->get('startDate');
-        $endDate = $request?->query->get('endDate');
-
-        if ($startDate) {
-            $startDate = new DateTime($startDate);
-            $qb->andWhere('a.startDateLocal >= :startDate')
-                ->setParameter('startDate', $startDate);
-        }
-
-        if ($endDate) {
-            $endDate = new DateTime($endDate);
-            $qb->andWhere('a.startDateLocal <= :endDate')
-                ->setParameter('endDate', $endDate);
-        }
     }
 
     public function getWeeklyFitnessData(int $userId, int $defaultWeeks = 10): array
@@ -271,16 +324,21 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
         $hasStartDate = $request?->query->has('startDate');
         $hasEndDate = $request?->query->has('endDate');
+        $hasSport = $request?->query->has('sport');
 
         $endDate = $hasEndDate
-            ? new DateTime($request->query->get('endDate'))
-            : new DateTime();
+            ? new \DateTime($request->query->get('endDate'))
+            : new \DateTime();
 
         $startDate = null;
+
+        $sport = $hasSport
+            ? $request->query->get('sport')
+            : null;
         if ($hasStartDate) {
-            $startDate = new DateTime($request->query->get('startDate'));
+            $startDate = new \DateTime($request->query->get('startDate'));
         } elseif (!$hasEndDate) {
-            $startDate = (new DateTime())->modify("-{$defaultWeeks} weeks");
+            $startDate = (new \DateTime())->modify("-{$defaultWeeks} weeks");
         }
 
         $qb = $this->createQueryBuilder('a')
@@ -295,6 +353,11 @@ use Symfony\Component\HttpFoundation\RequestStack;
         if ($endDate) {
             $qb->andWhere('a.startDateLocal <= :endDate')
                 ->setParameter('endDate', $endDate);
+        }
+
+        if ($sport) {
+            $qb->andWhere('a.sportType = :sport')
+                ->setParameter('sport', $sport);
         }
 
         $activities = $qb->getQuery()->getResult();
@@ -381,8 +444,8 @@ use Symfony\Component\HttpFoundation\RequestStack;
             'description' => 'Complete a 100 km ride',
             'achieved' => !empty($centuryRide['achievedDate']),
             'progression' => !empty($centuryRide['achievedDate'])
-                ? 'Achieved on: ' . (new DateTime($centuryRide['achievedDate']))->format('Y-m-d')
-                : $this->getMaxDistanceProgression($userId, 100000) . '/100 km',
+                ? 'Achieved on: '.(new \DateTime($centuryRide['achievedDate']))->format('Y-m-d')
+                : $this->getMaxDistanceProgression($userId, 100000).'/100 km',
         ];
 
         $ultraDistance = $this->createQueryBuilder('a')
@@ -398,8 +461,8 @@ use Symfony\Component\HttpFoundation\RequestStack;
             'description' => 'Complete an activity of 200 km or more',
             'achieved' => !empty($ultraDistance['achievedDate']),
             'progression' => !empty($ultraDistance['achievedDate'])
-                ? 'Achieved on: ' . (new DateTime($ultraDistance['achievedDate']))->format('Y-m-d')
-                : $this->getMaxDistanceProgression($userId, 200000) . '/200 km',
+                ? 'Achieved on: '.(new \DateTime($ultraDistance['achievedDate']))->format('Y-m-d')
+                : $this->getMaxDistanceProgression($userId, 200000).'/200 km',
         ];
 
         $streakActivities = $this->createQueryBuilder('a')
@@ -415,7 +478,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
         $previousDate = null;
 
         foreach ($streakActivities as $activity) {
-            if (!$activity['startDateLocal'] instanceof DateTimeInterface) {
+            if (!$activity['startDateLocal'] instanceof \DateTimeInterface) {
                 continue;
             }
             $currentDate = $activity['startDateLocal'];
@@ -438,7 +501,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
             'name' => 'Streak Master',
             'description' => 'Complete activities for 7 consecutive days',
             'achieved' => $maxStreak >= $streakGoal,
-            'progression' => $maxStreak . '/' . $streakGoal . ' days',
+            'progression' => $maxStreak.'/'.$streakGoal.' days',
         ];
 
         $marathon = $this->createQueryBuilder('a')
@@ -456,8 +519,8 @@ use Symfony\Component\HttpFoundation\RequestStack;
             'description' => 'Complete a marathon (42.195 km run)',
             'achieved' => !empty($marathon['achievedDate']),
             'progression' => !empty($marathon['achievedDate'])
-                ? 'Achieved on: ' . (new DateTime($marathon['achievedDate']))->format('Y-m-d')
-                : $this->getMaxDistanceProgression($userId, 42195, 'Run') . '/42.2 km',
+                ? 'Achieved on: '.(new \DateTime($marathon['achievedDate']))->format('Y-m-d')
+                : $this->getMaxDistanceProgression($userId, 42195, 'Run').'/42.2 km',
         ];
 
         $earlyBirdActivities = $this->createQueryBuilder('a')
@@ -470,8 +533,8 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
         $earlyBirdCount = 0;
         foreach ($earlyBirdActivities as $activity) {
-            if ($activity['startDateLocal'] instanceof DateTimeInterface) {
-                if ((int)$activity['startDateLocal']->format('H') < 7) {
+            if ($activity['startDateLocal'] instanceof \DateTimeInterface) {
+                if ((int) $activity['startDateLocal']->format('H') < 7) {
                     ++$earlyBirdCount;
                 }
             }
@@ -482,11 +545,11 @@ use Symfony\Component\HttpFoundation\RequestStack;
             'name' => 'Early Bird',
             'description' => 'Complete 10 activities starting before 7 AM',
             'achieved' => $earlyBirdCount >= $earlyBirdGoal,
-            'progression' => $earlyBirdCount . '/' . $earlyBirdGoal,
+            'progression' => $earlyBirdCount.'/'.$earlyBirdGoal,
         ];
 
-        $startOfMonth = (new DateTime('first day of this month'))->setTime(0, 0, 0);
-        $endOfMonth = (new DateTime('last day of this month'))->setTime(23, 59, 59);
+        $startOfMonth = (new \DateTime('first day of this month'))->setTime(0, 0, 0);
+        $endOfMonth = (new \DateTime('last day of this month'))->setTime(23, 59, 59);
 
         $elevationGain = $this->createQueryBuilder('a')
             ->select('SUM(a.totalElevationGain) as totalGain')
@@ -504,11 +567,11 @@ use Symfony\Component\HttpFoundation\RequestStack;
             'name' => 'Monthly Climb Challenge',
             'description' => 'Climb 5,000 meters in the current calendar month',
             'achieved' => $elevationGain >= $elevationGoal,
-            'progression' => round($elevationGain) . '/' . $elevationGoal . ' m',
+            'progression' => round($elevationGain).'/'.$elevationGoal.' m',
         ];
 
-        $endDate = new DateTime();
-        $startDate = (new DateTime())->modify('-28 days')->setTime(0, 0, 0);
+        $endDate = new \DateTime();
+        $startDate = (new \DateTime())->modify('-28 days')->setTime(0, 0, 0);
 
         $recentRuns = $this->createQueryBuilder('a')
             ->select('a.startDateLocal')
@@ -525,7 +588,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
         $runsPerWeek = [];
         foreach ($recentRuns as $run) {
-            if ($run['startDateLocal'] instanceof DateTimeInterface) {
+            if ($run['startDateLocal'] instanceof \DateTimeInterface) {
                 $weekNumber = $run['startDateLocal']->format('o-W');
                 if (!isset($runsPerWeek[$weekNumber])) {
                     $runsPerWeek[$weekNumber] = 0;
@@ -535,7 +598,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
         }
 
         $completedWeeksCount = 0;
-        $today = new DateTime();
+        $today = new \DateTime();
         for ($i = 0; $i < 4; ++$i) {
             $checkDate = (clone $today)->modify("-$i week");
             $checkWeekNumber = $checkDate->format('o-W');
@@ -548,7 +611,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
             'name' => 'Consistent Runner',
             'description' => 'Run 3 times a week for 4 consecutive weeks',
             'achieved' => $completedWeeksCount >= $consistencyGoalWeeks,
-            'progression' => $completedWeeksCount . '/' . $consistencyGoalWeeks . ' weeks',
+            'progression' => $completedWeeksCount.'/'.$consistencyGoalWeeks.' weeks',
         ];
 
         $explorerCities = $this->createQueryBuilder('a')
@@ -566,7 +629,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
             'name' => 'Explorer',
             'description' => 'Complete activities in 5 different cities',
             'achieved' => $explorerCities >= $explorerGoal,
-            'progression' => $explorerCities . '/' . $explorerGoal . ' cities',
+            'progression' => $explorerCities.'/'.$explorerGoal.' cities',
         ];
 
         $totalDistanceResult = $this->createQueryBuilder('a')
@@ -582,7 +645,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
             'name' => 'Global Trotter',
             'description' => 'Accumulate a total distance of 1,000 km across all activities',
             'achieved' => $achievedTotalDistance,
-            'progression' => round($totalDistance / 1000) . '/' . round($goalDistance / 1000) . ' km',
+            'progression' => round($totalDistance / 1000).'/'.round($goalDistance / 1000).' km',
         ];
 
         $totalElevationResult = $this->createQueryBuilder('a')
@@ -598,7 +661,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
             'name' => 'Everest Climber',
             'description' => 'Accumulate a total elevation gain equivalent to Mount Everest (8,848 m)',
             'achieved' => $achievedEverest,
-            'progression' => round($totalElevation) . '/' . $goalElevationEverest . ' m',
+            'progression' => round($totalElevation).'/'.$goalElevationEverest.' m',
         ];
 
         $nightOwlActivities = $this->createQueryBuilder('a')
@@ -611,8 +674,8 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
         $nightOwlCount = 0;
         foreach ($nightOwlActivities as $activity) {
-            if ($activity['startDateLocal'] instanceof DateTimeInterface) {
-                if ((int)$activity['startDateLocal']->format('H') >= 21) {
+            if ($activity['startDateLocal'] instanceof \DateTimeInterface) {
+                if ((int) $activity['startDateLocal']->format('H') >= 21) {
                     ++$nightOwlCount;
                 }
             }
@@ -623,7 +686,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
             'name' => 'Night Owl',
             'description' => 'Complete 10 activities starting after 9 PM local time',
             'achieved' => $achievedNightOwl,
-            'progression' => $nightOwlCount . '/' . $goalNightOwl,
+            'progression' => $nightOwlCount.'/'.$goalNightOwl,
         ];
 
         $weekendActivities = $this->createQueryBuilder('a')
@@ -636,10 +699,10 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
         $weekendDistance = 0;
         foreach ($weekendActivities as $activity) {
-            if ($activity['startDateLocal'] instanceof DateTimeInterface && $activity['distance'] > 0) {
-                $dayOfWeek = (int)$activity['startDateLocal']->format('N');
+            if ($activity['startDateLocal'] instanceof \DateTimeInterface && $activity['distance'] > 0) {
+                $dayOfWeek = (int) $activity['startDateLocal']->format('N');
                 if (6 === $dayOfWeek || 7 === $dayOfWeek) {
-                    $weekendDistance += (float)$activity['distance'];
+                    $weekendDistance += (float) $activity['distance'];
                 }
             }
         }
@@ -649,7 +712,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
             'name' => 'Weekend Warrior',
             'description' => 'Accumulate 500 km on weekend activities (Sat/Sun)',
             'achieved' => $achievedWeekendWarrior,
-            'progression' => round($weekendDistance / 1000) . '/' . round($goalWeekendDistance / 1000) . ' km',
+            'progression' => round($weekendDistance / 1000).'/'.round($goalWeekendDistance / 1000).' km',
         ];
 
         $sportTypes = $this->createQueryBuilder('a')
@@ -670,7 +733,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
             'name' => 'Multi-Sport Athlete',
             'description' => 'Log activities of at least 3 different types (e.g., Run, Ride, Swim)',
             'achieved' => $achievedMultiSport,
-            'progression' => $validSportTypesCount . '/' . $goalTypes . ' types',
+            'progression' => $validSportTypesCount.'/'.$goalTypes.' types',
         ];
 
         return $achievements;
@@ -702,16 +765,21 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
         $hasStartDate = $request->query->has('startDate');
         $hasEndDate = $request->query->has('endDate');
+        $hasSport = $request?->query->has('sport');
 
         $endDate = $hasEndDate
-            ? new DateTime($request->query->get('endDate'))
-            : new DateTime();
+            ? new \DateTime($request->query->get('endDate'))
+            : new \DateTime();
+
+        $sport = $hasSport
+            ? $request->query->get('sport')
+            : null;
 
         $startDate = null;
         if ($hasStartDate) {
-            $startDate = new DateTime($request->query->get('startDate'));
+            $startDate = new \DateTime($request->query->get('startDate'));
         } elseif (!$hasEndDate) {
-            $startDate = (new DateTime())->modify('-12 weeks');
+            $startDate = (new \DateTime())->modify('-12 weeks');
         }
 
         $qb = $this->createQueryBuilder('a')
@@ -729,12 +797,17 @@ use Symfony\Component\HttpFoundation\RequestStack;
                 ->setParameter('endDate', $endDate);
         }
 
+        if ($sport) {
+            $qb->andWhere('a.sportType = :sport')
+                ->setParameter('sport', $sport);
+        }
+
         $activities = $qb->getQuery()->getResult();
 
         $dataByWeek = [];
         foreach ($activities as $activity) {
             $dateTime = $activity->getStartDateLocal();
-            if ($dateTime instanceof DateTimeInterface) {
+            if ($dateTime instanceof \DateTimeInterface) {
                 $yearWeek = $dateTime->format('o-W');
 
                 if (!isset($dataByWeek[$yearWeek])) {
@@ -775,7 +848,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
                 $weekKey = $weekStart->format('o-W');
                 $weeklyData[] = [
-                    'label' => $weekStart->format('d M') . ' - ' . $weekEnd->format('d M'),
+                    'label' => $weekStart->format('d M').' - '.$weekEnd->format('d M'),
                     'distance' => isset($dataByWeek[$weekKey]) ? round($dataByWeek[$weekKey]['distance'], 2) : 0,
                     'elevation' => isset($dataByWeek[$weekKey]) ? round($dataByWeek[$weekKey]['elevation']) : 0,
                     'time' => isset($dataByWeek[$weekKey]) ? $dataByWeek[$weekKey]['time'] : 0,
@@ -803,7 +876,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
         foreach ($result as $row) {
             $sportDistribution[] = [
                 'type' => $row['sportType'],
-                'count' => (int)$row['activityCount'],
+                'count' => (int) $row['activityCount'],
             ];
         }
 
@@ -829,8 +902,22 @@ use Symfony\Component\HttpFoundation\RequestStack;
         return [
             'totalActivities' => $result['totalActivities'],
             'totalDistance' => round(($result['rawTotalDistance'] ?? 0) / 1000, 2),
-            'totalTime' => round(($result['rawTotalTime'] ?? 0) / 3600, 2) . ' h',
-            'averageSpeed' => round(($result['rawAverageSpeed'] ?? 0) * 3.6, 2) . ' km/h',
+            'totalTime' => round(($result['rawTotalTime'] ?? 0) / 3600, 2).' h',
+            'averageSpeed' => round(($result['rawAverageSpeed'] ?? 0) * 3.6, 2).' km/h',
         ];
+    }
+
+    public function getAthleteSports(int $userId): array
+    {
+        $qb = $this->createQueryBuilder('a')
+            ->select('DISTINCT a.sportType')
+            ->where('a.stravaUser = :userId')
+            ->setParameter('userId', $userId);
+
+        $this->applyFilter($qb);
+
+        return array_map(function ($row) {
+            return $row['sportType'];
+        }, $qb->getQuery()->getArrayResult());
     }
 }
