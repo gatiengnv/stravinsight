@@ -2,21 +2,25 @@
 
 namespace App\Repository;
 
+use AllowDynamicProperties;
 use App\Entity\Activity;
 use App\Entity\User;
 use DateTime;
 use DateTimeInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * @extends ServiceEntityRepository<Activity>
  */
-class ActivityRepository extends ServiceEntityRepository
+#[AllowDynamicProperties] class ActivityRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry, RequestStack $requestStack)
     {
         parent::__construct($registry, Activity::class);
+        $this->requestStack = $requestStack;
     }
 
     public function getActivityDifferenceFromLastMonth(int $userId): array
@@ -173,9 +177,11 @@ class ActivityRepository extends ServiceEntityRepository
             ->select('COUNT(a.id) as total')
             ->where('a.stravaUser = :userId')
             ->andWhere('a.averageHeartrate IS NOT NULL')
-            ->setParameter('userId', $userId)
-            ->getQuery()
-            ->getSingleScalarResult();
+            ->setParameter('userId', $userId);
+
+        $this->applyFilter($totalActivities);
+
+        $totalActivities = $totalActivities->getQuery()->getSingleScalarResult();
 
         if (0 == $totalActivities) {
             return [
@@ -206,8 +212,9 @@ class ActivityRepository extends ServiceEntityRepository
             ->setParameter('zone3Max', $zone3['max'] ?? 0)
             ->setParameter('zone4Min', $zone4['min'] ?? 0)
             ->setParameter('zone4Max', $zone4['max'] ?? 0)
-            ->setParameter('zone5Min', $zone5['min'] ?? 0)
-            ->getQuery()
+            ->setParameter('zone5Min', $zone5['min'] ?? 0);
+        $this->applyFilter($zoneQuery);
+        $zoneQuery = $zoneQuery->getQuery()
             ->getSingleResult();
 
         return [
@@ -234,22 +241,64 @@ class ActivityRepository extends ServiceEntityRepository
         ];
     }
 
-    public function getWeeklyFitnessData(int $userId, int $weeks): array
+    private function applyFilter($qb): void
     {
-        $endDate = new DateTime();
-        $startDate = (new DateTime())->modify("-{$weeks} weeks");
+        if (!$qb instanceof QueryBuilder) {
+            return;
+        }
 
-        $activities = $this->createQueryBuilder('a')
+        $request = $this->requestStack->getCurrentRequest();
+        $startDate = $request?->query->get('startDate');
+        $endDate = $request?->query->get('endDate');
+
+        if ($startDate) {
+            $startDate = new DateTime($startDate);
+            $qb->andWhere('a.startDateLocal >= :startDate')
+                ->setParameter('startDate', $startDate);
+        }
+
+        if ($endDate) {
+            $endDate = new DateTime($endDate);
+            $qb->andWhere('a.startDateLocal <= :endDate')
+                ->setParameter('endDate', $endDate);
+        }
+    }
+
+    public function getWeeklyFitnessData(int $userId, int $defaultWeeks = 10): array
+    {
+        $request = $this->requestStack->getCurrentRequest();
+
+        $hasStartDate = $request?->query->has('startDate');
+        $hasEndDate = $request?->query->has('endDate');
+
+        $endDate = $hasEndDate
+            ? new DateTime($request->query->get('endDate'))
+            : new DateTime();
+
+        $startDate = null;
+        if ($hasStartDate) {
+            $startDate = new DateTime($request->query->get('startDate'));
+        } elseif (!$hasEndDate) {
+            $startDate = (new DateTime())->modify("-{$defaultWeeks} weeks");
+        }
+
+        $qb = $this->createQueryBuilder('a')
             ->where('a.stravaUser = :userId')
-            ->andWhere('a.startDateLocal BETWEEN :startDate AND :endDate')
-            ->setParameter('userId', $userId)
-            ->setParameter('startDate', $startDate)
-            ->setParameter('endDate', $endDate)
-            ->getQuery()
-            ->getResult();
+            ->setParameter('userId', $userId);
+
+        if ($startDate) {
+            $qb->andWhere('a.startDateLocal >= :startDate')
+                ->setParameter('startDate', $startDate);
+        }
+
+        if ($endDate) {
+            $qb->andWhere('a.startDateLocal <= :endDate')
+                ->setParameter('endDate', $endDate);
+        }
+
+        $activities = $qb->getQuery()->getResult();
 
         $weeklyData = [];
-
         foreach ($activities as $activity) {
             $week = $activity->getStartDateLocal()->format('o-W');
             if (!isset($weeklyData[$week])) {
@@ -263,13 +312,32 @@ class ActivityRepository extends ServiceEntityRepository
             }
         }
 
-        $formattedData = [];
-        for ($i = 0; $i < $weeks; ++$i) {
-            $week = (new DateTime())->modify("-{$i} weeks")->format('o-W');
-            $formattedData[] = $weeklyData[$week] ?? 0;
+        $periodStart = $startDate ? clone $startDate : null;
+        $periodEnd = clone $endDate;
+
+        if (!$periodStart && !empty($activities)) {
+            $oldestActivity = end($activities);
+            $periodStart = clone $oldestActivity->getStartDateLocal();
+            $periodStart->modify('monday this week');
         }
 
-        return array_reverse($formattedData);
+        $weeks = 1;
+        if ($periodStart) {
+            $weeks = max(1, intdiv($periodEnd->diff($periodStart)->days, 7) + 1);
+        }
+
+        $formattedData = [];
+        if ($periodStart) {
+            $periodStart->modify('monday this week');
+
+            for ($i = 0; $i < $weeks; ++$i) {
+                $weekStart = (clone $periodStart)->modify("+{$i} weeks");
+                $weekKey = $weekStart->format('o-W');
+                $formattedData[] = $weeklyData[$weekKey] ?? 0;
+            }
+        }
+
+        return $formattedData;
     }
 
     private function calculateRelativeEffort(float $averageHeartrate, int $movingTime): float
@@ -627,54 +695,91 @@ class ActivityRepository extends ServiceEntityRepository
         return round($displayDistance / 1000, 1);
     }
 
-    public function getWeeklyDistance(int $userId, int $weeks = 12): array
+    public function getWeeklyDistance(int $userId): array
     {
-        $endDate = new DateTime();
-        $startDate = (new DateTime())->modify("-{$weeks} weeks");
+        $request = $this->requestStack->getCurrentRequest();
 
-        $conn = $this->getEntityManager()->getConnection();
-        $sql = '
-        SELECT to_char(a.start_date_local, \'IYYY-IW\') as year_week,
-               SUM(a.distance)/1000 as total_distance,
-               SUM(a.total_elevation_gain) as total_elevation,
-               SUM(a.moving_time) as total_time
-        FROM activity a
-        WHERE a.strava_user_id = :userId
-        AND a.start_date_local BETWEEN :startDate AND :endDate
-        GROUP BY year_week
-        ORDER BY year_week ASC
-    ';
+        $hasStartDate = $request->query->has('startDate');
+        $hasEndDate = $request->query->has('endDate');
 
-        $stmt = $conn->prepare($sql);
-        $result = $stmt->executeQuery([
-            'userId' => $userId,
-            'startDate' => $startDate->format('Y-m-d H:i:s'),
-            'endDate' => $endDate->format('Y-m-d H:i:s')
-        ]);
+        $endDate = $hasEndDate
+            ? new DateTime($request->query->get('endDate'))
+            : new DateTime();
+
+        $startDate = null;
+        if ($hasStartDate) {
+            $startDate = new DateTime($request->query->get('startDate'));
+        } elseif (!$hasEndDate) {
+            $startDate = (new DateTime())->modify('-12 weeks');
+        }
+
+        $qb = $this->createQueryBuilder('a')
+            ->select('a')
+            ->where('a.stravaUser = :userId')
+            ->setParameter('userId', $userId);
+
+        if ($startDate) {
+            $qb->andWhere('a.startDateLocal >= :startDate')
+                ->setParameter('startDate', $startDate);
+        }
+
+        if ($endDate) {
+            $qb->andWhere('a.startDateLocal <= :endDate')
+                ->setParameter('endDate', $endDate);
+        }
+
+        $activities = $qb->getQuery()->getResult();
 
         $dataByWeek = [];
-        foreach ($result->fetchAllAssociative() as $row) {
-            $dataByWeek[$row['year_week']] = [
-                'distance' => round($row['total_distance'], 2),
-                'elevation' => round($row['total_elevation']),
-                'time' => $row['total_time']
-            ];
+        foreach ($activities as $activity) {
+            $dateTime = $activity->getStartDateLocal();
+            if ($dateTime instanceof DateTimeInterface) {
+                $yearWeek = $dateTime->format('o-W');
+
+                if (!isset($dataByWeek[$yearWeek])) {
+                    $dataByWeek[$yearWeek] = [
+                        'distance' => 0,
+                        'elevation' => 0,
+                        'time' => 0,
+                    ];
+                }
+
+                $dataByWeek[$yearWeek]['distance'] += $activity->getDistance() / 1000;
+                $dataByWeek[$yearWeek]['elevation'] += $activity->getTotalElevationGain();
+                $dataByWeek[$yearWeek]['time'] += $activity->getMovingTime();
+            }
+        }
+
+        $periodStart = $startDate ? clone $startDate : null;
+        $periodEnd = clone $endDate;
+
+        if (!$periodStart && !empty($activities)) {
+            $oldestActivity = end($activities);
+            $periodStart = clone $oldestActivity->getStartDateLocal();
+            $periodStart->modify('monday this week');
+        }
+
+        $weeks = 1;
+        if ($periodStart) {
+            $weeks = max(1, intdiv($periodEnd->diff($periodStart)->days, 7) + 1);
         }
 
         $weeklyData = [];
-        for ($i = 0; $i < $weeks; $i++) {
-            $weekStart = (clone $startDate)->modify("+{$i} weeks");
-            $weekStart->modify('monday this week');
+        if ($periodStart) {
+            $periodStart->modify('monday this week');
 
-            $weekEnd = (clone $weekStart)->modify('+6 days');
+            for ($i = 0; $i < $weeks; ++$i) {
+                $weekStart = (clone $periodStart)->modify("+{$i} weeks");
+                $weekEnd = (clone $weekStart)->modify('+6 days');
 
-            $weekKey = $weekStart->format('o-W');
-            $weeklyData[] = [
-                'label' => $weekStart->format('d M') . ' - ' . $weekEnd->format('d M'),
-                'distance' => $dataByWeek[$weekKey]['distance'] ?? 0,
-                'elevation' => $dataByWeek[$weekKey]['elevation'] ?? 0,
-                'time' => $dataByWeek[$weekKey]['time'] ?? 0
-            ];
+                $weekKey = $weekStart->format('o-W');
+                $weeklyData[] = [
+                    'label' => $weekStart->format('d M') . ' - ' . $weekEnd->format('d M'),
+                    'distance' => isset($dataByWeek[$weekKey]) ? round($dataByWeek[$weekKey]['distance'], 2) : 0,
+                    'elevation' => isset($dataByWeek[$weekKey]) ? round($dataByWeek[$weekKey]['elevation']) : 0,
+                    'time' => isset($dataByWeek[$weekKey]) ? $dataByWeek[$weekKey]['time'] : 0,
+                ];
+            }
         }
 
         return $weeklyData;
@@ -690,17 +795,41 @@ class ActivityRepository extends ServiceEntityRepository
             ->groupBy('sportType')
             ->orderBy('activityCount', 'DESC')
             ->setParameter('userId', $userId);
-
+        $this->applyFilter($qb);
         $result = $qb->getQuery()->getResult();
 
         $sportDistribution = [];
         foreach ($result as $row) {
             $sportDistribution[] = [
                 'type' => $row['sportType'],
-                'count' => (int)$row['activityCount']
+                'count' => (int)$row['activityCount'],
             ];
         }
 
         return $sportDistribution;
+    }
+
+    public function getActivityStats(int $userId): array
+    {
+        $qb = $this->createQueryBuilder('a')
+            ->select(
+                'COUNT(a.id) as totalActivities',
+                'SUM(a.distance) as rawTotalDistance',
+                'SUM(a.movingTime) as rawTotalTime',
+                'AVG(a.averageSpeed) as rawAverageSpeed'
+            )
+            ->where('a.stravaUser = :userId')
+            ->setParameter('userId', $userId);
+
+        $this->applyFilter($qb);
+
+        $result = $qb->getQuery()->getSingleResult();
+
+        return [
+            'totalActivities' => $result['totalActivities'],
+            'totalDistance' => round(($result['rawTotalDistance'] ?? 0) / 1000, 2),
+            'totalTime' => round(($result['rawTotalTime'] ?? 0) / 3600, 2) . ' h',
+            'averageSpeed' => round(($result['rawAverageSpeed'] ?? 0) * 3.6, 2) . ' km/h',
+        ];
     }
 }

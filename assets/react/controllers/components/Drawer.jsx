@@ -1,16 +1,21 @@
 import {faBars} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import DateRangePicker from "./DateRangePicker";
+import React from "react";
 
-export default function Drawer({children, title = ""}) {
+export default function Drawer({children, showDateRangePicker = false, title = ""}) {
     return (
         <div className="drawer">
             <input id="my-drawer" type="checkbox" className="drawer-toggle"/>
             <div className="drawer-content">
-                <div className="flex items-center p-4">
-                    <label htmlFor="my-drawer" className="btn mr-3">
-                        <FontAwesomeIcon icon={faBars}/>
-                    </label>
-                    <h1 className="text-xl font-bold">{title}</h1>
+                <div className="flex justify-between items-center p-4">
+                    <div className="flex items-center">
+                        <label htmlFor="my-drawer" className="btn mr-3">
+                            <FontAwesomeIcon icon={faBars}/>
+                        </label>
+                        <h1 className="text-xl font-bold">{title}</h1>
+                    </div>
+                    {showDateRangePicker && (<DateRangePicker/>)}
                 </div>
                 {children}
             </div>

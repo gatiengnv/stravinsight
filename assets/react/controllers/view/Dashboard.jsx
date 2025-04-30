@@ -39,9 +39,8 @@ export default function Dashboard({
                                       weeklyDistance,
                                       activityCountBySport
                                   }) {
-    console.log(activityCountBySport);
     return (
-        <Drawer title={"Dashboard"}>
+        <Drawer title={"Dashboard"} showDateRangePicker={true}>
             <div className="p-4 md:p-6">
                 <div className="stats stats-vertical lg:stats-horizontal shadow mb-6 w-full">
                     <StatItem icon={faBolt} title={"Total Activities"} value={stats.totalActivities}
