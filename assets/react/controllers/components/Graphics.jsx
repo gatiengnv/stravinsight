@@ -74,6 +74,7 @@ const Graphics = ({activityStream}) => {
                     backgroundColor: metricColors[metric] || 'rgba(75, 192, 192, 0.5)',
                     tension: 0.1,
                     pointRadius: 0,
+                    yAxisID: metric,
                 };
             });
 
@@ -94,6 +95,53 @@ const Graphics = ({activityStream}) => {
             </div>
         );
     }
+
+    const generateScales = () => {
+        const scales = {
+            x: {
+                title: {
+                    display: true,
+                    text: 'Time',
+                },
+                ticks: {
+                    maxTicksLimit: 10,
+                    callback: function (value) {
+                        if (!activityStream.timeData) return value;
+                        const seconds = activityStream.timeData[value];
+                        if (seconds) {
+                            const mins = Math.floor(seconds / 60);
+                            const secs = Math.floor(seconds % 60);
+                            return `${mins}:${secs.toString().padStart(2, '0')}`;
+                        }
+                        return value;
+                    }
+                }
+            }
+        };
+
+        const rightSideMetrics = ['gradeData', 'cadenceData', 'distanceData'];
+
+        selectedMetrics.forEach((metric, index) => {
+            scales[metric] = {
+                type: 'linear',
+                display: true,
+                position: rightSideMetrics.includes(metric) ? 'right' : 'left',
+                title: {
+                    display: true,
+                    text: metricLabels[metric],
+                    color: metricColors[metric],
+                },
+                ticks: {
+                    color: metricColors[metric],
+                },
+                grid: {
+                    drawOnChartArea: index === 0,
+                }
+            };
+        });
+
+        return scales;
+    };
 
     return (
         <div className="card w-full bg-base-100 shadow-xl">
@@ -122,6 +170,10 @@ const Graphics = ({activityStream}) => {
                         options={{
                             responsive: true,
                             maintainAspectRatio: false,
+                            interaction: {
+                                mode: 'index',
+                                intersect: false,
+                            },
                             plugins: {
                                 legend: {
                                     position: 'top',
@@ -141,33 +193,7 @@ const Graphics = ({activityStream}) => {
                                     }
                                 },
                             },
-                            scales: {
-                                x: {
-                                    title: {
-                                        display: true,
-                                        text: 'Time',
-                                    },
-                                    ticks: {
-                                        maxTicksLimit: 10,
-                                        callback: function (value) {
-                                            if (!activityStream.timeData) return value;
-                                            const seconds = activityStream.timeData[value];
-                                            if (seconds) {
-                                                const mins = Math.floor(seconds / 60);
-                                                const secs = Math.floor(seconds % 60);
-                                                return `${mins}:${secs.toString().padStart(2, '0')}`;
-                                            }
-                                            return value;
-                                        }
-                                    }
-                                },
-                                y: {
-                                    title: {
-                                        display: selectedMetrics.length === 1,
-                                        text: selectedMetrics.length === 1 ? metricLabels[selectedMetrics[0]] : '',
-                                    },
-                                }
-                            }
+                            scales: generateScales()
                         }}
                     />
                 </div>

@@ -18,7 +18,6 @@ import {
 import Split from "../../components/Split";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import SegmentEfforts from "../../components/SegmentEfforts";
-import StandardSplits from "../../components/StandardSplit";
 import Graphics from "../../components/Graphics";
 
 export default function ActivityDetails({activity, activityDetail, activityStream}) {
@@ -119,15 +118,7 @@ export default function ActivityDetails({activity, activityDetail, activityStrea
                                     className={`tab tab-bordered ${activeTab === 'splitsMetric' ? 'tab-active' : ''}`}
                                     onClick={() => setActiveTab('splitsMetric')}
                                 >
-                                    <FontAwesomeIcon icon={faTableCells} className="mr-2"/> Splits (km)
-                                </button>
-                            )}
-                            {hasSplitsStandard && (
-                                <button
-                                    className={`tab tab-bordered ${activeTab === 'splitsStandard' ? 'tab-active' : ''}`}
-                                    onClick={() => setActiveTab('splitsStandard')}
-                                >
-                                    <FontAwesomeIcon icon={faTableCells} className="mr-2"/> Standard Splits
+                                    <FontAwesomeIcon icon={faTableCells} className="mr-2"/> Splits
                                 </button>
                             )}
                             <button
@@ -157,14 +148,9 @@ export default function ActivityDetails({activity, activityDetail, activityStrea
                     )}
 
                     {activeTab === 'splitsMetric' && hasSplitsMetric && (
-                        <Card title="Splits (per km)">
-                            <Split splitsMetric={activityDetail.splitsMetric}/>
-                        </Card>
-                    )}
-
-                    {activeTab === 'splitsStandard' && hasSplitsStandard && (
-                        <Card title="Standard Splits">
-                            <StandardSplits splitsStandard={activityDetail.splitsStandard}/>
+                        <Card title="Splits">
+                            <Split splitsMetric={activityDetail.splitsMetric}
+                                   splitsStandard={activityDetail.splitsStandard}/>
                         </Card>
                     )}
                     {activeTab === 'charts' && activityStream && (

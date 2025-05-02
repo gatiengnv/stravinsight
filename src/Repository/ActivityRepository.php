@@ -102,6 +102,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
                 'averageSpeed' => round($activity->getAverageSpeed() * 3.6, 2).' km/h',
                 'startDateLocal' => $activity->getStartDateLocal()?->format('Y-m-d H:i:s'),
                 'type' => $activity->getType(),
+                'summaryPolyline' => $activity->getSummaryPolyline(),
             ];
         }, $activities);
     }
@@ -178,22 +179,22 @@ use Symfony\Component\HttpFoundation\RequestStack;
             [
                 'name' => 'Max distance',
                 'value' => round(($maxDistanceRecord['distance'] ?? 0) / 1000, 2).' km',
-                'date' => $maxDistanceRecord['startDateLocal']->format('Y-m-d H:i:s') ?? null,
+                'date' => $maxDistanceRecord ? $maxDistanceRecord['startDateLocal']->format('Y-m-d H:i:s') : null,
             ],
             [
                 'name' => 'Max average speed',
                 'value' => round(($maxSpeedRecord['averageSpeed'] ?? 0) * 3.6, 2).' km/h',
-                'date' => $maxSpeedRecord['startDateLocal']->format('Y-m-d H:i:s') ?? null,
+                'date' => $maxSpeedRecord ? $maxSpeedRecord['startDateLocal']->format('Y-m-d H:i:s') : null,
             ],
             [
                 'name' => 'Max moving time',
                 'value' => isset($maxTimeRecord['movingTime']) ? gmdate('H:i:s', $maxTimeRecord['movingTime']) : '00:00:00',
-                'date' => $maxTimeRecord['startDateLocal']->format('Y-m-d H:i:s') ?? null,
+                'date' => $maxTimeRecord ? $maxTimeRecord['startDateLocal']->format('Y-m-d H:i:s') : null,
             ],
             [
                 'name' => 'Max elevation gain',
                 'value' => ($maxElevationRecord['totalElevationGain'] ?? 0).' m',
-                'date' => $maxElevationRecord['startDateLocal']->format('Y-m-d H:i:s') ?? null,
+                'date' => $maxElevationRecord ? $maxElevationRecord['startDateLocal']->format('Y-m-d H:i:s') : null,
             ],
         ];
     }

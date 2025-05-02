@@ -78,6 +78,14 @@ export default function Drawer({
                             Activities
                         </a>
                     </li>
+                    <li>
+                        <a
+                            href="/heatmap"
+                            className={title === "Heatmap" ? "active bg-primary text-primary-content" : ""}
+                        >
+                            Heatmap
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
