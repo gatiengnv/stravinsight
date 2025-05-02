@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import Map from "../../components/Map";
 import Card from "../../components/Card";
 import StatItem from "../../components/StatItem";
@@ -21,7 +21,25 @@ import SegmentEfforts from "../../components/SegmentEfforts";
 import Graphics from "../../components/Graphics";
 
 export default function ActivityDetails({activity, activityDetail, activityStream}) {
-    const [activeTab, setActiveTab] = useState('map');
+    const [activeTab, setActiveTab] = useState("map");
+
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const tab = urlParams.get('tab');
+        if (tab && ["map", "segments", "splitsmetric", "charts"].includes(tab)) {
+            setActiveTab(tab);
+        }
+    }, []);
+
+    useEffect(() => {
+        const url = new URL(window.location);
+        url.searchParams.set('tab', activeTab);
+        window.history.replaceState({}, '', url);
+    }, [activeTab]);
+
+    const handleTabChange = (tab) => {
+        setActiveTab(tab);
+    };
 
     if (!activity) {
         return <div className="p-4 md:p-6">No activity data available</div>;
@@ -44,12 +62,17 @@ export default function ActivityDetails({activity, activityDetail, activityStrea
     const hasSplitsMetric = activityDetail && activityDetail.splitsMetric && activityDetail.splitsMetric.length > 0;
     const hasSplitsStandard = activityDetail && activityDetail.splitsStandard && activityDetail.splitsStandard.length > 0;
 
-    React.useEffect(() => {
-        if (hasMap) setActiveTab('map');
-        else if (hasSegments) setActiveTab('segments');
-        else if (hasSplitsMetric) setActiveTab('splitsMetric');
-        else if (hasSplitsStandard) setActiveTab('splitsStandard');
-    }, [hasMap, hasSegments, hasSplitsMetric, hasSplitsStandard]);
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlTab = urlParams.get('tab');
+
+        if (!urlTab) {
+            if (hasMap) handleTabChange('map');
+            else if (hasSegments) handleTabChange('segments');
+            else if (hasSplitsMetric) handleTabChange('splitsmetric');
+            else if (hasSplitsStandard) handleTabChange('splitsstandard');
+        }
+    }, []);
 
     return (
         <Drawer>
@@ -100,7 +123,7 @@ export default function ActivityDetails({activity, activityDetail, activityStrea
                             {hasMap && (
                                 <button
                                     className={`tab tab-bordered ${activeTab === 'map' ? 'tab-active' : ''}`}
-                                    onClick={() => setActiveTab('map')}
+                                    onClick={() => handleTabChange('map')}
                                 >
                                     <FontAwesomeIcon icon={faMap} className="mr-2"/> Map
                                 </button>
@@ -108,22 +131,22 @@ export default function ActivityDetails({activity, activityDetail, activityStrea
                             {hasSegments && (
                                 <button
                                     className={`tab tab-bordered ${activeTab === 'segments' ? 'tab-active' : ''}`}
-                                    onClick={() => setActiveTab('segments')}
+                                    onClick={() => handleTabChange('segments')}
                                 >
                                     <FontAwesomeIcon icon={faRulerHorizontal} className="mr-2"/> Segments
                                 </button>
                             )}
                             {hasSplitsMetric && (
                                 <button
-                                    className={`tab tab-bordered ${activeTab === 'splitsMetric' ? 'tab-active' : ''}`}
-                                    onClick={() => setActiveTab('splitsMetric')}
+                                    className={`tab tab-bordered ${activeTab === 'splitsmetric' ? 'tab-active' : ''}`}
+                                    onClick={() => handleTabChange('splitsmetric')}
                                 >
                                     <FontAwesomeIcon icon={faTableCells} className="mr-2"/> Splits
                                 </button>
                             )}
                             <button
-                                className={`tab tab-bordered ${activeTab === 'Charts' ? 'tab-active' : ''}`}
-                                onClick={() => setActiveTab('charts')}
+                                className={`tab tab-bordered ${activeTab === 'charts' ? 'tab-active' : ''}`}
+                                onClick={() => handleTabChange('charts')}
                             >
                                 <FontAwesomeIcon icon={faLineChart} className="mr-2"/> Charts
                             </button>
@@ -147,7 +170,7 @@ export default function ActivityDetails({activity, activityDetail, activityStrea
                         </Card>
                     )}
 
-                    {activeTab === 'splitsMetric' && hasSplitsMetric && (
+                    {activeTab === 'splitsmetric' && hasSplitsMetric && (
                         <Card title="Splits">
                             <Split splitsMetric={activityDetail.splitsMetric}
                                    splitsStandard={activityDetail.splitsStandard}/>

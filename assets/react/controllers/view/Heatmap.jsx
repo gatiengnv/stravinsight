@@ -11,6 +11,27 @@ export default function Heatmap({activities}) {
     const [heatmapMode, setHeatmapMode] = useState(false);
 
     useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlFilter = urlParams.get('filter');
+        const urlMode = urlParams.get('mode');
+
+        if (urlFilter && ["all", "recent", "old"].includes(urlFilter)) {
+            setFilter(urlFilter);
+        }
+
+        if (urlMode === "heatmap" || urlMode === "route") {
+            setHeatmapMode(urlMode === "heatmap");
+        }
+    }, []);
+
+    useEffect(() => {
+        const url = new URL(window.location);
+        url.searchParams.set('filter', filter);
+        url.searchParams.set('mode', heatmapMode ? "heatmap" : "route");
+        window.history.replaceState({}, '', url);
+    }, [filter, heatmapMode]);
+
+    useEffect(() => {
         if (!window.google || !window.google.maps) {
             console.error("Google Maps API is not loaded");
             return;
@@ -173,37 +194,41 @@ export default function Heatmap({activities}) {
 
     return (
         <Drawer title="Heatmap">
-            <div className="mb-4 flex justify-center gap-2">
-                <button
-                    onClick={() => handleFilterChange("all")}
-                    className={`btn ${filter === "all" ? "btn-primary" : "btn-outline"}`}
-                >
-                    All activities
-                </button>
-                <button
-                    onClick={() => handleFilterChange("recent")}
-                    className={`btn ${filter === "recent" ? "btn-primary" : "btn-outline"}`}
-                >
-                    10 most recent
-                </button>
-                <button
-                    onClick={() => handleFilterChange("old")}
-                    className={`btn ${filter === "old" ? "btn-primary" : "btn-outline"}`}
-                >
-                    10 oldest
-                </button>
-                <button
-                    onClick={toggleHeatmapMode}
-                    className={`btn ${heatmapMode ? "btn-accent" : "btn-outline"}`}
-                >
-                    {heatmapMode ? "Route Colors" : "Heat Map"}
-                </button>
+            <div className="mb-4 p-2">
+                <div className="flex flex-wrap justify-center gap-2 mb-2">
+                    <button
+                        onClick={() => handleFilterChange("all")}
+                        className={`btn btn-sm md:btn-md ${filter === "all" ? "btn-primary" : "btn-outline"}`}
+                    >
+                        All
+                    </button>
+                    <button
+                        onClick={() => handleFilterChange("recent")}
+                        className={`btn btn-sm md:btn-md ${filter === "recent" ? "btn-primary" : "btn-outline"}`}
+                    >
+                        10 recent
+                    </button>
+                    <button
+                        onClick={() => handleFilterChange("old")}
+                        className={`btn btn-sm md:btn-md ${filter === "old" ? "btn-primary" : "btn-outline"}`}
+                    >
+                        10 oldest
+                    </button>
+                </div>
+                <div className="flex justify-center mt-2">
+                    <button
+                        onClick={toggleHeatmapMode}
+                        className={`btn btn-sm md:btn-md ${heatmapMode ? "btn-accent" : "btn-outline"}`}
+                    >
+                        {heatmapMode ? "Route Colors" : "Heat Map"}
+                    </button>
+                </div>
             </div>
             <div
                 ref={mapRef}
-                className="w-full h-[70vh] min-h-[400px] bg-base-300 rounded-box"
+                className="w-full h-[50vh] sm:h-[60vh] md:h-[70vh] min-h-[300px] bg-base-300 rounded-box"
             ></div>
-            <div className="mt-4 text-center text-sm opacity-70">
+            <div className="mt-4 p-2 text-center text-sm opacity-70">
                 <p>Hover over a route to see activity details, click to view details</p>
                 <p className="mt-2">Total: {activities.length} activities</p>
             </div>

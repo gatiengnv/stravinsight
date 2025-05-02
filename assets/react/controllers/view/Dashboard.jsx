@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import ActivityItem from "../components/ActivityItem";
 import StatItem from "../components/StatItem";
 import Drawer from "../components/Drawer";
@@ -40,6 +40,26 @@ export default function Dashboard({
                                       activityCountBySport,
                                       userSports
                                   }) {
+    const [activeTab, setActiveTab] = useState("overview");
+
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const tab = urlParams.get('tab');
+        if (tab && ["overview", "analytics", "achievements"].includes(tab)) {
+            setActiveTab(tab);
+        }
+    }, []);
+
+    useEffect(() => {
+        const url = new URL(window.location);
+        url.searchParams.set('tab', activeTab);
+        window.history.replaceState({}, '', url);
+    }, [activeTab]);
+
+    const handleTabChange = (tab) => {
+        setActiveTab(tab);
+    };
+
     return (
         <Drawer title={"Dashboard"} showDateRangePicker={true} showSportPicker={true} userSports={userSports}>
             <div className="p-4 md:p-6">
@@ -61,7 +81,8 @@ export default function Dashboard({
                         name="my_tabs_2"
                         className="tab"
                         aria-label="Overview"
-                        defaultChecked
+                        checked={activeTab === "overview"}
+                        onChange={() => handleTabChange("overview")}
                     />
 
                     <div
@@ -92,6 +113,8 @@ export default function Dashboard({
                         name="my_tabs_2"
                         className="tab"
                         aria-label="Analytics"
+                        checked={activeTab === "analytics"}
+                        onChange={() => handleTabChange("analytics")}
                     />
 
                     <div
@@ -120,6 +143,8 @@ export default function Dashboard({
                         name="my_tabs_2"
                         className="tab"
                         aria-label="Achievements"
+                        checked={activeTab === "achievements"}
+                        onChange={() => handleTabChange("achievements")}
                     />
 
                     <div

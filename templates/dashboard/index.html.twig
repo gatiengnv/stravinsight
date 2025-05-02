@@ -1,4 +1,7 @@
 {% extends 'base.html.twig' %}
+
+{% block title %}Dashboard{% endblock %}
+
 {% block body %}
     <div {{ react_component('view/Dashboard', {
         stats : stats,

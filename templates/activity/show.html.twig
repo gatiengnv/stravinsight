@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello ActivityController!{% endblock %}
+{% block title %}Activity details{% endblock %}
 
 {% block body %}
     <div {{ react_component('view/activities/single', {activity:activity, activityDetail:activityDetail, activityStream:activityStream}) }}>
