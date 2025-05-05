@@ -921,4 +921,119 @@ use Symfony\Component\HttpFoundation\RequestStack;
             return $row['sportType'];
         }, $qb->getQuery()->getArrayResult());
     }
+
+    public function getAthletePerformanceData(int $userId): array
+    {
+        $overallStats = $this->createQueryBuilder('a')
+            ->select('
+            COUNT(a.id) as totalActivities,
+            SUM(a.distance) as totalDistance,
+            SUM(a.movingTime) as totalDuration,
+            AVG(a.averageSpeed) as avgSpeed,
+            MAX(a.maxSpeed) as topSpeed,
+            AVG(a.averageHeartrate) as avgHeartrate,
+            AVG(a.averageWatts) as avgPower,
+            SUM(a.totalElevationGain) as totalElevation
+        ')
+            ->where('a.stravaUser = :userId')
+            ->setParameter('userId', $userId)
+            ->getQuery()
+            ->getSingleResult();
+
+        $bestPerformancesByType = $this->createQueryBuilder('a')
+            ->select('
+            a.sportType,
+            MAX(a.distance) as bestDistance,
+            MIN(a.movingTime / a.distance * 1000) as bestPace
+        ')
+            ->where('a.stravaUser = :userId')
+            ->andWhere('a.distance > 0')
+            ->setParameter('userId', $userId)
+            ->groupBy('a.sportType')
+            ->getQuery()
+            ->getResult();
+
+        $threeMonthsAgo = new \DateTime('-3 months');
+        $recentActivities = $this->createQueryBuilder('a')
+            ->select('a.startDateLocal, a.averageSpeed, a.distance')
+            ->where('a.stravaUser = :userId')
+            ->andWhere('a.startDateLocal >= :startDate')
+            ->setParameter('userId', $userId)
+            ->setParameter('startDate', $threeMonthsAgo)
+            ->orderBy('a.startDateLocal', 'ASC')
+            ->getQuery()
+            ->getResult();
+
+        $progressData = [];
+        foreach ($recentActivities as $activity) {
+            if ($activity['startDateLocal'] instanceof \DateTimeInterface) {
+                $year = $activity['startDateLocal']->format('Y');
+                $month = $activity['startDateLocal']->format('n');
+                $key = $year.'-'.$month;
+
+                if (!isset($progressData[$key])) {
+                    $progressData[$key] = [
+                        'year' => (int) $year,
+                        'month' => (int) $month,
+                        'totalSpeed' => 0,
+                        'speedCount' => 0,
+                        'monthlyDistance' => 0,
+                    ];
+                }
+
+                if ($activity['averageSpeed'] > 0) {
+                    $progressData[$key]['totalSpeed'] += $activity['averageSpeed'];
+                    ++$progressData[$key]['speedCount'];
+                }
+
+                $progressData[$key]['monthlyDistance'] += $activity['distance'];
+            }
+        }
+
+        $monthlyData = [];
+        foreach ($progressData as $data) {
+            $monthlyData[] = [
+                'year' => $data['year'],
+                'month' => $data['month'],
+                'monthlyAvgSpeed' => $data['speedCount'] > 0 ? $data['totalSpeed'] / $data['speedCount'] : 0,
+                'monthlyDistance' => $data['monthlyDistance'],
+            ];
+        }
+
+        $weeklyActivities = $this->createQueryBuilder('a')
+            ->select('a.startDateLocal')
+            ->where('a.stravaUser = :userId')
+            ->andWhere('a.startDateLocal >= :startDate')
+            ->setParameter('userId', $userId)
+            ->setParameter('startDate', $threeMonthsAgo)
+            ->orderBy('a.startDateLocal', 'ASC')
+            ->getQuery()
+            ->getResult();
+
+        $regularityData = [];
+        foreach ($weeklyActivities as $activity) {
+            if ($activity['startDateLocal'] instanceof \DateTimeInterface) {
+                $year = $activity['startDateLocal']->format('Y');
+                $week = $activity['startDateLocal']->format('W');
+                $key = $year.'-'.$week;
+
+                if (!isset($regularityData[$key])) {
+                    $regularityData[$key] = [
+                        'year' => (int) $year,
+                        'week' => (int) $week,
+                        'activitiesPerWeek' => 0,
+                    ];
+                }
+
+                ++$regularityData[$key]['activitiesPerWeek'];
+            }
+        }
+
+        return [
+            'overallStats' => $overallStats,
+            'bestPerformances' => $bestPerformancesByType,
+            'progression' => array_values($monthlyData),
+            'regularity' => array_values($regularityData),
+        ];
+    }
 }

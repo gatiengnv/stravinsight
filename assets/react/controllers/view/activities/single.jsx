@@ -19,6 +19,7 @@ import Split from "../../components/Split";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import SegmentEfforts from "../../components/SegmentEfforts";
 import Graphics from "../../components/Graphics";
+import AiBubble from "../../components/AiBubble";
 
 export default function ActivityDetails({activity, activityDetail, activityStream}) {
     const [activeTab, setActiveTab] = useState("map");
@@ -157,6 +158,7 @@ export default function ActivityDetails({activity, activityDetail, activityStrea
                 <div className="mt-4">
                     {activeTab === 'map' && hasMap && (
                         <Card>
+                            <AiBubble url={`/api/activities/${activity.id}/overview`}/>
                             <Map
                                 encodedPolyline={activityDetail.mapPolyline}
                                 averagePace={activity.averagePace || ""}
@@ -172,12 +174,14 @@ export default function ActivityDetails({activity, activityDetail, activityStrea
 
                     {activeTab === 'splitsmetric' && hasSplitsMetric && (
                         <Card title="Splits">
+                            <AiBubble url={`/api/activities/${activity.id}/splits`}/>
                             <Split splitsMetric={activityDetail.splitsMetric}
                                    splitsStandard={activityDetail.splitsStandard}/>
                         </Card>
                     )}
                     {activeTab === 'charts' && activityStream && (
                         <Card title="Chart">
+                            <AiBubble url={`/api/activities/${activity.id}/charts`}/>
                             <Graphics activityStream={activityStream}/>
                         </Card>
                     )}
