@@ -20,7 +20,7 @@ export default function ActivityItem({activity}) {
                     <div className="font-medium mb-2">{activity.name}</div>
                     <div className="grid grid-cols-3 gap-2 text-xs text-center">
                         <div>
-                            <span className="block opacity-70">Temps</span>
+                            <span className="block opacity-70">Time</span>
                             <span>{activity.movingTime}</span>
                         </div>
                         <div>
