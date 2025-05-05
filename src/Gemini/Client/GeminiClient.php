@@ -11,11 +11,10 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 class GeminiClient implements Gemini
 {
     private string $apiKey;
-    private array|null $activity = null;
-    private array|null $activityDetail = null;
-    private array|null $activityStream = null;
-    private array|null $performanceData = null;
-
+    private ?array $activity = null;
+    private ?array $activityDetail = null;
+    private ?array $activityStream = null;
+    private ?array $performanceData = null;
 
     public function __construct(private readonly HttpClientInterface $httpClient)
     {
@@ -70,14 +69,12 @@ class GeminiClient implements Gemini
     /**
      * @throws ClientExceptionInterface
      */
-
     public function initActivity(array $details, array $performanceData): void
     {
         $this->activity = $details['activity'];
         $this->activityDetail = $details['activityDetail'];
         $this->activityStream = $details['activityStream'];
         $this->performanceData = $performanceData;
-
     }
 
     public function getChartsDescription(): string

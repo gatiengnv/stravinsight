@@ -10,6 +10,7 @@ export default function DateRangePicker() {
     };
 
     const [dateRange, setDateRange] = useState(getInitialParams);
+    const [selectedMonth, setSelectedMonth] = useState('');
 
     const handleDateChange = (e) => {
         const {name, value} = e.target;
@@ -17,6 +18,24 @@ export default function DateRangePicker() {
             ...prev,
             [name]: value
         }));
+    };
+
+    const handleMonthChange = (e) => {
+        const value = e.target.value;
+        setSelectedMonth(value);
+
+        if (value) {
+            const [year, month] = value.split('-');
+            const startDate = `${value}-01`;
+
+            const lastDay = new Date(parseInt(year), parseInt(month), 0).getDate();
+            const endDate = `${value}-${lastDay}`;
+
+            setDateRange({
+                startDate: startDate,
+                endDate: endDate
+            });
+        }
     };
 
     const applyDateFilter = () => {
@@ -39,6 +58,7 @@ export default function DateRangePicker() {
 
     const handleReset = () => {
         setDateRange({startDate: '', endDate: ''});
+        setSelectedMonth('');
         const url = new URL(window.location);
         url.searchParams.delete('startDate');
         url.searchParams.delete('endDate');
@@ -53,6 +73,20 @@ export default function DateRangePicker() {
                     : 'Select Date Range'}
             </label>
             <div tabIndex={0} className="dropdown-content z-[1] p-4 shadow bg-base-200 rounded-box w-96">
+                <div className="form-control mb-4">
+                    <label className="label">
+                        <span className="label-text">Select a month</span>
+                    </label>
+                    <input
+                        type="month"
+                        value={selectedMonth}
+                        onChange={handleMonthChange}
+                        className="input input-bordered"
+                    />
+                </div>
+
+                <div className="divider">OR</div>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="form-control">
                         <label className="label">

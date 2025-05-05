@@ -103,6 +103,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
                 'startDateLocal' => $activity->getStartDateLocal()?->format('Y-m-d H:i:s'),
                 'type' => $activity->getType(),
                 'summaryPolyline' => $activity->getSummaryPolyline(),
+                'totalElevationGain' => $activity->getTotalElevationGain(),
             ];
         }, $activities);
     }
@@ -175,6 +176,50 @@ use Symfony\Component\HttpFoundation\RequestStack;
         $maxElevationRecord = $maxElevationRecord->getQuery()
             ->getOneOrNullResult();
 
+        $best5kRecord = $this->createQueryBuilder('a')
+            ->select('a.movingTime, a.startDateLocal, a.distance')
+            ->where('a.stravaUser = :userId')
+            ->andWhere('a.distance >= 5000')
+            ->orderBy('a.movingTime', 'ASC')
+            ->setParameter('userId', $userId)
+            ->setMaxResults(1);
+        $this->applyFilter($best5kRecord);
+        $best5kRecord = $best5kRecord->getQuery()
+            ->getOneOrNullResult();
+
+        $best10kRecord = $this->createQueryBuilder('a')
+            ->select('a.movingTime, a.startDateLocal, a.distance')
+            ->where('a.stravaUser = :userId')
+            ->andWhere('a.distance >= 10000')
+            ->orderBy('a.movingTime', 'ASC')
+            ->setParameter('userId', $userId)
+            ->setMaxResults(1);
+        $this->applyFilter($best10kRecord);
+        $best10kRecord = $best10kRecord->getQuery()
+            ->getOneOrNullResult();
+
+        $bestHalfMarathonRecord = $this->createQueryBuilder('a')
+            ->select('a.movingTime, a.startDateLocal, a.distance')
+            ->where('a.stravaUser = :userId')
+            ->andWhere('a.distance >= 21097')
+            ->orderBy('a.movingTime', 'ASC')
+            ->setParameter('userId', $userId)
+            ->setMaxResults(1);
+        $this->applyFilter($bestHalfMarathonRecord);
+        $bestHalfMarathonRecord = $bestHalfMarathonRecord->getQuery()
+            ->getOneOrNullResult();
+
+        $bestMarathonRecord = $this->createQueryBuilder('a')
+            ->select('a.movingTime, a.startDateLocal, a.distance')
+            ->where('a.stravaUser = :userId')
+            ->andWhere('a.distance >= 42195')
+            ->orderBy('a.movingTime', 'ASC')
+            ->setParameter('userId', $userId)
+            ->setMaxResults(1);
+        $this->applyFilter($bestMarathonRecord);
+        $bestMarathonRecord = $bestMarathonRecord->getQuery()
+            ->getOneOrNullResult();
+
         return [
             [
                 'name' => 'Max distance',
@@ -195,6 +240,26 @@ use Symfony\Component\HttpFoundation\RequestStack;
                 'name' => 'Max elevation gain',
                 'value' => ($maxElevationRecord['totalElevationGain'] ?? 0).' m',
                 'date' => $maxElevationRecord ? $maxElevationRecord['startDateLocal']->format('Y-m-d H:i:s') : null,
+            ],
+            [
+                'name' => '5 km',
+                'value' => isset($best5kRecord['movingTime']) ? gmdate('H:i:s', $best5kRecord['movingTime']) : '-',
+                'date' => $best5kRecord ? $best5kRecord['startDateLocal']->format('Y-m-d H:i:s') : null,
+            ],
+            [
+                'name' => '10 km',
+                'value' => isset($best10kRecord['movingTime']) ? gmdate('H:i:s', $best10kRecord['movingTime']) : '-',
+                'date' => $best10kRecord ? $best10kRecord['startDateLocal']->format('Y-m-d H:i:s') : null,
+            ],
+            [
+                'name' => 'Half Marathon',
+                'value' => isset($bestHalfMarathonRecord['movingTime']) ? gmdate('H:i:s', $bestHalfMarathonRecord['movingTime']) : '-',
+                'date' => $bestHalfMarathonRecord ? $bestHalfMarathonRecord['startDateLocal']->format('Y-m-d H:i:s') : null,
+            ],
+            [
+                'name' => 'Marathon',
+                'value' => isset($bestMarathonRecord['movingTime']) ? gmdate('H:i:s', $bestMarathonRecord['movingTime']) : '-',
+                'date' => $bestMarathonRecord ? $bestMarathonRecord['startDateLocal']->format('Y-m-d H:i:s') : null,
             ],
         ];
     }
