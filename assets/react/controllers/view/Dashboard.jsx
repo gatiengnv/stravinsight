@@ -90,20 +90,24 @@ export default function Dashboard({
                         className="tab-content bg-base-200 border-base-300 rounded-box p-4 md:p-6 text-base-content mt-[-1px]"
                     >
                         <div className="flex flex-col lg:flex-row gap-6">
-                            <Card title={"Recent Activities"} subtitle={"Your last 5 activities"}>
-                                {activities.map((activity, index) => (
-                                    <ActivityItem key={index} activity={activity}/>
-                                ))}
-                                <div className="mt-4 text-center">
-                                    <a href="/activities" className="btn btn-primary">See All Activities</a>
-                                </div>
-                            </Card>
+                            <div className="lg:w-2/3">
+                                <Card title={"Recent Activities"} subtitle={"Your last 7 activities"}>
+                                    {activities.map((activity, index) => (
+                                        <ActivityItem key={index} activity={activity}/>
+                                    ))}
+                                    <div className="mt-4 text-center">
+                                        <a href="/activities" className="btn btn-primary">See All Activities</a>
+                                    </div>
+                                </Card>
+                            </div>
 
-                            <Card title={"Personal Records"} subtitle={"Your best performances"}>
-                                {records.map((record, index) => (
-                                    <RecordItem key={index} record={record}/>
-                                ))}
-                            </Card>
+                            <div className="lg:w-1/3">
+                                <Card title={"Personal Records"} subtitle={"Your best performances"}>
+                                    {records.map((record, index) => (
+                                        <RecordItem key={index} record={record}/>
+                                    ))}
+                                </Card>
+                            </div>
                         </div>
                     </div>
 

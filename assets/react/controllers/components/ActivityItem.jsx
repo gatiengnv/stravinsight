@@ -28,7 +28,7 @@ export default function ActivityItem({activity}) {
                             <span>{activity.distance}</span>
                         </div>
                         <div>
-                            <span className="block opacity-70">D+</span>
+                            <span className="block opacity-70">Elevation</span>
                             <span>{activity.totalElevationGain || "0"} m</span>
                         </div>
                     </div>
@@ -41,7 +41,7 @@ export default function ActivityItem({activity}) {
                     <div className="text-right">{activity.movingTime}</div>
                     <div className="text-right flex items-center justify-end gap-3">
                         <span>{activity.distance}</span>
-                        <span className="text-xs opacity-70">D+ {activity.totalElevationGain || "0"} m</span>
+                        <span className="text-xs opacity-70">{activity.totalElevationGain || "0"} m</span>
                     </div>
                 </div>
             </div>

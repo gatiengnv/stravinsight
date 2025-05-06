@@ -31,7 +31,7 @@ export default function List({activities: initialActivities}) {
                 setLoading(false);
             })
             .catch(error => {
-                console.error('Erreur lors du chargement des activités:', error);
+                console.error('Error while loading data:', error);
                 setLoading(false);
             });
     };
@@ -53,6 +53,14 @@ export default function List({activities: initialActivities}) {
     return (
         <Drawer title={"Activities"}>
             <Card>
+                <div
+                    className="hidden md:grid md:grid-cols-6 md:items-center text-sm font-bold p-3 border-b bg-base-200">
+                    <div className="text-left">Type</div>
+                    <div className="text-left">Date</div>
+                    <div className="text-left col-span-2">Name</div>
+                    <div className="text-right">Duration</div>
+                    <div className="text-right">Distance / Elevation</div>
+                </div>
                 {activities.map((activity, index) => (
                     <ActivityItem key={index} activity={activity}/>
                 ))}

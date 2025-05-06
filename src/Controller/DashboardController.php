@@ -15,11 +15,12 @@ use Symfony\Component\Routing\Attribute\Route;
 final class DashboardController extends AbstractController
 {
     public function __construct(
-        private readonly Strava $client,
-        private readonly Security $security,
-        private readonly ActivityRepository $activityRepository,
+        private readonly Strava              $client,
+        private readonly Security            $security,
+        private readonly ActivityRepository  $activityRepository,
         private readonly StravaImportService $stravaImportService,
-    ) {
+    )
+    {
     }
 
     /**
@@ -29,7 +30,7 @@ final class DashboardController extends AbstractController
     public function index(): Response
     {
         $activityDifference = $this->activityRepository->getActivityDifferenceFromLastMonth($this->security->getUser()->getId());
-        $activities = $this->activityRepository->getActivities($this->security->getUser()->getId());
+        $activities = $this->activityRepository->getActivities($this->security->getUser()->getId(), 7);
         $records = $this->activityRepository->getActivityRecords($this->security->getUser()->getId());
         $hearthRatePercentage = $this->activityRepository->getHeartRateZoneDistribution($this->security->getUser()->getId());
         $fitnessTrend = $this->activityRepository->getWeeklyFitnessData($this->security->getUser()->getId(), 10);

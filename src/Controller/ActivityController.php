@@ -10,6 +10,7 @@ use App\Service\StravaImportService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -86,43 +87,44 @@ final class ActivityController extends AbstractController
     #[Route('/api/activities/{id}/overview', methods: ['GET'])]
     public function getActivityOverview(int $id, EntityManagerInterface $entityManager): Response
     {
-        $activity = $entityManager->getRepository(Activity::class)->find($id);
-        if (!$activity) {
-            return $this->json(['error' => 'Sorry there is a problem'], Response::HTTP_NOT_FOUND);
+        $AIresponse = $this->getOrCreateAiResponse($entityManager, $id);
+
+        if (!$AIresponse->getOverview()) {
+            $details = $this->stravaImportService->importUserActivityDetails($id, $entityManager);
+            $this->geminiClient->initActivity($details, $this->activityRepository->getAthletePerformanceData(
+                $this->security->getUser()->getId()
+            ));
+
+            $overviewDescription = $this->geminiClient->getOverviewDescription();
+
+            $AIresponse->setOverview($overviewDescription);
+
+            $entityManager->flush();
         }
 
-        $AIresponse = $entityManager->getRepository(AIresponse::class)->findOneBy(['activity' => $activity]);
+        return $this->json(
+            trim(str_replace(["\n", "\r"], ' ', $AIresponse->getOverview()))
+        );
+    }
 
-        if ($AIresponse !== null && $AIresponse->getOverview() !== null) {
-            return $this->json(
-                trim(str_replace(["\n", "\r"], ' ', $AIresponse->getOverview()))
-            );
-        }
+    private function getOrCreateAiResponse(EntityManagerInterface $entityManager, int $id): AIresponse|JsonResponse
+    {
+        $AIresponse = $entityManager->getRepository(AIresponse::class)->findOneBy(['activity' => $id]);
 
-        $details = $this->stravaImportService->importUserActivityDetails($id, $entityManager);
-        $this->geminiClient->initActivity($details, $this->activityRepository->getAthletePerformanceData(
-            $this->security->getUser()->getId()));
+        if (!$AIresponse) {
+            $activity = $entityManager->getRepository(Activity::class)->find($id);
+            if (!$activity) {
+                return $this->json(['error' => 'Sorry there is a problem'], Response::HTTP_NOT_FOUND);
+            }
 
-        $overviewDescription = $this->geminiClient->getOverviewDescription();
-
-        if ($AIresponse === null) {
             $AIresponse = new AIresponse();
             $AIresponse->setActivity($activity);
             $entityManager->persist($AIresponse);
         }
 
-        $AIresponse->setOverview($overviewDescription);
-        $entityManager->flush();
-
-        return $this->json(
-            trim(str_replace(["\n", "\r"], ' ', $overviewDescription))
-        );
+        return $AIresponse;
     }
 
-    /**
-     * @throws TransportExceptionInterface
-     * @throws ClientExceptionInterface
-     */
     /**
      * @throws TransportExceptionInterface
      * @throws ClientExceptionInterface
@@ -130,36 +132,23 @@ final class ActivityController extends AbstractController
     #[Route('/api/activities/{id}/charts', methods: ['GET'])]
     public function getActivityCharts(int $id, EntityManagerInterface $entityManager): Response
     {
-        $activity = $entityManager->getRepository(Activity::class)->find($id);
-        if (!$activity) {
-            return $this->json(['error' => 'Sorry there is a problem'], Response::HTTP_NOT_FOUND);
+        $AIresponse = $this->getOrCreateAiResponse($entityManager, $id);
+
+        if (!$AIresponse->getCharts()) {
+            $details = $this->stravaImportService->importUserActivityDetails($id, $entityManager);
+            $this->geminiClient->initActivity($details, $this->activityRepository->getAthletePerformanceData(
+                $this->security->getUser()->getId()
+            ));
+
+            $chartDescription = $this->geminiClient->getChartsDescription();
+
+            $AIresponse->setCharts($chartDescription);
+
+            $entityManager->flush();
         }
-
-        $AIresponse = $entityManager->getRepository(AIresponse::class)->findOneBy(['activity' => $activity]);
-
-        if ($AIresponse !== null && $AIresponse->getCharts() !== null) {
-            return $this->json(
-                trim(str_replace(["\n", "\r"], ' ', $AIresponse->getCharts()))
-            );
-        }
-
-        $details = $this->stravaImportService->importUserActivityDetails($id, $entityManager);
-        $this->geminiClient->initActivity($details, $this->activityRepository->getAthletePerformanceData(
-            $this->security->getUser()->getId()));
-
-        $chartsDescription = $this->geminiClient->getChartsDescription();
-
-        if ($AIresponse === null) {
-            $AIresponse = new AIresponse();
-            $AIresponse->setActivity($activity);
-            $entityManager->persist($AIresponse);
-        }
-
-        $AIresponse->setCharts($chartsDescription);
-        $entityManager->flush();
 
         return $this->json(
-            trim(str_replace(["\n", "\r"], ' ', $chartsDescription))
+            trim(str_replace(["\n", "\r"], ' ', $AIresponse->getCharts()))
         );
     }
 
@@ -170,36 +159,23 @@ final class ActivityController extends AbstractController
     #[Route('/api/activities/{id}/splits', methods: ['GET'])]
     public function getActivitySplits(int $id, EntityManagerInterface $entityManager): Response
     {
-        $activity = $entityManager->getRepository(Activity::class)->find($id);
-        if (!$activity) {
-            return $this->json(['error' => 'Sorry there is a problem'], Response::HTTP_NOT_FOUND);
+        $AIresponse = $this->getOrCreateAiResponse($entityManager, $id);
+
+        if (!$AIresponse->getSplits()) {
+            $details = $this->stravaImportService->importUserActivityDetails($id, $entityManager);
+            $this->geminiClient->initActivity($details, $this->activityRepository->getAthletePerformanceData(
+                $this->security->getUser()->getId()
+            ));
+
+            $splitDescription = $this->geminiClient->getSplitDescription();
+
+            $AIresponse->setSplits($splitDescription);
+
+            $entityManager->flush();
         }
-
-        $AIresponse = $entityManager->getRepository(AIresponse::class)->findOneBy(['activity' => $activity]);
-
-        if ($AIresponse !== null && $AIresponse->getSplits() !== null) {
-            return $this->json(
-                trim(str_replace(["\n", "\r"], ' ', $AIresponse->getSplits()))
-            );
-        }
-
-        $details = $this->stravaImportService->importUserActivityDetails($id, $entityManager);
-        $this->geminiClient->initActivity($details, $this->activityRepository->getAthletePerformanceData(
-            $this->security->getUser()->getId()));
-
-        $splitsDescription = $this->geminiClient->getSplitDescription();
-
-        if ($AIresponse === null) {
-            $AIresponse = new AIresponse();
-            $AIresponse->setActivity($activity);
-            $entityManager->persist($AIresponse);
-        }
-
-        $AIresponse->setSplits($splitsDescription);
-        $entityManager->flush();
 
         return $this->json(
-            trim(str_replace(["\n", "\r"], ' ', $splitsDescription))
+            trim(str_replace(["\n", "\r"], ' ', $AIresponse->getSplits()))
         );
     }
 }
