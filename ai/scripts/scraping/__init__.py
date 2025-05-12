@@ -1,1 +1,0 @@
-from .scrap_activities import StravaActivityScrapper
