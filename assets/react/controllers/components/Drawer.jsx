@@ -86,6 +86,14 @@ export default function Drawer({
                             Heatmap
                         </a>
                     </li>
+                    <li>
+                        <a
+                            href="/predict"
+                            className={title === "Predict" ? "active bg-primary text-primary-content" : ""}
+                        >
+                            Time prediction
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>

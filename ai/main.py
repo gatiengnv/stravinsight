@@ -1,8 +1,10 @@
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 
 from models.predict_duration_model import load_model, predict_duration
 
 app = Flask(__name__)
+CORS(app)
 
 model, scaler = load_model('models/predict_duration_model.pth')
 

@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Predict your next time{% endblock %}
+
+{% block body %}
+    <div {{ react_component('view/Predict', {heartRateZoneList:heartRateZone}) }}>
+        <div class="flex justify-center items-center h-screen">
+            <span class="loading loading-spinner loading-xl text-primary"></span>
+        </div>
+    </div>
+{% endblock %}
