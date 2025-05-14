@@ -12,10 +12,84 @@ export default function Predict({heartRateZoneList}) {
     const [gender, setGender] = useState("");
     const [prediction, setPrediction] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [activities, setActivities] = useState([]);
+    const [selectedMarathon, setSelectedMarathon] = useState(null);
+    const [routeType, setRouteType] = useState("predefined");
+
     const mapRef = useRef(null);
     const leafletMapRef = useRef(null);
     const polylineRef = useRef(null);
     const pointsRef = useRef([]);
+
+    const famousMarathons = [
+        {
+            name: "Paris Marathon",
+            distance: 42.195,
+            elevation: 162,
+            description: "Iconic course through the French capital"
+        },
+        {
+            name: "Berlin Marathon",
+            distance: 42.195,
+            elevation: 21,
+            description: "Fast and flat course, ideal for records"
+        },
+        {
+            name: "New York Marathon",
+            distance: 42.195,
+            elevation: 358,
+            description: "Challenging course through the five boroughs"
+        },
+        {
+            name: "Boston Marathon",
+            distance: 42.195,
+            elevation: 235,
+            description: "The oldest annual marathon with challenging hills"
+        },
+        {
+            name: "London Marathon",
+            distance: 42.195,
+            elevation: 108,
+            description: "Fast course along the Thames"
+        },
+        {
+            name: "Half Marathon",
+            distance: 21.1,
+            elevation: 80,
+            description: "Standard half marathon distance"
+        },
+        {
+            name: "10K Race",
+            distance: 10,
+            elevation: 40,
+            description: "Standard road race distance"
+        }
+    ];
+
+    const selectMarathon = (marathon) => {
+        setSelectedMarathon(marathon);
+        setDistance(marathon.distance);
+        setElevation(marathon.elevation);
+        loadSimilarActivities(marathon.distance);
+    };
+
+    const loadSimilarActivities = (distance) => {
+        setLoading(true);
+        const distanceInMeters = Math.round(distance * 1000);
+        fetch(`/api/similar-activities/${distanceInMeters}`, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                setActivities(data.activities);
+                setLoading(false);
+            })
+            .catch(error => {
+                setLoading(false);
+            });
+    };
 
     useEffect(() => {
         const cleanupMap = () => {
@@ -27,12 +101,12 @@ export default function Predict({heartRateZoneList}) {
             polylineRef.current = null;
         };
 
-        if (currentStep !== 0) {
+        if (currentStep !== 0 || routeType !== "custom") {
             cleanupMap();
             return;
         }
 
-        if (currentStep === 0 && mapRef.current && !leafletMapRef.current) {
+        if (currentStep === 0 && routeType === "custom" && mapRef.current && !leafletMapRef.current) {
             cleanupMap();
 
             const map = L.map(mapRef.current).setView([46.603354, 1.888334], 6);
@@ -60,7 +134,7 @@ export default function Predict({heartRateZoneList}) {
         }
 
         return cleanupMap;
-    }, [currentStep]);
+    }, [currentStep, routeType]);
 
     useEffect(() => {
         if (points.length > 1) {
@@ -76,6 +150,7 @@ export default function Predict({heartRateZoneList}) {
 
             totalDistance = totalDistance / 1000;
             setDistance(totalDistance);
+            loadSimilarActivities(totalDistance);
             setElevation(Math.round(totalDistance * 15));
         }
     }, [points]);
@@ -108,7 +183,7 @@ export default function Predict({heartRateZoneList}) {
 
             try {
                 const response = await fetch(
-                    `http://localhost:5000/predict_duration?distance=${distanceInMeters}&elevation_gain=${elevation}&heart_rate=${heartRate}&gender=${gender}`
+                    `http://localhost:5000/predict_duration?distance=${distanceInMeters}&elevation_gain=${elevation}&heart_rate=${heartRate}&gender=${gender}&similar_activities=${JSON.stringify(activities)}`,
                 );
 
                 if (!response.ok) {
@@ -127,9 +202,7 @@ export default function Predict({heartRateZoneList}) {
     };
 
     const handlePrevious = () => {
-        if (currentStep === 3) {
-            setCurrentStep(0);
-        } else if (currentStep > 0) {
+        if (currentStep > 0) {
             setCurrentStep(currentStep - 1);
         }
     };
@@ -147,16 +220,59 @@ export default function Predict({heartRateZoneList}) {
             case 0:
                 return (
                     <div className="p-4">
-                        <h2 className="text-xl font-bold mb-4">Draw your route</h2>
-                        <p className="mb-4">Click on the map to draw your route and get distance and elevation</p>
+                        <h2 className="text-xl font-bold mb-4">Choose your route</h2>
 
-                        {currentStep === 0 && (
-                            <div className="h-96 w-full mb-4">
-                                <div ref={mapRef} className="h-full w-full rounded-box"></div>
+                        <div className="tabs tabs-boxed mb-4">
+                            <a
+                                className={`tab ${routeType === "predefined" ? 'tab-active' : ''}`}
+                                onClick={() => {
+                                    setRouteType("predefined");
+                                    clearRoute();
+                                }}
+                            >
+                                Predefined courses
+                            </a>
+                            <a
+                                className={`tab ${routeType === "custom" ? 'tab-active' : ''}`}
+                                onClick={() => {
+                                    setRouteType("custom");
+                                    setSelectedMarathon(null);
+                                }}
+                            >
+                                Custom route
+                            </a>
+                        </div>
+
+                        {routeType === "predefined" ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+                                {famousMarathons.map((marathon, index) => (
+                                    <div
+                                        key={index}
+                                        className={`card p-4 cursor-pointer border transition-all hover:shadow-md
+                                            ${selectedMarathon?.name === marathon.name ? "border-primary bg-base-200" : "border-base-300"}`}
+                                        onClick={() => selectMarathon(marathon)}
+                                    >
+                                        <h3 className="font-bold">{marathon.name}</h3>
+                                        <div className="text-sm">
+                                            <p>{marathon.distance} km • {marathon.elevation} m elevation gain</p>
+                                            <p className="opacity-70">{marathon.description}</p>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
+                        ) : (
+                            <>
+                                <p className="mb-4">Click on the map to draw your route</p>
+                                <div className="h-96 w-full mb-4">
+                                    <div ref={mapRef} className="h-full w-full rounded-box"></div>
+                                </div>
+                                <button className="btn btn-secondary mr-2" onClick={clearRoute}>
+                                    Clear
+                                </button>
+                            </>
                         )}
 
-                        {points.length > 1 && (
+                        {(points.length > 1 || selectedMarathon) && (
                             <div className="stats shadow mt-4 mb-4 w-full">
                                 <div className="stat">
                                     <div className="stat-title">Distance</div>
@@ -168,10 +284,6 @@ export default function Predict({heartRateZoneList}) {
                                 </div>
                             </div>
                         )}
-
-                        <button className="btn btn-secondary mr-2" onClick={clearRoute}>
-                            Clear
-                        </button>
                     </div>
                 );
 
@@ -182,7 +294,7 @@ export default function Predict({heartRateZoneList}) {
                         <p className="mb-4">At what intensity will you run?</p>
 
                         <div className="grid grid-cols-3 gap-4">
-                            {heartRateZoneList.map((zone, index) => (
+                            {(heartRateZoneList.slice(0, heartRateZoneList.length - 1)).map((zone, index) => (
                                 <div key={index}
                                      className={`card p-4 cursor-pointer border ${heartRateZone === zone ? "border-primary" : "border-base-300"}`}
                                      onClick={() => setHeartRateZone(zone)}
@@ -242,7 +354,7 @@ export default function Predict({heartRateZoneList}) {
                                 </div>
 
                                 <div className="text-sm opacity-70">
-                                    <p>Intensity: {heartRateZone === "chill" ? "Low" : heartRateZone === "medium" ? "Medium" : "High"}</p>
+                                    <p>Intensity: {heartRateZone}</p>
                                     <p>Gender: {gender === "M" ? "Male" : "Female"}</p>
                                 </div>
                             </div>
@@ -277,13 +389,13 @@ export default function Predict({heartRateZoneList}) {
                         onClick={handlePrevious}
                         disabled={currentStep === 0}
                     >
-                        {currentStep === 3 ? "New Prediction" : "Previous"}
+                        Previous
                     </button>
 
                     <button
                         className="btn btn-primary"
                         onClick={handleNext}
-                        disabled={(currentStep === 0 && points.length < 2) ||
+                        disabled={(currentStep === 0 && points.length < 2 && !selectedMarathon) ||
                             (currentStep === 1 && !heartRateZone) ||
                             (currentStep === 2 && !gender) ||
                             currentStep === 3 ||
