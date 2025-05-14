@@ -22,7 +22,7 @@ class AIresponse
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $splits = null;
-    
+
     public function getId(): ?int
     {
         return $this->activity?->getId();

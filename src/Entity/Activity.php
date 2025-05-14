@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\ActivityRepository;
-use DateTimeInterface;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -36,10 +35,10 @@ class Activity
     private ?int $workoutType = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?DateTimeInterface $startDate = null;
+    private ?\DateTimeInterface $startDate = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?DateTimeInterface $startDateLocal = null;
+    private ?\DateTimeInterface $startDateLocal = null;
 
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     private ?string $timezone = null;
@@ -260,24 +259,24 @@ class Activity
         return $this;
     }
 
-    public function getStartDate(): ?DateTimeInterface
+    public function getStartDate(): ?\DateTimeInterface
     {
         return $this->startDate;
     }
 
-    public function setStartDate(?DateTimeInterface $startDate): static
+    public function setStartDate(?\DateTimeInterface $startDate): static
     {
         $this->startDate = $startDate;
 
         return $this;
     }
 
-    public function getStartDateLocal(): ?DateTimeInterface
+    public function getStartDateLocal(): ?\DateTimeInterface
     {
         return $this->startDateLocal;
     }
 
-    public function setStartDateLocal(?DateTimeInterface $startDateLocal): static
+    public function setStartDateLocal(?\DateTimeInterface $startDateLocal): static
     {
         $this->startDateLocal = $startDateLocal;
 
@@ -823,7 +822,7 @@ class Activity
         return $this;
     }
 
-    public function getAIresponse(): ?ActivityStream
+    public function getAIresponse(): ?AIresponse
     {
         return $this->AIresponse;
     }
