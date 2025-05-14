@@ -38,7 +38,7 @@ class GeminiClient implements Gemini
         );
     }
 
-    public function makeRequest(string $prompt): string
+    public function makeRequest(string $prompt): ?string
     {
         $response = $this->httpClient->request(
             'POST',
@@ -62,7 +62,7 @@ class GeminiClient implements Gemini
         try {
             return json_decode($response->getContent(), true)['candidates'][0]['content']['parts'][0]['text'];
         } catch (ClientExceptionInterface|RedirectionExceptionInterface|ServerExceptionInterface|TransportExceptionInterface $e) {
-            return $e->getMessage();
+            return null;
         }
     }
 

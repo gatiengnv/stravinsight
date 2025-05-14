@@ -82,7 +82,7 @@ export default function ActivityDetails({activity, activityDetail, activityStrea
                     <div className="flex items-center gap-3">
                         {activity.type === "Run" && <FontAwesomeIcon icon={faPersonRunning}/>}
                         <h1 className="text-2xl font-bold text-base-content">
-                            {activity.name || 'Activité sans nom'}
+                            {activity.name || 'My activity'}
                         </h1>
                     </div>
                     <div className="text-sm text-base-content opacity-80 text-left sm:text-right">

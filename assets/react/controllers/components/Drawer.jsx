@@ -18,7 +18,7 @@ export default function Drawer({
     };
 
     return (
-        <div className="drawer">
+        <div className="drawer z-[9999]">
             <input id="my-drawer" type="checkbox" className="drawer-toggle"/>
             <div className="drawer-content">
                 <div className="flex justify-between items-center p-4">
@@ -59,7 +59,7 @@ export default function Drawer({
                 </div>
                 {children}
             </div>
-            <div className="drawer-side">
+            <div className="drawer-side z-[9999]">
                 <label htmlFor="my-drawer" aria-label="close sidebar" className="drawer-overlay"></label>
                 <ul className="menu bg-base-200 text-base-content min-h-full w-80 p-4">
                     <li>
@@ -89,7 +89,7 @@ export default function Drawer({
                     <li>
                         <a
                             href="/predict"
-                            className={title === "Predict" ? "active bg-primary text-primary-content" : ""}
+                            className={title === "Time Prediction" ? "active bg-primary text-primary-content" : ""}
                         >
                             Time prediction
                         </a>

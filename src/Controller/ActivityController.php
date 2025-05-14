@@ -23,7 +23,7 @@ final class ActivityController extends AbstractController
         private readonly Security            $security,
         private readonly ActivityRepository  $activityRepository,
         private readonly StravaImportService $stravaImportService,
-        private GeminiClient                 $geminiClient,
+        private readonly GeminiClient        $geminiClient,
     )
     {
     }
@@ -146,7 +146,6 @@ final class ActivityController extends AbstractController
 
             $entityManager->flush();
         }
-
         return $this->json(
             trim(str_replace(["\n", "\r"], ' ', $AIresponse->getCharts()))
         );
@@ -173,7 +172,6 @@ final class ActivityController extends AbstractController
 
             $entityManager->flush();
         }
-
         return $this->json(
             trim(str_replace(["\n", "\r"], ' ', $AIresponse->getSplits()))
         );
