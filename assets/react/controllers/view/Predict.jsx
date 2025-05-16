@@ -95,8 +95,10 @@ export default function Predict({heartRateZoneList}) {
 
             map.on('click', (e) => {
                 const newPoint = {lat: e.latlng.lat, lng: e.latlng.lng};
-                const updatedPoints = [...points, newPoint];
-                setPoints(updatedPoints);
+
+                setPoints(currentPoints => {
+                    return [...currentPoints, newPoint];
+                });
 
                 polylineRef.current.addLatLng([newPoint.lat, newPoint.lng]);
             });
@@ -110,7 +112,7 @@ export default function Predict({heartRateZoneList}) {
                 polylineRef.current = null;
             }
         };
-    }, [routeType, mapRef.current]);
+    }, [routeType]);
 
     const clearRoute = () => {
         setPoints([]);

@@ -1,8 +1,11 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello HomeController!{% endblock %}
+{% block title %}Stravinsight{% endblock %}
 
 {% block body %}
-    <img src="{{ asset('img/strava.png') }}" alt="Strava Logo" class="w-1/7"/>
-    <a href="{{ path('connect_strava_start') }}">Login with Strava</a>
+    <div {{ react_component('view/landing/page') }}>
+        <div class="flex justify-center items-center h-screen">
+            <span class="loading loading-spinner loading-xl text-primary"></span>
+        </div>
+    </div>
 {% endblock %}
