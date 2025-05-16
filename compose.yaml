@@ -74,8 +74,6 @@ services:
         restart: unless-stopped
         volumes:
             - ./ai:/app
-        ports:
-            - "5000:5000"
         depends_on:
             - php
 
