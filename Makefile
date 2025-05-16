@@ -1,6 +1,6 @@
 .PHONY: reset watch-front reset-start-dev
-NODE_PKG_MANAGER = npm
-
+NODE_PKG_MANAGER = pnpm
+DC_PHP_CONSOLE = docker compose exec php bin/console
 
 watch-front:
 	$(NODE_PKG_MANAGER) install
@@ -13,7 +13,7 @@ reset:
 reset-start-dev: reset watch-front
 
 reset-db:
-	docker compose exec php bin/console doctrine:database:drop --force --if-exists
-	docker compose exec php bin/console doctrine:database:create
-	docker compose exec php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration
+	$(DC_PHP_CONSOLE) doctrine:database:drop --force --if-exists
+	$(DC_PHP_CONSOLE) doctrine:database:create
+	$(DC_PHP_CONSOLE) doctrine:migrations:migrate --no-interaction --allow-no-migration
 

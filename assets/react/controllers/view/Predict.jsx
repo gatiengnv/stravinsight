@@ -1,13 +1,13 @@
-import React, {useEffect, useRef, useState} from "react";
-import Drawer from "../components/Drawer";
-import Step from "../components/Step";
-import Road from "../components/Road";
-import StepPagination from "../components/StepPagination";
-import HeartRateZoneSelector from "../components/HeartRateZoneSelector";
-import GenderSelector from "../components/GenderSelector";
-import PredictionResult from "../components/PredictionResult";
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { useEffect, useRef, useState } from "react";
+import Drawer from "../components/Drawer";
+import GenderSelector from "../components/GenderSelector";
+import HeartRateZoneSelector from "../components/HeartRateZoneSelector";
+import PredictionResult from "../components/PredictionResult";
+import Road from "../components/Road";
+import Step from "../components/Step";
+import StepPagination from "../components/StepPagination";
 
 export default function Predict({heartRateZoneList}) {
     const [currentStep, setCurrentStep] = useState(0);
@@ -193,11 +193,17 @@ export default function Predict({heartRateZoneList}) {
                 heartRate = 150;
             }
 
-            const distanceInMeters = distance * 1000;
-
             try {
+                const parameters = {
+                    distance: distance * 1000,
+                    elevation_gain: elevation,
+                    heart_rate: heartRate,
+                    gender,
+                    similar_activities: JSON.stringify(activities),
+                }
+
                 const response = await fetch(
-                    `http://localhost:5000/predict_duration?distance=${distanceInMeters}&elevation_gain=${elevation}&heart_rate=${heartRate}&gender=${gender}&similar_activities=${JSON.stringify(activities)}`,
+                    `/ai/predict_duration?${new URLSearchParams(parameters).toString()}`,
                 );
 
                 if (!response.ok) {

@@ -44,21 +44,24 @@
 	vulcain
 
 	{$CADDY_SERVER_EXTRA_DIRECTIVES}
-
-	# Disable Topics tracking if not enabled explicitly: https://github.com/jkarlin/topics
-	header ?Permissions-Policy "browsing-topics=()"
-
-    reverse_proxy /ai* http://python:5000
-
-	@phpRoute {
-		not path /.well-known/mercure*
-		not file {path}
+	handle_path /ai/* {
+		reverse_proxy http://python:5000
 	}
-	rewrite @phpRoute index.php
 
-	@frontController path index.php
-	php @frontController
-	file_server {
-		hide *.php
+	handle {
+		# Disable Topics tracking if not enabled explicitly: https://github.com/jkarlin/topics
+		header ?Permissions-Policy "browsing-topics=()"
+
+		@phpRoute {
+			not path /.well-known/mercure*
+			not file {path}
+		}
+		rewrite @phpRoute index.php
+
+		@frontController path index.php
+		php @frontController
+		file_server {
+			hide *.php
+		}
 	}
 }
