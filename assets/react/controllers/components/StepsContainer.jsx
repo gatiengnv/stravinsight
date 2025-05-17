@@ -4,7 +4,7 @@ export default function StepsContaienr() {
     return (
         <section className="bg-gradient-to-br from-base-200/50 to-base-100 py-24 relative">
             <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
-            <div className="container relative">
+            <div className="container relative mx-auto">
                 <div className="mx-auto mb-16 max-w-2xl text-center">
                             <span
                                 className="inline-block px-4 py-1 rounded-full bg-blue-100 text-blue-800 font-medium text-sm mb-4">HOW IT WORKS</span>

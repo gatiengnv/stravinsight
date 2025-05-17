@@ -6,7 +6,7 @@ export default function AvatarContainer() {
         <section
             className="bg-gradient-to-r from-orange-500 to-primary py-24 text-white relative overflow-hidden">
             <div className="absolute inset-0 bg-pattern opacity-10"></div>
-            <div className="container relative">
+            <div className="container relative mx-auto">
                 <div className="mx-auto max-w-3xl text-center">
                             <span
                                 className="inline-block px-4 py-1 rounded-full bg-white/20 backdrop-blur-sm text-white font-medium text-sm mb-4">READY TO START</span>

@@ -3,7 +3,7 @@ import QuoteItem from "./QuoteItem";
 export default function QuotesContainer() {
     return (
         <section className="py-20 bg-gradient-to-b from-base-100 to-orange-50/30">
-            <div className="container">
+            <div className="container mx-auto">
                 <div className="mx-auto mb-16 max-w-2xl text-center">
                             <span
                                 className="inline-block px-4 py-1 rounded-full bg-green-100 text-green-800 font-medium text-sm mb-4">TESTIMONIALS</span>

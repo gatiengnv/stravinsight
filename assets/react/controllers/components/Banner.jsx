@@ -3,7 +3,7 @@ import {ArrowRight} from "lucide-react";
 export default function Banner() {
     return (
         <section
-            className="relative overflow-hidden bg-gradient-to-b from-orange-50 via-orange-100/30 to-base-100 py-24 md:py-36">
+            className="relative overflow-hidden bg-gradient-to-b from-orange-50 via-orange-100/30 to-base-100 py-24 md:py-36 mx-auto">
             <div className="absolute top-0 left-0 w-full h-full">
                 <div
                     className="absolute opacity-20 -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-primary to-orange-300 rounded-full blur-3xl"></div>
@@ -11,7 +11,7 @@ export default function Banner() {
                     className="absolute opacity-10 top-60 -left-20 w-72 h-72 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full blur-3xl"></div>
             </div>
 
-            <div className="container relative flex flex-col items-center text-center">
+            <div className="container relative flex flex-col items-center text-center mx-auto">
                         <span
                             className="bg-orange-100 text-orange-800 px-4 py-1 rounded-full text-sm font-semibold mb-8 shadow-sm animate-pulse">Optimize Your Training</span>
                 <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">

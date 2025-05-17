@@ -7,7 +7,7 @@ export default function FeaturesContainer() {
         <section className="py-20 relative overflow-hidden">
             <div
                 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
-            <div className="container relative">
+            <div className="container relative mx-auto">
                 <div className="mx-auto mb-16 max-w-2xl text-center">
                             <span
                                 className="inline-block px-4 py-1 rounded-full bg-orange-100 text-orange-800 font-medium text-sm mb-4">FEATURES</span>

@@ -4,7 +4,7 @@ export default function FaqContainer() {
     return (
         <section className="py-20 relative overflow-hidden">
             <div className="absolute -top-40 right-0 w-72 h-72 bg-primary/10 rounded-full blur-3xl"></div>
-            <div className="container relative">
+            <div className="container relative mx-auto">
                 <div className="mx-auto mb-16 max-w-2xl text-center">
                             <span
                                 className="inline-block px-4 py-1 rounded-full bg-purple-100 text-purple-800 font-medium text-sm mb-4">FREQUENTLY ASKED QUESTIONS</span>
