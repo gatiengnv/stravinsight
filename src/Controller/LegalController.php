@@ -15,7 +15,7 @@ final class LegalController extends AbstractController
             'title' => 'Terms of Use',
             'text' => '
                 <h2>Terms of Use for StravInsight</h2>
-                <p>Last Updated: ' . date('F d, Y') . '</p>
+                <p>Last Updated: '.date('F d, Y').'</p>
 
                 <h3>1. Acceptance of Terms</h3>
                 <p>Welcome to StravInsight. By accessing or using our platform, you agree to be bound by these Terms of Use. If you do not agree to these terms, please do not use our service.</p>
@@ -63,7 +63,7 @@ final class LegalController extends AbstractController
             'title' => 'Privacy Policy',
             'text' => '
                 <h2>Privacy Policy for StravInsight</h2>
-                <p>Last Updated: ' . date('F d, Y') . '</p>
+                <p>Last Updated: '.date('F d, Y').'</p>
 
                 <h3>1. Introduction</h3>
                 <p>At StravInsight, we respect your privacy and are committed to protecting your personal data. This Privacy Policy explains how we collect, use, and safeguard your information when you use our platform.</p>
@@ -131,7 +131,7 @@ final class LegalController extends AbstractController
             'title' => 'Legal Notice',
             'text' => '
                 <h2>Legal Notice</h2>
-                <p>Last Updated: ' . date('F d, Y') . '</p>
+                <p>Last Updated: '.date('F d, Y').'</p>
 
                 <h3>Company Information</h3>
                 <p>StravInsight is operated by:</p>

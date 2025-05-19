@@ -74,6 +74,32 @@ final class ActivityController extends AbstractController
         ]);
     }
 
+    #[Route('/activities/{id}/initialize', name: 'app_activities_initialize')]
+    public function initialize(
+        int $id,
+    ): Response {
+        return $this->render('activity/initialize.html.twig', [
+            'endpoint' => "/api/activity/$id/sync",
+            'redirectUrl' => "/activities/$id",
+        ]);
+    }
+
+    #[Route('/api/activity/{id}/sync', name: 'app_activity_synchronize')]
+    public function synchronize(
+        int $id,
+        EntityManagerInterface $entityManager,
+    ): Response {
+        $details = $this->stravaImportService->importUserActivityDetails($id, $entityManager);
+        $this->geminiClient->initActivity($details, $this->activityRepository->getAthletePerformanceData(
+            $this->security->getUser()->getId()));
+
+        return $this->json(
+            [
+                'status' => 'success',
+            ]
+        );
+    }
+
     /**
      * @throws TransportExceptionInterface
      * @throws ClientExceptionInterface

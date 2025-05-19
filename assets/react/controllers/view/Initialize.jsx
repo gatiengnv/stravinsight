@@ -1,9 +1,13 @@
 import {useEffect} from "react";
 
-export default function Initialize() {
+export default function Initialize({
+                                       endpoint = '/api/activities/sync',
+                                       redirectUrl = '/dashboard',
+                                       loadingText = 'Loading your activities'
+                                   }) {
     const fetchActivities = async () => {
         const response = await fetch(
-            `/api/activities/sync`,
+            `${endpoint}`,
         );
 
         if (!response.ok) {
@@ -17,7 +21,7 @@ export default function Initialize() {
         fetchActivities()
             .then((data) => {
                 if (data.status === "success") {
-                    window.location.href = "/dashboard";
+                    window.location.href = `${redirectUrl}`;
                 }
             })
             .catch((error) => {
@@ -28,7 +32,7 @@ export default function Initialize() {
     return (
         <div className="flex flex-col justify-center items-center h-screen gap-4">
             <span className="loading loading-spinner loading-lg text-primary"></span>
-            <p className="text-lg font-medium animate-pulse">Loading your activities</p>
+            <p className="text-lg font-medium animate-pulse">{loadingText}</p>
             <progress className="progress progress-primary w-56"></progress>
         </div>
     )

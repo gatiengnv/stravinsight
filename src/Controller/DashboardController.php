@@ -15,12 +15,11 @@ use Symfony\Component\Routing\Attribute\Route;
 final class DashboardController extends AbstractController
 {
     public function __construct(
-        private readonly Strava              $client,
-        private readonly Security            $security,
-        private readonly ActivityRepository  $activityRepository,
+        private readonly Strava $client,
+        private readonly Security $security,
+        private readonly ActivityRepository $activityRepository,
         private readonly StravaImportService $stravaImportService,
-    )
-    {
+    ) {
     }
 
     /**

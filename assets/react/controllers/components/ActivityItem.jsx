@@ -10,7 +10,7 @@ export default function ActivityItem({activity}) {
     }) || '';
 
     return (
-        <a href={"/activities/" + activity.id}>
+        <a href={"/activities/" + `${activity.id}` + "/initialize"}>
             <div className="p-3 border-b hover:bg-base-200 transition-colors">
                 <div className="block md:hidden">
                     <div className="flex justify-between items-center mb-1">
