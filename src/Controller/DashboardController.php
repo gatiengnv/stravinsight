@@ -15,11 +15,12 @@ use Symfony\Component\Routing\Attribute\Route;
 final class DashboardController extends AbstractController
 {
     public function __construct(
-        private readonly Strava $client,
-        private readonly Security $security,
-        private readonly ActivityRepository $activityRepository,
+        private readonly Strava              $client,
+        private readonly Security            $security,
+        private readonly ActivityRepository  $activityRepository,
         private readonly StravaImportService $stravaImportService,
-    ) {
+    )
+    {
     }
 
     /**
@@ -54,7 +55,13 @@ final class DashboardController extends AbstractController
     }
 
     #[Route('/initialize', name: 'app_initialize')]
-    public function initialize(Request $request): Response
+    public function initialize(): Response
+    {
+        return $this->render('dashboard/initialize.html.twig');
+    }
+
+    #[Route('/api/activities/sync', name: 'app_synchronize')]
+    public function synchronize(Request $request): Response
     {
         $accessToken = $request->getSession()->get('access_token');
 
@@ -62,7 +69,11 @@ final class DashboardController extends AbstractController
 
         $this->security->login($user);
 
-        return $this->redirectToRoute('app_dashboard');
+        return $this->json(
+            [
+                'status' => 'success',
+            ]
+        );
     }
 
     #[Route('/logout', name: 'app_logout')]

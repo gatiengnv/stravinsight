@@ -28,17 +28,12 @@ export default function FaqContainer() {
                         {
                             question: "How often is my Strava data synced?",
                             answer:
-                                "Your data is synced automatically whenever you upload a new activity to Strava. You can also manually trigger a sync from your dashboard at any time.",
+                                "Your data is synced automatically whenever you log in to our platform. You can also manually sync your data at any time by clicking the 'Sync Now' button in your account settings.",
                         },
                         {
                             question: "Do you offer a free trial?",
                             answer:
                                 "Our platform is completely free to use! We believe in making advanced analytics accessible to all athletes.",
-                        },
-                        {
-                            question: "Can I export my data?",
-                            answer:
-                                "Yes, you can export your data and analysis in various formats including CSV, PDF, and GPX files for further analysis or sharing with your coach.",
                         },
                         {
                             question: "Is there a limit to how many activities I can analyze?",

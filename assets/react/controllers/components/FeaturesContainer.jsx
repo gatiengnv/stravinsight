@@ -1,4 +1,4 @@
-import {BarChart2, Clock, Compass, Heart, MapPin, Zap} from "lucide-react";
+import {BarChart2, Clock, Heart, MapPin, MessageSquare, Zap} from "lucide-react";
 import FeatureItem from "./FeatureItem";
 
 export default function FeaturesContainer() {
@@ -55,10 +55,10 @@ export default function FeaturesContainer() {
                             color: "from-pink-400 to-rose-500"
                         },
                         {
-                            title: "Route Discovery",
+                            title: "AI commentary",
                             description:
-                                "Discover popular routes in your area and get recommendations based on your preferences.",
-                            icon: Compass,
+                                "Get AI generated commentary on your activities, providing insights and motivation.",
+                            icon: MessageSquare,
                             color: "from-purple-400 to-violet-500"
                         },
                     ].map((feature, i) => (
