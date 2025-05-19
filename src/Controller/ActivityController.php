@@ -14,23 +14,26 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
+#[IsGranted('IS_AUTHENTICATED')]
 final class ActivityController extends AbstractController
 {
     public function __construct(
-        private readonly Security $security,
-        private readonly ActivityRepository $activityRepository,
+        private readonly Security            $security,
+        private readonly ActivityRepository  $activityRepository,
         private readonly StravaImportService $stravaImportService,
-        private readonly GeminiClient $geminiClient,
-    ) {
+        private readonly GeminiClient        $geminiClient,
+    )
+    {
     }
 
     #[Route('/activities', name: 'app_activity')]
     public function index(Request $request): Response
     {
-        $page = max(1, (int) $request->query->get('page', 1));
+        $page = max(1, (int)$request->query->get('page', 1));
         $limit = 25;
         $offset = ($page - 1) * $limit;
 
@@ -60,9 +63,10 @@ final class ActivityController extends AbstractController
      */
     #[Route('/activities/{id}', requirements: ['id' => '\d+'])]
     public function show(
-        int $id,
+        int                    $id,
         EntityManagerInterface $entityManager,
-    ): Response {
+    ): Response
+    {
         $details = $this->stravaImportService->importUserActivityDetails($id, $entityManager);
         $this->geminiClient->initActivity($details, $this->activityRepository->getAthletePerformanceData(
             $this->security->getUser()->getId()));
@@ -77,7 +81,8 @@ final class ActivityController extends AbstractController
     #[Route('/activities/{id}/initialize', name: 'app_activities_initialize')]
     public function initialize(
         int $id,
-    ): Response {
+    ): Response
+    {
         return $this->render('activity/initialize.html.twig', [
             'endpoint' => "/api/activity/$id/sync",
             'redirectUrl' => "/activities/$id",
@@ -86,9 +91,10 @@ final class ActivityController extends AbstractController
 
     #[Route('/api/activity/{id}/sync', name: 'app_activity_synchronize')]
     public function synchronize(
-        int $id,
+        int                    $id,
         EntityManagerInterface $entityManager,
-    ): Response {
+    ): Response
+    {
         $details = $this->stravaImportService->importUserActivityDetails($id, $entityManager);
         $this->geminiClient->initActivity($details, $this->activityRepository->getAthletePerformanceData(
             $this->security->getUser()->getId()));

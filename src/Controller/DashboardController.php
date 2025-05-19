@@ -11,20 +11,23 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 final class DashboardController extends AbstractController
 {
     public function __construct(
-        private readonly Strava $client,
-        private readonly Security $security,
-        private readonly ActivityRepository $activityRepository,
+        private readonly Strava              $client,
+        private readonly Security            $security,
+        private readonly ActivityRepository  $activityRepository,
         private readonly StravaImportService $stravaImportService,
-    ) {
+    )
+    {
     }
 
     /**
      * @throws GuzzleException
      */
+    #[IsGranted('IS_AUTHENTICATED')]
     #[Route('/dashboard', name: 'app_dashboard')]
     public function index(): Response
     {
