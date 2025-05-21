@@ -10,7 +10,9 @@ export default function FeatureItem({feature}) {
                 <h3 className="card-title text-xl">{feature.title}</h3>
                 <p className="text-base-content/70">{feature.description}</p>
                 <div className="card-actions justify-end mt-4">
-                    <button className="btn btn-sm btn-ghost text-primary">Learn more →
+                    <button className="btn btn-sm btn-ghost text-primary" onClick={() => {
+                        document.location.href = "/connect/strava"
+                    }}>Learn more →
                     </button>
                 </div>
             </div>

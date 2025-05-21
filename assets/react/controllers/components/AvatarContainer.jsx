@@ -28,7 +28,10 @@ export default function AvatarContainer() {
                             <ArrowRight className="h-5 w-5 ml-1"/>
                         </button>
                         <button
-                            className="btn btn-lg bg-transparent border-2 border-white/80 text-white hover:bg-white/10 transform hover:-translate-y-1 transition-all">
+                            className="btn btn-lg bg-transparent border-2 border-white/80 text-white hover:bg-white/10 transform hover:-translate-y-1 transition-all"
+                            onClick={() => {
+                                document.location.href = "/connect/strava"
+                            }}>
                             Learn More
                         </button>
                     </div>

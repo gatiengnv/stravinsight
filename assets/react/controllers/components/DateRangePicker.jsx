@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 
 export default function DateRangePicker() {
     const getInitialParams = () => {
@@ -11,6 +11,16 @@ export default function DateRangePicker() {
 
     const [dateRange, setDateRange] = useState(getInitialParams);
     const [selectedMonth, setSelectedMonth] = useState('');
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     const handleDateChange = (e) => {
         const {name, value} = e.target;
@@ -66,13 +76,14 @@ export default function DateRangePicker() {
     };
 
     return (
-        <div className="dropdown dropdown-bottom dropdown-end">
+        <div className={`dropdown dropdown-bottom ${isMobile ? 'dropdown-center' : 'dropdown-end'}`}>
             <label tabIndex={0} className="btn btn-outline m-1">
                 {dateRange.startDate || dateRange.endDate
                     ? `${dateRange.startDate || 'Any'} to ${dateRange.endDate || 'Any'}`
                     : 'Select Date Range'}
             </label>
-            <div tabIndex={0} className="dropdown-content z-[1] p-4 shadow bg-base-200 rounded-box w-96">
+            <div tabIndex={0}
+                 className="dropdown-content z-[1] p-4 shadow bg-base-200 rounded-box w-full md:w-96 max-w-[95vw]">
                 <div className="form-control mb-4">
                     <label className="label">
                         <span className="label-text">Select a month</span>

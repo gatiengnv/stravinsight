@@ -92,7 +92,8 @@ export default function ActivityDetails({activity, activityDetail, activityStrea
 
                 {hasStats && (
                     <Card className="mb-6">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                        <div
+                            className="stats stats-vertical md:grid-cols-2 lg:grid-cols-3 xl:stats-horizontal shadow w-full">
                             {activity.distance && (
                                 <StatItem title="Distance" value={activity.distance + " km"} icon={faLocationDot}/>
                             )}

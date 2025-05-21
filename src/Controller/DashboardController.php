@@ -16,12 +16,11 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class DashboardController extends AbstractController
 {
     public function __construct(
-        private readonly Strava              $client,
-        private readonly Security            $security,
-        private readonly ActivityRepository  $activityRepository,
+        private readonly Strava $client,
+        private readonly Security $security,
+        private readonly ActivityRepository $activityRepository,
         private readonly StravaImportService $stravaImportService,
-    )
-    {
+    ) {
     }
 
     /**
@@ -31,16 +30,21 @@ final class DashboardController extends AbstractController
     #[Route('/dashboard', name: 'app_dashboard')]
     public function index(): Response
     {
-        $activityDifference = $this->activityRepository->getActivityDifferenceFromLastMonth($this->security->getUser()->getId());
-        $activities = $this->activityRepository->getActivities($this->security->getUser()->getId(), 7);
-        $records = $this->activityRepository->getActivityRecords($this->security->getUser()->getId());
-        $hearthRatePercentage = $this->activityRepository->getHeartRateZoneDistribution($this->security->getUser()->getId());
-        $fitnessTrend = $this->activityRepository->getWeeklyFitnessData($this->security->getUser()->getId(), 10);
-        $achievements = $this->activityRepository->getAchievements($this->security->getUser()->getId());
-        $weeklyDistance = $this->activityRepository->getWeeklyDistance($this->security->getUser()->getId());
-        $activityCountBySport = $this->activityRepository->getActivityCountBySport($this->security->getUser()->getId());
-        $stats = $this->activityRepository->getActivityStats($this->security->getUser()->getId());
-        $userSports = $this->activityRepository->getAthleteSports($this->security->getUser()->getId());
+        $user = $this->security->getUser();
+        $userId = $user?->getId();
+
+        $this->activityRepository->setUserId($userId);
+
+        $activityDifference = $this->activityRepository->getActivityDifferenceFromLastMonth();
+        $activities = $this->activityRepository->getActivities(7);
+        $records = $this->activityRepository->getActivityRecords();
+        $hearthRatePercentage = $this->activityRepository->getHeartRateZoneDistribution();
+        $fitnessTrend = $this->activityRepository->getWeeklyFitnessData();
+        $achievements = $this->activityRepository->getAchievements();
+        $weeklyDistance = $this->activityRepository->getWeeklyDistance();
+        $activityCountBySport = $this->activityRepository->getActivityCountBySport();
+        $stats = $this->activityRepository->getActivityStats();
+        $userSports = $this->activityRepository->getAthleteSports();
 
         return $this->render('dashboard/index.html.twig',
             [

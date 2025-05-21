@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 
-export default function Header() {
+export default function Header({isLoggedIn}) {
     const [scrolled, setScrolled] = useState(false);
 
     useEffect(() => {
@@ -38,7 +38,7 @@ export default function Header() {
                 <div>
                     <a className="btn btn-primary hover:scale-105 transition-all shadow-lg hover:shadow-primary/30"
                        href="/connect/strava">
-                        Login with Strava
+                        {isLoggedIn ? "Dashboard" : "Login with Strava"}
                     </a>
                 </div>
             </div>

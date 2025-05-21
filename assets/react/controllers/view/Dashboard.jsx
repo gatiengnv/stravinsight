@@ -63,7 +63,7 @@ export default function Dashboard({
     return (
         <Drawer title={"Dashboard"} showDateRangePicker={true} showSportPicker={true} userSports={userSports}>
             <div className="p-4 md:p-6">
-                <div className="stats stats-vertical lg:stats-horizontal shadow mb-6 w-full">
+                <div className="stats stats-vertical md:grid-cols-2 lg:grid-cols-3 xl:stats-horizontal shadow w-full">
                     <StatItem icon={faBolt} title={"Total Activities"} value={stats.totalActivities}
                               desc={(activityDifference.activityDifference > 0 ? "+" : "") + activityDifference.activityDifference + " from last month"}/>
                     <StatItem icon={faLocationDot} title={"Total Distance"} value={stats.totalDistance + " km"}

@@ -9,7 +9,6 @@ use App\Repository\ActivityRepository;
 use App\Service\StravaImportService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,7 +21,6 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 final class ActivityController extends AbstractController
 {
     public function __construct(
-        private readonly Security            $security,
         private readonly ActivityRepository  $activityRepository,
         private readonly StravaImportService $stravaImportService,
         private readonly GeminiClient        $geminiClient,
@@ -38,7 +36,6 @@ final class ActivityController extends AbstractController
         $offset = ($page - 1) * $limit;
 
         $activities = $this->activityRepository->getActivities(
-            $this->security->getUser()->getId(),
             $limit,
             $offset
         );
@@ -68,8 +65,7 @@ final class ActivityController extends AbstractController
     ): Response
     {
         $details = $this->stravaImportService->importUserActivityDetails($id, $entityManager);
-        $this->geminiClient->initActivity($details, $this->activityRepository->getAthletePerformanceData(
-            $this->security->getUser()->getId()));
+        $this->geminiClient->initActivity($details, $this->activityRepository->getAthletePerformanceData());
 
         return $this->render('activity/show.html.twig', [
             'activity' => $details['activity'],
@@ -96,8 +92,7 @@ final class ActivityController extends AbstractController
     ): Response
     {
         $details = $this->stravaImportService->importUserActivityDetails($id, $entityManager);
-        $this->geminiClient->initActivity($details, $this->activityRepository->getAthletePerformanceData(
-            $this->security->getUser()->getId()));
+        $this->geminiClient->initActivity($details, $this->activityRepository->getAthletePerformanceData());
 
         return $this->json(
             [
@@ -121,9 +116,7 @@ final class ActivityController extends AbstractController
 
         if (!$AIresponse->getOverview()) {
             $details = $this->stravaImportService->importUserActivityDetails($id, $entityManager);
-            $this->geminiClient->initActivity($details, $this->activityRepository->getAthletePerformanceData(
-                $this->security->getUser()->getId()
-            ));
+            $this->geminiClient->initActivity($details, $this->activityRepository->getAthletePerformanceData());
 
             $overviewDescription = $this->geminiClient->getOverviewDescription();
 
@@ -166,9 +159,7 @@ final class ActivityController extends AbstractController
 
         if (!$AIresponse->getCharts()) {
             $details = $this->stravaImportService->importUserActivityDetails($id, $entityManager);
-            $this->geminiClient->initActivity($details, $this->activityRepository->getAthletePerformanceData(
-                $this->security->getUser()->getId()
-            ));
+            $this->geminiClient->initActivity($details, $this->activityRepository->getAthletePerformanceData());
 
             $chartDescription = $this->geminiClient->getChartsDescription();
 
@@ -193,9 +184,7 @@ final class ActivityController extends AbstractController
 
         if (!$AIresponse->getSplits()) {
             $details = $this->stravaImportService->importUserActivityDetails($id, $entityManager);
-            $this->geminiClient->initActivity($details, $this->activityRepository->getAthletePerformanceData(
-                $this->security->getUser()->getId()
-            ));
+            $this->geminiClient->initActivity($details, $this->activityRepository->getAthletePerformanceData());
 
             $splitDescription = $this->geminiClient->getSplitDescription();
 
