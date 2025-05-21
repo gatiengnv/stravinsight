@@ -3,18 +3,48 @@ import ActivityItem from "../../components/ActivityItem";
 import Card from "../../components/Card";
 import Drawer from "../../components/Drawer";
 
-export default function List({activities: initialActivities}) {
+export default function List({activities: initialActivities, userSports}) {
     const [activities, setActivities] = useState(initialActivities);
     const [loading, setLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
+    const [dateFilters, setDateFilters] = useState({
+        startDate: null,
+        endDate: null
+    });
+
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const startDate = urlParams.get('startDate');
+        const endDate = urlParams.get('endDate');
+        const sport = urlParams.get('sport');
+
+        if (startDate || endDate || sport) {
+            setDateFilters({
+                startDate: startDate,
+                endDate: endDate,
+                sport: sport
+            });
+        }
+    }, []);
 
     const loadMoreActivities = () => {
         if (loading || !hasMore) return;
 
         setLoading(true);
 
-        fetch(`/activities?page=${currentPage + 1}`, {
+        let url = `/activities?page=${currentPage + 1}`;
+        if (dateFilters.startDate) {
+            url += `&startDate=${dateFilters.startDate}`;
+        }
+        if (dateFilters.endDate) {
+            url += `&endDate=${dateFilters.endDate}`;
+        }
+        if (dateFilters.sport) {
+            url += `&sport=${dateFilters.sport}`;
+        }
+
+        fetch(url, {
             headers: {
                 'X-Requested-With': 'XMLHttpRequest'
             }
@@ -48,10 +78,10 @@ export default function List({activities: initialActivities}) {
         return () => {
             window.removeEventListener('scroll', handleScroll);
         };
-    }, [loading, hasMore, currentPage]);
+    }, [loading, hasMore, currentPage, dateFilters]);
 
     return (
-        <Drawer title={"Activities"}>
+        <Drawer title={"Activities"} showDateRangePicker={true} showSportPicker={true} userSports={userSports}>
             <Card>
                 <div
                     className="hidden md:grid md:grid-cols-6 md:items-center text-sm font-bold p-3 border-b bg-base-200">

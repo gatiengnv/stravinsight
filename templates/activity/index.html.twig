@@ -3,7 +3,7 @@
 {% block title %}Activities{% endblock %}
 
 {% block body %}
-    <div {{ react_component('view/activities/list', {activities:activities}) }}>
+    <div {{ react_component('view/activities/list', {activities:activities, userSports:userSports}) }}>
         <div class="flex justify-center items-center h-screen">
             <span class="loading loading-spinner loading-xl text-primary"></span>
         </div>

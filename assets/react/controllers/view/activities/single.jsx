@@ -20,6 +20,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import SegmentEfforts from "../../components/SegmentEfforts";
 import Graphics from "../../components/Graphics";
 import AiBubble from "../../components/AiBubble";
+import SportIcon from "../../components/SportIcon";
 
 export default function ActivityDetails({activity, activityDetail, activityStream}) {
     const [activeTab, setActiveTab] = useState("map");
@@ -80,7 +81,7 @@ export default function ActivityDetails({activity, activityDetail, activityStrea
             <div className="p-4 md:p-6">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-6">
                     <div className="flex items-center gap-3">
-                        {activity.type === "Run" && <FontAwesomeIcon icon={faPersonRunning}/>}
+                        {activity.type && <SportIcon type={activity.type}/>}
                         <h1 className="text-2xl font-bold text-base-content">
                             {activity.name || 'My activity'}
                         </h1>

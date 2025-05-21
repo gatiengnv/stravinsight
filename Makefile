@@ -16,4 +16,3 @@ reset-db:
 	$(DC_PHP_CONSOLE) doctrine:database:drop --force --if-exists
 	$(DC_PHP_CONSOLE) doctrine:database:create
 	$(DC_PHP_CONSOLE) doctrine:migrations:migrate --no-interaction --allow-no-migration
-

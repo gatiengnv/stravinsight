@@ -95,16 +95,34 @@ use Symfony\Component\HttpFoundation\RequestStack;
         ];
     }
 
-    public function getActivities(int $limit = 10, int $offset = 0): array
+    public function getActivities(int $limit = 10, int $offset = 0, ?string $startDate = null, ?string $endDate = null, ?string $sport = null): array
     {
-        $activities = $this->createQueryBuilder('a')
+        $qb = $this->createQueryBuilder('a')
             ->where('a.stravaUser = :userId')
             ->setParameter('userId', $this->userId)
             ->orderBy('a.startDateLocal', 'DESC')
             ->setMaxResults($limit)
-            ->setFirstResult($offset)
-            ->getQuery()
-            ->getResult();
+            ->setFirstResult($offset);
+
+        if ($startDate) {
+            $startDateObj = new DateTime($startDate);
+            $qb->andWhere('a.startDateLocal >= :startDate')
+                ->setParameter('startDate', $startDateObj);
+        }
+
+        if ($endDate) {
+            $endDateObj = new DateTime($endDate);
+            $endDateObj->setTime(23, 59, 59);
+            $qb->andWhere('a.startDateLocal <= :endDate')
+                ->setParameter('endDate', $endDateObj);
+        }
+
+        if ($sport) {
+            $qb->andWhere('a.sportType = :sport')
+                ->setParameter('sport', $sport);
+        }
+
+        $activities = $qb->getQuery()->getResult();
 
         return array_map(function (Activity $activity) {
             return [
@@ -135,6 +153,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
         }
 
         return [
+            'type' => $activity->getType(),
             'id' => $activity->getId(),
             'name' => $activity->getName(),
             'distance' => round($activity->getDistance() / 1000, 2),
@@ -144,7 +163,6 @@ use Symfony\Component\HttpFoundation\RequestStack;
             'startDateLocal' => $activity->getStartDateLocal()?->format('Y-m-d H:i:s'),
             'totalElevationGain' => $activity->getTotalElevationGain(),
             'averageHeartrate' => $activity->getAverageHeartrate(),
-            'type' => $activity->getType(),
         ];
     }
 

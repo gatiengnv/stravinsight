@@ -1,6 +1,6 @@
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { useEffect, useRef, useState } from "react";
+import {useEffect, useRef, useState} from "react";
 import Drawer from "../components/Drawer";
 import GenderSelector from "../components/GenderSelector";
 import HeartRateZoneSelector from "../components/HeartRateZoneSelector";
@@ -79,40 +79,47 @@ export default function Predict({heartRateZoneList}) {
     };
 
     useEffect(() => {
-        if (routeType === "custom" && mapRef.current && !leafletMapRef.current) {
-            const map = L.map(mapRef.current).setView([46.603354, 1.888334], 6);
+        if (currentStep === 0 && routeType === "custom") {
+            setTimeout(() => {
+                if (leafletMapRef.current) {
+                    leafletMapRef.current.remove();
+                    leafletMapRef.current = null;
+                    polylineRef.current = null;
+                }
 
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            }).addTo(map);
+                if (mapRef.current) {
+                    const map = L.map(mapRef.current).setView([46.603354, 1.888334], 6);
 
-            leafletMapRef.current = map;
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    }).addTo(map);
 
-            polylineRef.current = L.polyline([], {
-                color: '#4285F4',
-                weight: 4
-            }).addTo(map);
+                    leafletMapRef.current = map;
 
-            map.on('click', (e) => {
-                const newPoint = {lat: e.latlng.lat, lng: e.latlng.lng};
+                    polylineRef.current = L.polyline([], {
+                        color: '#4285F4',
+                        weight: 4
+                    }).addTo(map);
 
-                setPoints(currentPoints => {
-                    return [...currentPoints, newPoint];
-                });
+                    if (points.length > 1) {
+                        points.forEach(point => {
+                            polylineRef.current.addLatLng([point.lat, point.lng]);
+                        });
+                    }
 
-                polylineRef.current.addLatLng([newPoint.lat, newPoint.lng]);
-            });
+                    map.on('click', (e) => {
+                        const newPoint = {lat: e.latlng.lat, lng: e.latlng.lng};
+
+                        setPoints(currentPoints => {
+                            return [...currentPoints, newPoint];
+                        });
+
+                        polylineRef.current.addLatLng([newPoint.lat, newPoint.lng]);
+                    });
+                }
+            }, 100);
         }
-
-        return () => {
-            if (leafletMapRef.current) {
-                leafletMapRef.current.off('click');
-                leafletMapRef.current.remove();
-                leafletMapRef.current = null;
-                polylineRef.current = null;
-            }
-        };
-    }, [routeType]);
+    }, [currentStep, routeType]);
 
     const clearRoute = () => {
         setPoints([]);
@@ -229,6 +236,27 @@ export default function Predict({heartRateZoneList}) {
 
     const resetPrediction = () => {
         setCurrentStep(0);
+
+        if (leafletMapRef.current) {
+            leafletMapRef.current.off('click');
+            leafletMapRef.current.remove();
+            leafletMapRef.current = null;
+            polylineRef.current = null;
+        }
+
+        if (routeType === "custom") {
+            setRouteType("predefined");
+            setTimeout(() => {
+                setRouteType("custom");
+            }, 50);
+        }
+
+        setPrediction(null);
+        if (!selectedMarathon) {
+            setPoints([]);
+            setDistance(0);
+            setElevation(0);
+        }
     };
 
     const renderStep = () => {

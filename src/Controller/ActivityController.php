@@ -31,13 +31,21 @@ final class ActivityController extends AbstractController
     #[Route('/activities', name: 'app_activity')]
     public function index(Request $request): Response
     {
+        $userSports = $this->activityRepository->getAthleteSports();
         $page = max(1, (int)$request->query->get('page', 1));
         $limit = 25;
         $offset = ($page - 1) * $limit;
 
+        $startDate = $request->query->get('startDate');
+        $endDate = $request->query->get('endDate');
+        $sport = $request->query->get('sport');
+
         $activities = $this->activityRepository->getActivities(
             $limit,
-            $offset
+            $offset,
+            $startDate,
+            $endDate,
+            $sport
         );
 
         if ($request->isXmlHttpRequest()) {
@@ -51,6 +59,7 @@ final class ActivityController extends AbstractController
         return $this->render('activity/index.html.twig', [
             'activities' => $activities,
             'currentPage' => $page,
+            'userSports' => $userSports
         ]);
     }
 
