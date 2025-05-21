@@ -1,4 +1,5 @@
 @import "tailwindcss";
+
 @plugin "daisyui";
 @plugin "daisyui/theme" {
     name: "strava";
@@ -48,4 +49,8 @@
 
     background-color: var(--color-base-100);
     color: var(--color-base-content);
+}
+
+.turbo-progress-bar {
+    background-color: #fc4c02
 }
