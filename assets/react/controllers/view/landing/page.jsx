@@ -8,7 +8,6 @@ import AvatarContainer from "../../components/AvatarContainer";
 import Banner from "../../components/Banner";
 
 export default function LandingPage({isLoggedIn}) {
-    console.log(isLoggedIn);
     return (
         <div className="flex min-h-screen flex-col bg-gradient-to-b from-base-100 to-base-200/30">
             <Header isLoggedIn={isLoggedIn}/>

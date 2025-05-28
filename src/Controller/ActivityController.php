@@ -8,7 +8,9 @@ use App\Gemini\Client\GeminiClient;
 use App\Repository\ActivityRepository;
 use App\Service\StravaImportService;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,6 +26,7 @@ final class ActivityController extends AbstractController
         private readonly ActivityRepository  $activityRepository,
         private readonly StravaImportService $stravaImportService,
         private readonly GeminiClient        $geminiClient,
+        private readonly Security            $security,
     )
     {
     }
@@ -73,8 +76,12 @@ final class ActivityController extends AbstractController
         EntityManagerInterface $entityManager,
     ): Response
     {
-        $details = $this->stravaImportService->importUserActivityDetails($id, $entityManager);
-        $this->geminiClient->initActivity($details, $this->activityRepository->getAthletePerformanceData());
+        try {
+            $details = $this->stravaImportService->importUserActivityDetails($id, $entityManager);
+            $this->geminiClient->initActivity($details, $this->activityRepository->getAthletePerformanceData());
+        } catch (Exception $e) {
+            return $this->render('activity/error.html.twig');
+        }
 
         return $this->render('activity/show.html.twig', [
             'activity' => $details['activity'],

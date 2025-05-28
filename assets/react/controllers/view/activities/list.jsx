@@ -30,7 +30,6 @@ export default function List({activities: initialActivities, userSports}) {
 
     const loadMoreActivities = () => {
         if (loading || !hasMore) return;
-
         setLoading(true);
 
         let url = `/activities?page=${currentPage + 1}`;

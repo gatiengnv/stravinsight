@@ -14,13 +14,15 @@ final class PredictionController extends AbstractController
 {
     public function __construct(
         private readonly ActivityRepository $activityRepository,
-    ) {
+        private readonly Security           $security,
+    )
+    {
+        $this->activityRepository->setUserId($security->getUser()->getId());
     }
 
     #[Route('/predict', name: 'app_prediction')]
     public function index(Security $security): Response
     {
-        $this->activityRepository->setUserId($security->getUser()->getId());
         $hearthRatePercentage = $this->activityRepository->getHeartRateZoneDistribution();
 
         return $this->render('prediction/index.html.twig', [
