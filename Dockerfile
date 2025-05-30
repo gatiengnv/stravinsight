@@ -98,9 +98,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     npm \
     && rm -rf /var/lib/apt/lists/* \
 
-# Copy & install JS dependencies
-COPY package.json package-lock.json ./
-
 # copy sources
 COPY --link . ./
 RUN rm -Rf frankenphp/
