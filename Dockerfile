@@ -99,7 +99,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/* \
 
 # Copy & install JS dependencies
-COPY --link package.json package-lock.json ./
+COPY package.json package-lock.json ./
 RUN npm i
 
 
