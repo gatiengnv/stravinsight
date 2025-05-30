@@ -21,6 +21,7 @@ import SegmentEfforts from "../../components/SegmentEfforts";
 import Graphics from "../../components/Graphics";
 import AiBubble from "../../components/AiBubble";
 import SportIcon from "../../components/SportIcon";
+import ActivitySummary from "../../components/ActivitySummary";
 
 export default function ActivityDetails({activity, activityDetail, activityStream}) {
     const [activeTab, setActiveTab] = useState("map");
@@ -90,6 +91,8 @@ export default function ActivityDetails({activity, activityDetail, activityStrea
                         {formattedDate} {formattedTime && `at ${formattedTime}`}
                     </div>
                 </div>
+
+                <ActivitySummary activity={activity} activityDetail={activityDetail}/>
 
                 {hasStats && (
                     <Card className="mb-6">
