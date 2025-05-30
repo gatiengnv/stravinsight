@@ -100,8 +100,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Copy & install JS dependencies
 COPY package.json package-lock.json ./
-RUN npm i
-
 
 # copy sources
 COPY --link . ./
