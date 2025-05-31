@@ -51,6 +51,9 @@
     color: var(--color-base-content);
 }
 
-.turbo-progress-bar {
-    background-color: #fc4c02
+.gmnoprint:nth-of-type(2),
+.gmnoprint:nth-of-type(4),
+.gmnoprint:nth-of-type(5),
+.gm-style-cc {
+    display: none;
 }

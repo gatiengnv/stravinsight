@@ -8,7 +8,6 @@ use App\Gemini\Client\GeminiClient;
 use App\Repository\ActivityRepository;
 use App\Service\StravaImportService;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -23,19 +22,19 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 final class ActivityController extends AbstractController
 {
     public function __construct(
-        private readonly ActivityRepository  $activityRepository,
+        private readonly ActivityRepository $activityRepository,
         private readonly StravaImportService $stravaImportService,
-        private readonly GeminiClient        $geminiClient,
-        private readonly Security            $security,
-    )
-    {
+        private readonly GeminiClient $geminiClient,
+        private readonly Security $security,
+    ) {
     }
 
     #[Route('/activities', name: 'app_activity')]
     public function index(Request $request): Response
     {
+        $this->activityRepository->setUserId($this->security->getUser()->getId());
         $userSports = $this->activityRepository->getAthleteSports();
-        $page = max(1, (int)$request->query->get('page', 1));
+        $page = max(1, (int) $request->query->get('page', 1));
         $limit = 25;
         $offset = ($page - 1) * $limit;
 
@@ -62,7 +61,7 @@ final class ActivityController extends AbstractController
         return $this->render('activity/index.html.twig', [
             'activities' => $activities,
             'currentPage' => $page,
-            'userSports' => $userSports
+            'userSports' => $userSports,
         ]);
     }
 
@@ -72,14 +71,13 @@ final class ActivityController extends AbstractController
      */
     #[Route('/activities/{id}', requirements: ['id' => '\d+'])]
     public function show(
-        int                    $id,
+        int $id,
         EntityManagerInterface $entityManager,
-    ): Response
-    {
+    ): Response {
         try {
             $details = $this->stravaImportService->importUserActivityDetails($id, $entityManager);
             $this->geminiClient->initActivity($details, $this->activityRepository->getAthletePerformanceData());
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return $this->render('activity/error.html.twig');
         }
 
@@ -93,8 +91,7 @@ final class ActivityController extends AbstractController
     #[Route('/activities/{id}/initialize', name: 'app_activities_initialize')]
     public function initialize(
         int $id,
-    ): Response
-    {
+    ): Response {
         return $this->render('activity/initialize.html.twig', [
             'endpoint' => "/api/activity/$id/sync",
             'redirectUrl' => "/activities/$id",
@@ -103,10 +100,9 @@ final class ActivityController extends AbstractController
 
     #[Route('/api/activity/{id}/sync', name: 'app_activity_synchronize')]
     public function synchronize(
-        int                    $id,
+        int $id,
         EntityManagerInterface $entityManager,
-    ): Response
-    {
+    ): Response {
         $details = $this->stravaImportService->importUserActivityDetails($id, $entityManager);
         $this->geminiClient->initActivity($details, $this->activityRepository->getAthletePerformanceData());
 
