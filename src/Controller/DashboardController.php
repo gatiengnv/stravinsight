@@ -15,13 +15,18 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 final class DashboardController extends AbstractController
 {
+    private ?int $userId = null;
+
     public function __construct(
-        private readonly Strava              $client,
-        private readonly Security            $security,
-        private readonly ActivityRepository  $activityRepository,
+        private readonly Strava $client,
+        private readonly Security $security,
+        private readonly ActivityRepository $activityRepository,
         private readonly StravaImportService $stravaImportService,
-    )
-    {
+    ) {
+        $user = $this->security->getUser();
+        if ($user) {
+            $this->userId = $user->getId();
+        }
     }
 
     /**
@@ -31,21 +36,20 @@ final class DashboardController extends AbstractController
     #[Route('/dashboard', name: 'app_dashboard')]
     public function index(): Response
     {
-        $user = $this->security->getUser();
-        $userId = $user?->getId();
+        if (null === $this->userId) {
+            return $this->redirectToRoute('app_login');
+        }
 
-        $this->activityRepository->setUserId($userId);
-
-        $activityDifference = $this->activityRepository->getActivityDifferenceFromLastMonth();
-        $activities = $this->activityRepository->getActivities(7);
-        $records = $this->activityRepository->getActivityRecords();
-        $hearthRatePercentage = $this->activityRepository->getHeartRateZoneDistribution();
-        $fitnessTrend = $this->activityRepository->getWeeklyFitnessData();
-        $achievements = $this->activityRepository->getAchievements();
-        $weeklyDistance = $this->activityRepository->getWeeklyDistance();
-        $activityCountBySport = $this->activityRepository->getActivityCountBySport();
-        $stats = $this->activityRepository->getActivityStats();
-        $userSports = $this->activityRepository->getAthleteSports();
+        $activityDifference = $this->activityRepository->getActivityDifferenceFromLastMonth($this->userId);
+        $activities = $this->activityRepository->getActivities($this->userId, 7);
+        $records = $this->activityRepository->getActivityRecords($this->userId);
+        $hearthRatePercentage = $this->activityRepository->getHeartRateZoneDistribution($this->userId);
+        $fitnessTrend = $this->activityRepository->getWeeklyFitnessData($this->userId);
+        $achievements = $this->activityRepository->getAchievements($this->userId);
+        $weeklyDistance = $this->activityRepository->getWeeklyDistance($this->userId);
+        $activityCountBySport = $this->activityRepository->getActivityCountBySport($this->userId);
+        $stats = $this->activityRepository->getActivityStats($this->userId);
+        $userSports = $this->activityRepository->getAthleteSports($this->userId);
 
         return $this->render('dashboard/index.html.twig',
             [
@@ -75,6 +79,9 @@ final class DashboardController extends AbstractController
         $user = $this->stravaImportService->importUserData($accessToken);
 
         $this->security->login($user);
+        if ($user) {
+            $this->userId = $user->getId();
+        }
 
         return $this->json(
             [
@@ -87,7 +94,8 @@ final class DashboardController extends AbstractController
     public function logout(): Response
     {
         $this->client->logout();
-        $this->security->logout();
+        $this->security->logout(false);
+        $this->userId = null;
 
         return $this->redirectToRoute('app_home');
     }

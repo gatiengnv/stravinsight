@@ -12,18 +12,25 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('IS_AUTHENTICATED')]
 final class PredictionController extends AbstractController
 {
+    private ?int $userId = null;
+
     public function __construct(
         private readonly ActivityRepository $activityRepository,
-        private readonly Security           $security,
-    )
-    {
-        $this->activityRepository->setUserId($security->getUser()->getId());
+        private readonly Security $security,
+    ) {
+        $user = $this->security->getUser();
+        if ($user) {
+            $this->userId = $user->getId();
+        }
     }
 
     #[Route('/predict', name: 'app_prediction')]
-    public function index(Security $security): Response
+    public function index(): Response
     {
-        $hearthRatePercentage = $this->activityRepository->getHeartRateZoneDistribution();
+        if (null === $this->userId) {
+            return $this->redirectToRoute('app_login');
+        }
+        $hearthRatePercentage = $this->activityRepository->getHeartRateZoneDistribution($this->userId);
 
         return $this->render('prediction/index.html.twig', [
             'heartRateZone' => array_column($hearthRatePercentage, 'minmax'),
@@ -33,7 +40,10 @@ final class PredictionController extends AbstractController
     #[Route('/api/similar-activities/{distance}', name: 'app_prediction_activities')]
     public function getSimilarActivities(float $distance): Response
     {
-        $activities = $this->activityRepository->getSimilarActivities($distance);
+        if (null === $this->userId) {
+            return $this->json(['error' => 'User not authenticated'], Response::HTTP_UNAUTHORIZED);
+        }
+        $activities = $this->activityRepository->getSimilarActivities($this->userId, $distance);
 
         return $this->json([
             'activities' => $activities,

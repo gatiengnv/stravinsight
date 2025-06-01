@@ -30,8 +30,6 @@ class StravaImportService
         $userInfo = $this->client->getUserInfo();
 
         $user = $this->findOrCreateUser($userInfo);
-        $this->activityRepository->setUserId($user->getId());
-
         $this->importUserActivities($user);
 
         $this->importHeartRateZones($user);
