@@ -86,13 +86,12 @@ export default function ActivityDetails({activity, activityDetail, activityStrea
                         <h1 className="text-2xl font-bold text-base-content">
                             {activity.name || 'My activity'}
                         </h1>
+                        <ActivitySummary activity={activity} activityDetail={activityDetail}/>
                     </div>
                     <div className="text-sm text-base-content opacity-80 text-left sm:text-right">
                         {formattedDate} {formattedTime && `at ${formattedTime}`}
                     </div>
                 </div>
-
-                <ActivitySummary activity={activity} activityDetail={activityDetail}/>
 
                 {hasStats && (
                     <Card className="mb-6">

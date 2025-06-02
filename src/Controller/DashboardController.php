@@ -37,7 +37,7 @@ final class DashboardController extends AbstractController
     public function index(): Response
     {
         if (null === $this->userId) {
-            return $this->redirectToRoute('app_login');
+            $this->userId = $this->security->getUser()?->getId();
         }
 
         $activityDifference = $this->activityRepository->getActivityDifferenceFromLastMonth($this->userId);
