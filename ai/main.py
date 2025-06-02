@@ -1,9 +1,7 @@
-import json
-
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
-from models.predict_duration_model import load_model, predict_duration
+from models.predict_duration_model import load_model, predict_duration, adapt_model_locally
 
 app = Flask(__name__)
 CORS(app)
@@ -23,19 +21,26 @@ def time_to_seconds(time_str):
         raise ValueError("Invalid time format")
 
 
-@app.route('/predict_duration')
+@app.route('/predict_duration', methods=['POST'])
 def predict_duration_route():
-    # Calculate first prediction
-    distance = float(request.args.get('distance', 10000))
-    elevation_gain = float(request.args.get('elevation_gain', 0))
-    heart_rate = float(request.args.get('heart_rate', 150))
-    gender = request.args.get('gender', 'M')
+    data = request.get_json()
+
+    # Extract parameters from the request data
+    distance = float(data.get('distance', 10000))
+    elevation_gain = float(data.get('elevation_gain', 0))
+    heart_rate = float(data.get('heart_rate', 150))
+    gender = data.get('gender', 'M')
+    all_activities = data.get('similar_activities', [])
+
+    # Adapt the model locally based on the provided activities
+    adapted_model = adapt_model_locally(model, scaler, all_activities, gender)
+
     seconds = predict_duration(
         distance=distance,
         elevation_gain=elevation_gain,
         heart_rate=heart_rate,
         gender=gender,
-        model=model,
+        model=adapted_model,
         scaler=scaler
     )
 
@@ -44,8 +49,7 @@ def predict_duration_route():
     correction_factor_sum = 0.0
 
     try:
-        similar_activities_json = request.args.get('similar_activities', '[]')
-        similar_activities = json.loads(similar_activities_json)
+        similar_activities = all_activities
         for activity in similar_activities:
             distance = float(activity['distance'].replace(' km', '')) * 1000
             elevation_gain = int(activity['totalElevationGain'])
@@ -70,10 +74,8 @@ def predict_duration_route():
             # Calculate the average correction factor
             correction_factor = correction_factor_sum / len(similar_activities)
 
-
-
-    except json.JSONDecodeError:
-        print("Error decoding JSON for activities")
+    except Exception as e:
+        print(f"Error processing activities: {e}")
 
     return jsonify({
         'seconds': seconds * correction_factor,

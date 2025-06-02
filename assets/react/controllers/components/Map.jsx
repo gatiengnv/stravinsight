@@ -1,7 +1,52 @@
 import React, {useEffect, useRef, useState} from "react";
 import polyline from "@mapbox/polyline";
 
-export default function Map({encodedPolyline, averagePace}) {
+const loadGoogleMapsApi = () => {
+    return new Promise((resolve, reject) => {
+        if (window.google && window.google.maps) {
+            resolve(window.google.maps);
+            return;
+        }
+
+        const googleMapsScript = document.getElementById('google-maps-script');
+
+        if (googleMapsScript) {
+            googleMapsScript.addEventListener('load', () => {
+                if (window.google && window.google.maps) {
+                    resolve(window.google.maps);
+                } else {
+                    reject(new Error('Google Maps API script loaded but google.maps is not available'));
+                }
+            });
+            googleMapsScript.addEventListener('error', () => {
+                reject(new Error('Failed to load Google Maps API script'));
+            });
+            return;
+        }
+
+        const script = document.createElement('script');
+        script.id = 'google-maps-script';
+        script.src = 'https://maps.googleapis.com/maps/api/js?key=&libraries=geometry&callback=Function.prototype';
+        script.async = true;
+        script.defer = true;
+
+        script.addEventListener('load', () => {
+            if (window.google && window.google.maps) {
+                resolve(window.google.maps);
+            } else {
+                reject(new Error('Google Maps API script loaded but google.maps is not available'));
+            }
+        });
+
+        script.addEventListener('error', () => {
+            reject(new Error('Failed to load Google Maps API script'));
+        });
+
+        document.head.appendChild(script);
+    });
+};
+
+export default function Map({encodedPolyline, averagePace, showMapControls = true}) {
     const mapRef = useRef(null);
     const markerRef = useRef(null);
     const animationRef = useRef(null);
@@ -23,80 +68,95 @@ export default function Map({encodedPolyline, averagePace}) {
     });
 
     useEffect(() => {
-        if (!window.google || !window.google.maps) {
-            console.error("Google Maps API is not loaded. Make sure to include it in your HTML page.");
+        if (!encodedPolyline) {
             return;
         }
 
-        const map = new window.google.maps.Map(mapRef.current, {
-            center: {lat: 48.8566, lng: 2.3522},
-            zoom: 16,
-            mapTypeId: window.google.maps.MapTypeId.SATELLITE,
-            mapTypeControl: false,
-            streetViewControl: false,
-            tilt: 45,
-            zoomControl: true,
-        });
+        let isComponentMounted = true;
+        let map = null;
 
-        mapInstanceRef.current = map;
+        const initMap = async () => {
+            try {
+                await loadGoogleMapsApi();
 
-        const decodedPath = polyline.decode(encodedPolyline);
-        const googlePath = decodedPath.map(([lat, lng]) => ({lat, lng}));
-        googlePathRef.current = googlePath;
+                if (!isComponentMounted || !mapRef.current) return;
 
-        const fullPath = new window.google.maps.Polyline({
-            path: googlePath,
-            geodesic: true,
-            strokeColor: "#FC4C02",
-            strokeOpacity: 1.0,
-            strokeWeight: 4,
-        });
-        fullPath.setMap(map);
-        fullPathRef.current = fullPath;
+                map = new window.google.maps.Map(mapRef.current, {
+                    center: {lat: 48.8566, lng: 2.3522},
+                    zoom: 16,
+                    mapTypeId: window.google.maps.MapTypeId.SATELLITE,
+                    mapTypeControl: showMapControls,
+                    streetViewControl: showMapControls,
+                    tilt: 45,
+                    zoomControl: showMapControls,
+                    disableDefaultUI: !showMapControls
+                });
+                mapInstanceRef.current = map;
 
-        const progressivePath = new window.google.maps.Polyline({
-            path: [googlePath[0]],
-            geodesic: true,
-            strokeColor: "#FC4C02",
-            strokeOpacity: 0,
-            strokeWeight: 4,
-        });
-        progressivePath.setMap(map);
-        polylineRef.current = progressivePath;
+                const decodedPath = polyline.decode(encodedPolyline);
+                const googlePath = decodedPath.map(([lat, lng]) => ({lat, lng}));
+                googlePathRef.current = googlePath;
 
-        const runnerIcon = {
-            path: window.google.maps.SymbolPath.CIRCLE,
-            scale: 7,
-            fillColor: "#FC4C02",
-            fillOpacity: 1,
-            strokeColor: "#ffffff",
-            strokeWeight: 2,
+                const fullPath = new window.google.maps.Polyline({
+                    path: googlePath,
+                    geodesic: true,
+                    strokeColor: "#FC4C02",
+                    strokeOpacity: 1.0,
+                    strokeWeight: 4,
+                });
+                fullPath.setMap(map);
+                fullPathRef.current = fullPath;
+
+                const progressivePath = new window.google.maps.Polyline({
+                    path: [googlePath[0]],
+                    geodesic: true,
+                    strokeColor: "#FC4C02",
+                    strokeOpacity: 0,
+                    strokeWeight: 4,
+                });
+                progressivePath.setMap(map);
+                polylineRef.current = progressivePath;
+
+                const runnerIcon = {
+                    path: window.google.maps.SymbolPath.CIRCLE,
+                    scale: 7,
+                    fillColor: "#FC4C02",
+                    fillOpacity: 1,
+                    strokeColor: "#ffffff",
+                    strokeWeight: 2,
+                };
+
+                const marker = new window.google.maps.Marker({
+                    position: googlePath[0],
+                    map: map,
+                    icon: runnerIcon,
+                    visible: false,
+                    title: "Runner"
+                });
+
+                markerRef.current = marker;
+
+                const bounds = new window.google.maps.LatLngBounds();
+                googlePath.forEach((point) => bounds.extend(point));
+                map.fitBounds(bounds, {padding: 50});
+
+                animationStateRef.current = {
+                    currentIndex: 0,
+                    progressivePathPoints: [googlePath[0]],
+                    lastTimestamp: 0,
+                    interpolationFactor: 0,
+                    fromPoint: googlePath[0],
+                    toPoint: googlePath[1] || googlePath[0]
+                };
+            } catch (err) {
+                console.error("Error initializing Google Maps:", err);
+            }
         };
 
-        const marker = new window.google.maps.Marker({
-            position: googlePath[0],
-            map: map,
-            icon: runnerIcon,
-            visible: false,
-            title: "Runner"
-        });
-
-        markerRef.current = marker;
-
-        const bounds = new window.google.maps.LatLngBounds();
-        googlePath.forEach((point) => bounds.extend(point));
-        map.fitBounds(bounds, {padding: 50});
-
-        animationStateRef.current = {
-            currentIndex: 0,
-            progressivePathPoints: [googlePath[0]],
-            lastTimestamp: 0,
-            interpolationFactor: 0,
-            fromPoint: googlePath[0],
-            toPoint: googlePath[1] || googlePath[0]
-        };
+        initMap();
 
         return () => {
+            isComponentMounted = false;
             if (animationRef.current) {
                 cancelAnimationFrame(animationRef.current);
             }
@@ -208,9 +268,9 @@ export default function Map({encodedPolyline, averagePace}) {
                 googlePath.forEach((point) => bounds.extend(point));
                 mapInstanceRef.current.fitBounds(bounds, {padding: 50});
                 mapInstanceRef.current.setOptions({
-                    disableDefaultUI: false,
-                    gestureHandling: "auto",
-                    zoomControl: true,
+                    disableDefaultUI: !showMapControls,
+                    gestureHandling: showMapControls ? "auto" : "none",
+                    zoomControl: showMapControls,
                 });
                 mapInstanceRef.current.setTilt(0);
             }
@@ -225,9 +285,9 @@ export default function Map({encodedPolyline, averagePace}) {
         markerRef.current.setVisible(true);
 
         mapInstanceRef.current.setOptions({
-            disableDefaultUI: true,
-            gestureHandling: "none",
-            zoomControl: false,
+            disableDefaultUI: !showMapControls,
+            gestureHandling: showMapControls ? "auto" : "none",
+            zoomControl: showMapControls,
         });
 
         mapInstanceRef.current.setCenter(googlePath[0]);
@@ -303,9 +363,9 @@ export default function Map({encodedPolyline, averagePace}) {
             mapInstanceRef.current.fitBounds(bounds, {padding: 50});
 
             mapInstanceRef.current.setOptions({
-                disableDefaultUI: false,
-                gestureHandling: "auto",
-                zoomControl: true,
+                disableDefaultUI: !showMapControls,
+                gestureHandling: showMapControls ? "auto" : "none",
+                zoomControl: showMapControls,
             });
             mapInstanceRef.current.setTilt(0);
         }
@@ -343,24 +403,26 @@ export default function Map({encodedPolyline, averagePace}) {
                 ref={mapRef}
                 className="w-full h-[50vh] min-h-[300px] max-h-[600px] bg-base-300 rounded-box"
             ></div>
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-                {isAnimating && (
-                    <button
-                        onClick={stopAnimation}
-                        className="bg-error text-white py-2 px-4 rounded-full shadow-md hover:bg-error-focus transition-colors"
-                    >
-                        Stop
-                    </button>
-                )}
-                {!isAnimating && (
-                    <button
-                        onClick={hasAnimated ? restartAnimation : startAnimation}
-                        className="bg-primary text-white py-2 px-4 rounded-full shadow-md hover:bg-primary-focus transition-colors"
-                    >
-                        {hasAnimated ? "Replay" : "Play"}
-                    </button>
-                )}
-            </div>
+            {showMapControls && (
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+                    {isAnimating && (
+                        <button
+                            onClick={stopAnimation}
+                            className="bg-error text-white py-2 px-4 rounded-full shadow-md hover:bg-error-focus transition-colors"
+                        >
+                            Stop
+                        </button>
+                    )}
+                    {!isAnimating && (
+                        <button
+                            onClick={hasAnimated ? restartAnimation : startAnimation}
+                            className="bg-primary text-white py-2 px-4 rounded-full shadow-md hover:bg-primary-focus transition-colors"
+                        >
+                            {hasAnimated ? "Replay" : "Play"}
+                        </button>
+                    )}
+                </div>
+            )}
         </div>
     );
 }

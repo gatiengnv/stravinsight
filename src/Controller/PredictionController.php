@@ -37,6 +37,19 @@ final class PredictionController extends AbstractController
         ]);
     }
 
+    #[Route('/api/all-activities', name: 'app_prediction_all_activities')]
+    public function getAllActivities(): Response
+    {
+        if (null === $this->userId) {
+            return $this->json(['error' => 'User not authenticated'], Response::HTTP_UNAUTHORIZED);
+        }
+        $activities = $this->activityRepository->getActivities($this->userId, 500);
+
+        return $this->json([
+            'activities' => $activities,
+        ]);
+    }
+
     #[Route('/api/similar-activities/{distance}', name: 'app_prediction_activities')]
     public function getSimilarActivities(float $distance): Response
     {

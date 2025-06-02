@@ -19,6 +19,7 @@ export default function Predict({heartRateZoneList}) {
     const [prediction, setPrediction] = useState(null);
     const [loading, setLoading] = useState(false);
     const [activities, setActivities] = useState([]);
+    const [allActivities, setAllActivities] = useState([]);
     const [selectedMarathon, setSelectedMarathon] = useState(null);
     const [routeType, setRouteType] = useState("predefined");
 
@@ -146,6 +147,23 @@ export default function Predict({heartRateZoneList}) {
             });
     };
 
+    const loadAllActivities = () => {
+        setLoading(true);
+        fetch(`/api/all-activities`, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                setAllActivities(data.activities);
+                setLoading(false);
+            })
+            .catch(error => {
+                setLoading(false);
+            });
+    };
+
     useEffect(() => {
         if (points.length > 1) {
             let totalDistance = 0;
@@ -175,6 +193,10 @@ export default function Predict({heartRateZoneList}) {
             setElevation(Math.round(totalDistance * 15));
         }
     }, [points]);
+
+    useEffect(() => {
+        loadAllActivities();
+    }, []);
 
     const formatTime = (seconds) => {
         const hours = Math.floor(seconds / 3600);
@@ -206,12 +228,16 @@ export default function Predict({heartRateZoneList}) {
                     elevation_gain: elevation,
                     heart_rate: heartRate,
                     gender,
-                    similar_activities: JSON.stringify(activities),
-                }
-
-                const response = await fetch(
-                    `/ai/predict_duration?${new URLSearchParams(parameters).toString()}`,
-                );
+                    similar_activities: activities
+                };
+                const response = await fetch('/ai/predict_duration', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify(parameters)
+                });
 
                 if (!response.ok) {
                     throw new Error('Prediction error');
