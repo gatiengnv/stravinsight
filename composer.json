@@ -77,9 +77,7 @@
             "@auto-scripts"
         ],
         "fix": [
-            "php vendor/bin/php-cs-fixer fix"
-        ],
-        "fix-twig": [
+            "php vendor/bin/php-cs-fixer fix",
             "php vendor/bin/twig-cs-fixer fix"
         ]
     },

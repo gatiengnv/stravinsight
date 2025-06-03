@@ -23,7 +23,7 @@ import AiBubble from "../../components/AiBubble";
 import SportIcon from "../../components/SportIcon";
 import ActivitySummary from "../../components/ActivitySummary";
 
-export default function ActivityDetails({activity, activityDetail, activityStream}) {
+export default function ActivityDetails({activity, activityDetail, activityStream, userProfileMedium}) {
     const [activeTab, setActiveTab] = useState("map");
 
     useEffect(() => {
@@ -78,7 +78,7 @@ export default function ActivityDetails({activity, activityDetail, activityStrea
     }, []);
 
     return (
-        <Drawer>
+        <Drawer userProfileMedium={userProfileMedium}>
             <div className="p-4 md:p-6">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-6">
                     <div className="flex items-center gap-3">

@@ -4,16 +4,17 @@
 
 {% block body %}
     <div {{ react_component('view/Dashboard', {
-        stats : stats,
+        stats: stats,
         activityDifference: activityDifference,
-        activities:activities,
-        records:records,
-        hearthRatePercentage:hearthRatePercentage,
-        fitnessTrend:fitnessTrend,
-        achievements:achievements,
-        weeklyDistance:weeklyDistance,
-        activityCountBySport:activityCountBySport,
-        userSports:userSports,
+        activities: activities,
+        records: records,
+        hearthRatePercentage: hearthRatePercentage,
+        fitnessTrend: fitnessTrend,
+        achievements: achievements,
+        weeklyDistance: weeklyDistance,
+        activityCountBySport: activityCountBySport,
+        userSports: userSports,
+        userProfileMedium: app.user.profileMedium,
     }) }}>
         <div class="flex justify-center items-center h-screen">
             <span class="loading loading-spinner loading-xl text-primary"></span>

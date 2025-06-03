@@ -3,7 +3,7 @@
 {% block title %}Predict your next time{% endblock %}
 
 {% block body %}
-    <div {{ react_component('view/Predict', {heartRateZoneList:heartRateZone}) }}>
+    <div {{ react_component('view/Predict', {heartRateZoneList: heartRateZone, userProfileMedium: app.user.profileMedium}) }}>
         <div class="flex justify-center items-center h-screen">
             <span class="loading loading-spinner loading-xl text-primary"></span>
         </div>

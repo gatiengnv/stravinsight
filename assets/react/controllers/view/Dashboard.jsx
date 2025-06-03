@@ -38,7 +38,8 @@ export default function Dashboard({
                                       achievements,
                                       weeklyDistance,
                                       activityCountBySport,
-                                      userSports
+                                      userSports,
+                                      userProfileMedium
                                   }) {
     const [activeTab, setActiveTab] = useState("overview");
 
@@ -61,7 +62,8 @@ export default function Dashboard({
     };
 
     return (
-        <Drawer title={"Dashboard"} showDateRangePicker={true} showSportPicker={true} userSports={userSports}>
+        <Drawer title={"Dashboard"} showDateRangePicker={true} showSportPicker={true} userSports={userSports}
+                userProfileMedium={userProfileMedium}>
             <div className="p-4 md:p-6">
                 <div className="stats stats-vertical md:grid-cols-2 lg:grid-cols-3 xl:stats-horizontal shadow w-full">
                     <StatItem icon={faBolt} title={"Total Activities"} value={stats.totalActivities}

@@ -9,7 +9,7 @@ import Road from "../components/Road";
 import Step from "../components/Step";
 import StepPagination from "../components/StepPagination";
 
-export default function Predict({heartRateZoneList}) {
+export default function Predict({heartRateZoneList, userProfileMedium}) {
     const [currentStep, setCurrentStep] = useState(0);
     const [points, setPoints] = useState([]);
     const [distance, setDistance] = useState(0);
@@ -342,7 +342,7 @@ export default function Predict({heartRateZoneList}) {
     };
 
     return (
-        <Drawer title="Time Prediction">
+        <Drawer title="Time Prediction" userProfileMedium={userProfileMedium}>
             <div className="p-4">
                 <ul className="steps w-full mb-8">
                     <li className={`step ${currentStep >= 0 ? "step-primary" : ""}`}>Route</li>

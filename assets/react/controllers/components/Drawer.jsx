@@ -1,4 +1,4 @@
-import {faBars, faFilter} from "@fortawesome/free-solid-svg-icons";
+import {faBars, faFilter, faRightFromBracket} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import DateRangePicker from "./DateRangePicker";
 import React, {useState} from "react";
@@ -9,7 +9,8 @@ export default function Drawer({
                                    showDateRangePicker = false,
                                    showSportPicker = false,
                                    userSports = [],
-                                   title = ""
+                                   title = "",
+                                   userProfileMedium = ""
                                }) {
     const [showFilters, setShowFilters] = useState(false);
 
@@ -61,40 +62,56 @@ export default function Drawer({
             </div>
             <div className="drawer-side z-[9999]">
                 <label htmlFor="my-drawer" aria-label="close sidebar" className="drawer-overlay"></label>
-                <ul className="menu bg-base-200 text-base-content min-h-full w-80 p-4">
-                    <li>
-                        <a
-                            href="/dashboard"
-                            className={title === "Dashboard" ? "active bg-primary text-primary-content" : ""}
-                        >
-                            Dashboard
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            href="/activities"
-                            className={title === "Activities" ? "active bg-primary text-primary-content" : ""}
-                        >
-                            Activities
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            href="/heatmap"
-                            className={title === "Heatmap" ? "active bg-primary text-primary-content" : ""}
-                        >
-                            Heatmap
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            href="/predict"
-                            className={title === "Time Prediction" ? "active bg-primary text-primary-content" : ""}
-                        >
-                            Time prediction
-                        </a>
-                    </li>
-                </ul>
+                <div className="bg-base-200 text-base-content w-50 min-h-full flex flex-col">
+                    <ul className="menu p-4 flex-1">
+                        <li>
+                            <a
+                                href="/dashboard"
+                                className={title === "Dashboard" ? "active bg-primary text-primary-content" : ""}
+                            >
+                                Dashboard
+                            </a>
+                        </li>
+                        <li>
+                            <a
+                                href="/activities"
+                                className={title === "Activities" ? "active bg-primary text-primary-content" : ""}
+                            >
+                                Activities
+                            </a>
+                        </li>
+                        <li>
+                            <a
+                                href="/heatmap"
+                                className={title === "Heatmap" ? "active bg-primary text-primary-content" : ""}
+                            >
+                                Heatmap
+                            </a>
+                        </li>
+                        <li>
+                            <a
+                                href="/predict"
+                                className={title === "Time Prediction" ? "active bg-primary text-primary-content" : ""}
+                            >
+                                Time prediction
+                            </a>
+                        </li>
+                    </ul>
+                    <ul className="p-4 mt-auto border-t border-base-300">
+                        <li>
+                            <div className="avatar">
+                                <div
+                                    className="ring-primary ring-offset-base-100 w-8 rounded-full ring-2 ring-offset-2 mr-3">
+                                    <img src={userProfileMedium} alt="Profile"/>
+                                </div>
+                            </div>
+                            <a href={"logout"}>
+                                Logout
+                                <FontAwesomeIcon icon={faRightFromBracket} className={"ml-2"}/>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     )

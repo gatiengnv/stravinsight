@@ -3,7 +3,7 @@ import ActivityItem from "../../components/ActivityItem";
 import Card from "../../components/Card";
 import Drawer from "../../components/Drawer";
 
-export default function List({activities: initialActivities, userSports}) {
+export default function List({activities: initialActivities, userSports, userProfileMedium}) {
     const [activities, setActivities] = useState(initialActivities);
     const [loading, setLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
@@ -80,7 +80,8 @@ export default function List({activities: initialActivities, userSports}) {
     }, [loading, hasMore, currentPage, dateFilters]);
 
     return (
-        <Drawer title={"Activities"} showDateRangePicker={true} showSportPicker={true} userSports={userSports}>
+        <Drawer title={"Activities"} showDateRangePicker={true} showSportPicker={true} userSports={userSports}
+                userProfileMedium={userProfileMedium}>
             <Card>
                 <div
                     className="hidden md:grid md:grid-cols-6 md:items-center text-sm font-bold p-3 border-b bg-base-200">

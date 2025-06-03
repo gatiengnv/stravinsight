@@ -3,7 +3,7 @@
 {% block title %}Heatmap{% endblock %}
 
 {% block body %}
-    <div {{ react_component('view/Heatmap', {activities:activities}) }}>
+    <div {{ react_component('view/Heatmap', {activities: activities, userProfileMedium: app.user.profileMedium}) }}>
         <div class="flex justify-center items-center h-screen">
             <span class="loading loading-spinner loading-xl text-primary"></span>
         </div>

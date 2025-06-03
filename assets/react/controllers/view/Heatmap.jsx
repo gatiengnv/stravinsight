@@ -4,7 +4,7 @@ import HeatmapControls from "../components/HeatmapControls";
 import ActivityMap from "../components/ActivityMap";
 import InfoStats from "../components/InfoStats";
 
-export default function Heatmap({activities}) {
+export default function Heatmap({activities, userProfileMedium}) {
     const [filter, setFilter] = useState("all");
     const [heatmapMode, setHeatmapMode] = useState(false);
 
@@ -38,7 +38,7 @@ export default function Heatmap({activities}) {
     };
 
     return (
-        <Drawer title="Heatmap">
+        <Drawer title="Heatmap" userProfileMedium={userProfileMedium}>
             <HeatmapControls
                 filter={filter}
                 onFilterChange={handleFilterChange}
