@@ -21,13 +21,13 @@ export default function Initialize({
         fetchActivities()
             .then((data) => {
                 if (data.status === "success") {
-                    window.location.href = `${redirectUrl}`;
+                    window.location.replace(`${redirectUrl}`);
                 }
             })
             .catch((error) => {
                 console.error('Error fetching activities:', error);
             });
-    })
+    }, [])
 
     return (
         <div className="flex flex-col justify-center items-center h-screen gap-4">
