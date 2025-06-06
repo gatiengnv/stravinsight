@@ -21,27 +21,21 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 #[IsGranted('IS_AUTHENTICATED')]
 final class ActivityController extends AbstractController
 {
-    private ?int $userId = null;
-
     public function __construct(
         private readonly ActivityRepository $activityRepository,
         private readonly StravaImportService $stravaImportService,
         private readonly GeminiClient $geminiClient,
         private readonly Security $security,
     ) {
-        $user = $this->security->getUser();
-        if ($user) {
-            $this->userId = $user->getId();
-        }
     }
 
     #[Route('/activities', name: 'app_activity')]
     public function index(Request $request): Response
     {
-        if (null === $this->userId) {
+        if (null === $this->getUserId()) {
             return $this->redirectToRoute('app_login');
         }
-        $userSports = $this->activityRepository->getAthleteSports($this->userId);
+        $userSports = $this->activityRepository->getAthleteSports($this->getUserId());
         $page = max(1, (int) $request->query->get('page', 1));
         $limit = 25;
         $offset = ($page - 1) * $limit;
@@ -51,7 +45,7 @@ final class ActivityController extends AbstractController
         $sport = $request->query->get('sport');
 
         $activities = $this->activityRepository->getActivities(
-            $this->userId,
+            $this->getUserId(),
             $limit,
             $offset,
             $startDate,
@@ -74,6 +68,11 @@ final class ActivityController extends AbstractController
         ]);
     }
 
+    private function getUserId(): ?int
+    {
+        return $this->security->getUser()?->getId();
+    }
+
     /**
      * @throws TransportExceptionInterface
      * @throws ClientExceptionInterface
@@ -83,12 +82,12 @@ final class ActivityController extends AbstractController
         int $id,
         EntityManagerInterface $entityManager,
     ): Response {
-        if (null === $this->userId) {
+        if (null === $this->getUserId()) {
             return $this->redirectToRoute('app_login');
         }
         try {
             $details = $this->stravaImportService->importUserActivityDetails($id, $entityManager);
-            $this->geminiClient->initActivity($details, $this->activityRepository->getAthletePerformanceData($this->userId));
+            $this->geminiClient->initActivity($details, $this->activityRepository->getAthletePerformanceData($this->getUserId()));
         } catch (\Exception $e) {
             return $this->render('activity/error.html.twig');
         }
@@ -115,11 +114,11 @@ final class ActivityController extends AbstractController
         int $id,
         EntityManagerInterface $entityManager,
     ): Response {
-        if (null === $this->userId) {
+        if (null === $this->getUserId()) {
             return $this->json(['error' => 'User not authenticated'], Response::HTTP_UNAUTHORIZED);
         }
         $details = $this->stravaImportService->importUserActivityDetails($id, $entityManager);
-        $this->geminiClient->initActivity($details, $this->activityRepository->getAthletePerformanceData($this->userId));
+        $this->geminiClient->initActivity($details, $this->activityRepository->getAthletePerformanceData($this->getUserId()));
 
         return $this->json(
             [
@@ -131,7 +130,7 @@ final class ActivityController extends AbstractController
     #[Route('/api/activities/{id}/overview', methods: ['GET'])]
     public function getActivityOverview(int $id, EntityManagerInterface $entityManager): Response
     {
-        if (null === $this->userId) {
+        if (null === $this->getUserId()) {
             return $this->json(['error' => 'User not authenticated'], Response::HTTP_UNAUTHORIZED);
         }
         $aiResponseOrError = $this->getOrCreateAiResponse($entityManager, $id);
@@ -142,7 +141,7 @@ final class ActivityController extends AbstractController
 
         if (!$aiResponse->getOverview()) {
             $details = $this->stravaImportService->importUserActivityDetails($id, $entityManager);
-            $this->geminiClient->initActivity($details, $this->activityRepository->getAthletePerformanceData($this->userId));
+            $this->geminiClient->initActivity($details, $this->activityRepository->getAthletePerformanceData($this->getUserId()));
 
             $overviewDescription = $this->geminiClient->getOverviewDescription();
 
@@ -177,7 +176,7 @@ final class ActivityController extends AbstractController
     #[Route('/api/activities/{id}/charts', methods: ['GET'])]
     public function getActivityCharts(int $id, EntityManagerInterface $entityManager): Response
     {
-        if (null === $this->userId) {
+        if (null === $this->getUserId()) {
             return $this->json(['error' => 'User not authenticated'], Response::HTTP_UNAUTHORIZED);
         }
         $aiResponseOrError = $this->getOrCreateAiResponse($entityManager, $id);
@@ -188,7 +187,7 @@ final class ActivityController extends AbstractController
 
         if (!$aiResponse->getCharts()) {
             $details = $this->stravaImportService->importUserActivityDetails($id, $entityManager);
-            $this->geminiClient->initActivity($details, $this->activityRepository->getAthletePerformanceData($this->userId));
+            $this->geminiClient->initActivity($details, $this->activityRepository->getAthletePerformanceData($this->getUserId()));
 
             $chartDescription = $this->geminiClient->getChartsDescription();
 
@@ -205,7 +204,7 @@ final class ActivityController extends AbstractController
     #[Route('/api/activities/{id}/splits', methods: ['GET'])]
     public function getActivitySplits(int $id, EntityManagerInterface $entityManager): Response
     {
-        if (null === $this->userId) {
+        if (null === $this->getUserId()) {
             return $this->json(['error' => 'User not authenticated'], Response::HTTP_UNAUTHORIZED);
         }
         $aiResponseOrError = $this->getOrCreateAiResponse($entityManager, $id);
@@ -216,7 +215,7 @@ final class ActivityController extends AbstractController
 
         if (!$aiResponse->getSplits()) {
             $details = $this->stravaImportService->importUserActivityDetails($id, $entityManager);
-            $this->geminiClient->initActivity($details, $this->activityRepository->getAthletePerformanceData($this->userId));
+            $this->geminiClient->initActivity($details, $this->activityRepository->getAthletePerformanceData($this->getUserId()));
 
             $splitDescription = $this->geminiClient->getSplitDescription();
 

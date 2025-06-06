@@ -12,28 +12,27 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('IS_AUTHENTICATED')]
 final class HeatmapController extends AbstractController
 {
-    private ?int $userId = null;
-
     public function __construct(
         private readonly ActivityRepository $activityRepository,
         private readonly Security $security,
     ) {
-        $user = $this->security->getUser();
-        if ($user) {
-            $this->userId = $user->getId();
-        }
     }
 
     #[Route('/heatmap', name: 'app_heatmap')]
     public function index(): Response
     {
-        if (null === $this->userId) {
+        if (null === $this->getUserId()) {
             return $this->redirectToRoute('app_login');
         }
-        $activities = $this->activityRepository->getActivities($this->userId, PHP_INT_MAX);
+        $activities = $this->activityRepository->getActivities($this->getUserId(), PHP_INT_MAX);
 
         return $this->render('heatmap/index.html.twig', [
             'activities' => $activities,
         ]);
+    }
+
+    private function getUserId(): ?int
+    {
+        return $this->security->getUser()?->getId();
     }
 }
