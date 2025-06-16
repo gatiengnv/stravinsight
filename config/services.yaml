@@ -37,6 +37,6 @@ services:
         tags:
             - { name: kernel.event_subscriber }
     
-    App\EventListener\LocaleSubscriber:
+    App\EventSubscriber\LocaleSubscriber:
         arguments: [ '%kernel.default_locale%' ]
-        tags: [ kernel.event_subscriber ]
+        tags: [ kernel.event_subscriber ] 
