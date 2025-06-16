@@ -1,6 +1,6 @@
 import {ArrowRight} from "lucide-react";
 
-export default function Banner() {
+export default function PremiumBanner() {
     return (
         <section
             className="relative overflow-hidden bg-gradient-to-b from-orange-50 via-orange-100/30 to-base-100 py-24 md:py-36 mx-auto">

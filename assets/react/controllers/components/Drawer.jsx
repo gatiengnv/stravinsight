@@ -102,7 +102,9 @@ export default function Drawer({
                             <div className="avatar">
                                 <div
                                     className="ring-primary ring-offset-base-100 w-8 rounded-full ring-2 ring-offset-2 mr-3">
-                                    <img src={userProfileMedium} alt="Profile"/>
+                                    <img src={userProfileMedium} alt="Profile" onClick={
+                                        () => window.location.href = "/profile"
+                                    }/>
                                 </div>
                             </div>
                             <a href={"logout"}>

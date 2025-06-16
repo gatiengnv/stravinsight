@@ -16,3 +16,6 @@ reset-db:
 	$(DC_PHP_CONSOLE) doctrine:database:drop --force --if-exists
 	$(DC_PHP_CONSOLE) doctrine:database:create
 	$(DC_PHP_CONSOLE) doctrine:migrations:migrate --no-interaction --allow-no-migration
+
+restart:
+	DOMAIN=localhost docker compose down && DOMAIN=localhost docker compose -f compose.traefik.yaml -f compose.yaml -f compose.override.yaml up -d --build && DOMAIN=localhost docker compose exec php npm run watch

@@ -18,6 +18,7 @@ final class PredictionController extends AbstractController
     ) {
     }
 
+    #[IsGranted('IS_AUTHENTICATED')]
     #[Route('/predict', name: 'app_prediction')]
     public function index(): Response
     {
@@ -36,6 +37,7 @@ final class PredictionController extends AbstractController
         return $this->security->getUser()?->getId();
     }
 
+    #[IsGranted('IS_AUTHENTICATED')]
     #[Route('/api/all-activities', name: 'app_prediction_all_activities')]
     public function getAllActivities(): Response
     {
@@ -49,6 +51,7 @@ final class PredictionController extends AbstractController
         ]);
     }
 
+    #[IsGranted('IS_AUTHENTICATED')]
     #[Route('/api/similar-activities/{distance}', name: 'app_prediction_activities')]
     public function getSimilarActivities(float $distance): Response
     {

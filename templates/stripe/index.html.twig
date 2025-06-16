@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+{% block title %}Profile{% endblock %}
+
+{% block body %}
+    <div {{ react_component('view/Profile', {subscription: subscription, nextInvoiceDate: nextInvoiceDate, userProfileMedium: app.user.profileMedium, userProfile: app.user.profile, firstname: app.user.firstname, lastname: app.user.lastname}) }}>
+        <div class="flex justify-center items-center h-screen">
+            <span class="loading loading-spinner loading-xl text-primary"></span>
+        </div>
+    </div>
+{% endblock %}

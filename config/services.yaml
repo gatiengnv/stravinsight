@@ -28,3 +28,15 @@ services:
             $client: '@App\Strava\Client\StravaClient'
             $security: '@security.helper'
             $activityRepository: '@App\Repository\ActivityRepository'
+            
+    App\Service\SubscriptionCheckerService:
+        arguments:
+            $stripeSecretKey: '%env(STRIPE_SECRET_KEY)%'
+        
+    App\EventSubscriber\SubscriptionCheckSubscriber:
+        tags:
+            - { name: kernel.event_subscriber }
+    
+    App\EventListener\LocaleSubscriber:
+        arguments: [ '%kernel.default_locale%' ]
+        tags: [ kernel.event_subscriber ]

@@ -29,6 +29,7 @@ final class ActivityController extends AbstractController
     ) {
     }
 
+    #[IsGranted('IS_AUTHENTICATED')]
     #[Route('/activities', name: 'app_activity')]
     public function index(Request $request): Response
     {
@@ -77,6 +78,7 @@ final class ActivityController extends AbstractController
      * @throws TransportExceptionInterface
      * @throws ClientExceptionInterface
      */
+    #[IsGranted('IS_AUTHENTICATED')]
     #[Route('/activities/{id}', requirements: ['id' => '\d+'])]
     public function show(
         int $id,
@@ -99,6 +101,7 @@ final class ActivityController extends AbstractController
         ]);
     }
 
+    #[IsGranted('IS_AUTHENTICATED')]
     #[Route('/activities/{id}/initialize', name: 'app_activities_initialize')]
     public function initialize(
         int $id,
@@ -109,6 +112,7 @@ final class ActivityController extends AbstractController
         ]);
     }
 
+    #[IsGranted('IS_AUTHENTICATED')]
     #[Route('/api/activity/{id}/sync', name: 'app_activity_synchronize')]
     public function synchronize(
         int $id,
@@ -127,6 +131,7 @@ final class ActivityController extends AbstractController
         );
     }
 
+    #[IsGranted('IS_AUTHENTICATED')]
     #[Route('/api/activities/{id}/overview', methods: ['GET'])]
     public function getActivityOverview(int $id, EntityManagerInterface $entityManager): Response
     {
@@ -173,6 +178,7 @@ final class ActivityController extends AbstractController
         return $aiResponse;
     }
 
+    #[IsGranted('IS_AUTHENTICATED')]
     #[Route('/api/activities/{id}/charts', methods: ['GET'])]
     public function getActivityCharts(int $id, EntityManagerInterface $entityManager): Response
     {
@@ -201,6 +207,7 @@ final class ActivityController extends AbstractController
         );
     }
 
+    #[IsGranted('IS_AUTHENTICATED')]
     #[Route('/api/activities/{id}/splits', methods: ['GET'])]
     public function getActivitySplits(int $id, EntityManagerInterface $entityManager): Response
     {

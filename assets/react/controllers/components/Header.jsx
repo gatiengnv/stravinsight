@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 
-export default function Header({isLoggedIn}) {
+export default function Header({isLoggedIn, isPremiumMode}) {
     const [scrolled, setScrolled] = useState(false);
 
     useEffect(() => {
@@ -24,9 +24,16 @@ export default function Header({isLoggedIn}) {
 
                 <div className="lg:block">
                     <ul className="menu menu-horizontal px-1 flex items-center hidden lg:flex">
-                        {["features", "testimonials", "faq"].map(item => (
+                        {["features", "testimonials", "faq", ...(isPremiumMode ? ["pricing"] : [])].map(item => (
                             <li key={item}>
                                 <a href={`#${item}`}
+                                   onClick={(e) => {
+                                       e.preventDefault();
+                                       document.getElementById(item)?.scrollIntoView({
+                                           behavior: 'smooth',
+                                           block: 'start'
+                                       });
+                                   }}
                                    className="hover:text-primary font-medium transition-all hover:scale-105">
                                     {item.charAt(0).toUpperCase() + item.slice(1)}
                                 </a>

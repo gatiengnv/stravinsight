@@ -81,6 +81,9 @@ class User implements UserInterface
     #[ORM\OneToOne(mappedBy: 'stravaUser', cascade: ['persist', 'remove'])]
     private ?HearthRateZones $hearthRateZones = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $StripeSubscriptionId = null;
+
     public function __construct()
     {
         $this->activities = new ArrayCollection();
@@ -368,6 +371,18 @@ class User implements UserInterface
         }
 
         $this->hearthRateZones = $hearthRateZones;
+
+        return $this;
+    }
+
+    public function getStripeSubscriptionId(): ?string
+    {
+        return $this->StripeSubscriptionId;
+    }
+
+    public function setStripeSubscriptionId(?string $StripeSubscriptionId): static
+    {
+        $this->StripeSubscriptionId = $StripeSubscriptionId;
 
         return $this;
     }

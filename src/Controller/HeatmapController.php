@@ -18,6 +18,7 @@ final class HeatmapController extends AbstractController
     ) {
     }
 
+    #[IsGranted('IS_AUTHENTICATED')]
     #[Route('/heatmap', name: 'app_heatmap')]
     public function index(): Response
     {
