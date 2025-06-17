@@ -9,7 +9,8 @@ import PremiumBanner from "../../components/PremiumBanner";
 import Pricing from "../../components/Pricing";
 
 export default function LandingPage({isLoggedIn, price, premiumMode}) {
-    const isPremiumMode = premiumMode === 1;
+    const isPremiumMode = premiumMode == 1;
+    console.log(isPremiumMode);
     return (
         <div className="flex min-h-screen flex-col bg-gradient-to-b from-base-100 to-base-200/30">
             <Header isLoggedIn={isLoggedIn} isPremiumMode={isPremiumMode}/>

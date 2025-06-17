@@ -26,7 +26,7 @@ class SubscriptionCheckerService
             return new RedirectResponse($this->urlGenerator->generate('app_home'));
         }
 
-        if (0 === $_ENV['PREMIUM_MODE']) {
+        if (0 == $_ENV['PREMIUM_MODE']) {
             return null;
         }
 
