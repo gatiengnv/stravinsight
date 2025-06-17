@@ -11,11 +11,10 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 class SubscriptionCheckerService
 {
     public function __construct(
-        private readonly Security              $security,
+        private readonly Security $security,
         private readonly UrlGeneratorInterface $urlGenerator,
-        private readonly string                $stripeSecretKey,
-    )
-    {
+        private readonly string $stripeSecretKey,
+    ) {
         Stripe::setApiKey($this->stripeSecretKey);
     }
 
