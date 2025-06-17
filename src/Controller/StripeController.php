@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Stripe\Checkout\Session;
 use Stripe\Exception\ApiErrorException;
@@ -25,8 +26,9 @@ final class StripeController extends AbstractController
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly Security $security,
-    ) {
+        private readonly Security               $security,
+    )
+    {
         $this->stripeSecretKey = $_ENV['STRIPE_SECRET_KEY'];
         $this->stripePriceId = $_ENV['STRIPE_PRICE_ID'];
         $this->websiteUrl = $_ENV['WEBSITE_URL'];
@@ -43,8 +45,8 @@ final class StripeController extends AbstractController
                     'quantity' => 1,
                 ]],
                 'mode' => 'subscription',
-                'success_url' => $this->websiteUrl.'/premium/success?session_id={CHECKOUT_SESSION_ID}',
-                'cancel_url' => $this->websiteUrl.'/premium/cancel?session_id={CHECKOUT_SESSION_ID}',
+                'success_url' => $this->websiteUrl . '/premium/success?session_id={CHECKOUT_SESSION_ID}',
+                'cancel_url' => $this->websiteUrl . '/',
             ];
 
             $session = Session::create($sessionData);
@@ -83,6 +85,16 @@ final class StripeController extends AbstractController
         } catch (ApiErrorException $e) {
             return $this->redirectToRoute('app_premium');
         }
+    }
+
+    private function getCurrentUser(): ?User
+    {
+        $user = $this->security->getUser();
+        if (!$user) {
+            return null;
+        }
+
+        return $this->entityManager->getRepository(User::class)->find($user->getId());
     }
 
     #[IsGranted('ROLE_USER')]
@@ -138,7 +150,7 @@ final class StripeController extends AbstractController
 
         try {
             $subscription = Subscription::retrieve($user->getStripeSubscriptionId());
-            $nextInvoiceDate = new \DateTime();
+            $nextInvoiceDate = new DateTime();
             $nextInvoiceDate->setTimestamp($subscription->current_period_end);
 
             return $this->render('stripe/index.html.twig', [
@@ -148,15 +160,5 @@ final class StripeController extends AbstractController
         } catch (ApiErrorException $e) {
             return $this->redirectToRoute('app_home');
         }
-    }
-
-    private function getCurrentUser(): ?User
-    {
-        $user = $this->security->getUser();
-        if (!$user) {
-            return null;
-        }
-
-        return $this->entityManager->getRepository(User::class)->find($user->getId());
     }
 }
