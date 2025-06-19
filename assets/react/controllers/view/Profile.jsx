@@ -3,15 +3,22 @@ import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faCalendarAlt, faCreditCard, faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 
-export default function Profile({subscription, nextInvoiceDate, userProfileMedium, userProfile, firstname, lastname}) {
+export default function Profile({subscription, userProfileMedium, userProfile, firstname, lastname}) {
     const [showCancelModal, setShowCancelModal] = useState(false);
 
-    const formatDate = (dateString) => {
-        const date = new Date(dateString);
+    const formatDate = (timestamp) => {
+        const date = new Date(timestamp * 1000); // Convert timestamp to milliseconds
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
         const year = date.getFullYear();
         return `${month}/${day}/${year}`;
+    };
+
+    const getCurrentPeriodEnd = () => {
+        if (subscription && subscription.items && subscription.items.data && subscription.items.data.length > 0) {
+            return subscription.items.data[0].current_period_end;
+        }
+        return null;
     };
 
     const handleCancelClick = () => {
@@ -21,6 +28,10 @@ export default function Profile({subscription, nextInvoiceDate, userProfileMediu
     const closeCancelModal = () => {
         setShowCancelModal(false);
     };
+
+    const currentPeriodEnd = getCurrentPeriodEnd();
+
+    console.log(subscription);
 
     return (
         <Drawer title="Profile" userProfileMedium={userProfileMedium}>
@@ -41,21 +52,21 @@ export default function Profile({subscription, nextInvoiceDate, userProfileMediu
 
                         <div className="divider"></div>
 
-                        <div className="mb-6 hidden">
+                        <div className="mb-6">
                             <h3 className="font-bold text-lg mb-2 flex items-center">
                                 <FontAwesomeIcon icon={faCreditCard} className="mr-2" />
                                 Subscription Information
                             </h3>
 
                             <div className="bg-base-100 p-4 rounded-lg">
-                                {subscription && (
+                                {subscription && currentPeriodEnd && (
                                     <div className="flex flex-col gap-3">
                                         <div className="flex items-center">
                                             <FontAwesomeIcon icon={faCalendarAlt} className="mr-2 text-primary" />
                                             {subscription.cancel_at_period_end ? (
-                                                <span>Your subscription will end on <span className="font-semibold">{formatDate(nextInvoiceDate)}</span></span>
+                                                <span>Your subscription will end on <span className="font-semibold">{formatDate(currentPeriodEnd)}</span></span>
                                             ) : (
-                                                <span>Next billing on <span className="font-semibold">{formatDate(nextInvoiceDate)}</span></span>
+                                                <span>Next billing on <span className="font-semibold">{formatDate(currentPeriodEnd)}</span></span>
                                             )}
                                         </div>
                                     </div>
@@ -78,7 +89,7 @@ export default function Profile({subscription, nextInvoiceDate, userProfileMediu
                 </div>
             </div>
 
-            {showCancelModal && (
+            {showCancelModal && currentPeriodEnd && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[10000]">
                     <div className="bg-base-100 p-6 rounded-lg shadow-xl max-w-md w-full">
                         <h3 className="font-bold text-lg mb-4 flex items-center">
@@ -87,7 +98,7 @@ export default function Profile({subscription, nextInvoiceDate, userProfileMediu
                         </h3>
                         <p className="mb-6">
                             Are you sure you want to cancel your Premium subscription?
-                            You will still have access to premium features until {formatDate(nextInvoiceDate)}.
+                            You will still have access to premium features until {formatDate(currentPeriodEnd)}.
                         </p>
                         <div className="flex justify-end gap-2">
                             <button onClick={closeCancelModal} className="btn btn-ghost">

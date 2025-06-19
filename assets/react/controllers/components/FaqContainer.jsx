@@ -33,7 +33,7 @@ export default function FaqContainer() {
                         {
                             question: "Do you offer a free trial?",
                             answer:
-                                "Our platform is completely free to use! We believe in making advanced analytics accessible to all athletes.",
+                                "Yes, we offer a 14-day free trial for new users.",
                         },
                         {
                             question: "Is there a limit to how many activities I can analyze?",

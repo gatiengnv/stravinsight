@@ -33,7 +33,7 @@ export default function PremiumBanner() {
                         onClick={() => {
                             document.location.href = "/connect/strava"
                         }}>
-                        Get Started
+                        Get Started For Free
                         <ArrowRight className="h-5 w-5 ml-1 animate-pulse"/>
                     </button>
                     <button

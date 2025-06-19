@@ -34,7 +34,7 @@ class SubscriptionCheckerService
         }
 
         $status = Subscription::retrieve($user->getStripeSubscriptionId())->status;
-        if ('active' !== $status) {
+        if (!in_array($status, ['active', 'trialing'])) {
             return new RedirectResponse($this->urlGenerator->generate('app_premium_pay'));
         }
 

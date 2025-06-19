@@ -84,6 +84,9 @@ class User implements UserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $StripeSubscriptionId = null;
 
+    #[ORM\Column]
+    private bool $freeTrial = false;
+
     public function __construct()
     {
         $this->activities = new ArrayCollection();
@@ -383,6 +386,18 @@ class User implements UserInterface
     public function setStripeSubscriptionId(?string $StripeSubscriptionId): static
     {
         $this->StripeSubscriptionId = $StripeSubscriptionId;
+
+        return $this;
+    }
+
+    public function isFreeTrial(): ?bool
+    {
+        return $this->freeTrial;
+    }
+
+    public function setFreeTrial(bool $freeTrial): static
+    {
+        $this->freeTrial = $freeTrial;
 
         return $this;
     }

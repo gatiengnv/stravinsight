@@ -1,6 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Stravinsight{% endblock %}
+{% block description %}Analyze your Strava activity data like never before. Stravinsight delivers powerful insights to boost your performance and track your progress.{% endblock %}
 
 {% block body %}
     <div {{ react_component('view/landing/page', {isLoggedIn: isLoggedIn, price: price, premiumMode}) }}>

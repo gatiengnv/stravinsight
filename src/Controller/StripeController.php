@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\User;
-use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Stripe\Checkout\Session;
 use Stripe\Exception\ApiErrorException;
@@ -26,9 +25,8 @@ final class StripeController extends AbstractController
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly Security               $security,
-    )
-    {
+        private readonly Security $security,
+    ) {
         $this->stripeSecretKey = $_ENV['STRIPE_SECRET_KEY'];
         $this->stripePriceId = $_ENV['STRIPE_PRICE_ID'];
         $this->websiteUrl = $_ENV['WEBSITE_URL'];
@@ -38,6 +36,7 @@ final class StripeController extends AbstractController
     #[Route('/premium/pay', name: 'app_premium_pay')]
     public function pay(): RedirectResponse
     {
+        $user = $this->getCurrentUser();
         try {
             $sessionData = [
                 'line_items' => [[
@@ -45,9 +44,15 @@ final class StripeController extends AbstractController
                     'quantity' => 1,
                 ]],
                 'mode' => 'subscription',
-                'success_url' => $this->websiteUrl . '/premium/success?session_id={CHECKOUT_SESSION_ID}',
-                'cancel_url' => $this->websiteUrl . '/',
+                'success_url' => $this->websiteUrl.'/premium/success?session_id={CHECKOUT_SESSION_ID}',
+                'cancel_url' => $this->websiteUrl.'/',
             ];
+
+            if (!$user->isFreeTrial()) {
+                $sessionData['subscription_data'] = [
+                    'trial_period_days' => 15,
+                ];
+            }
 
             $session = Session::create($sessionData);
 
@@ -76,6 +81,7 @@ final class StripeController extends AbstractController
             if ('paid' === $session->payment_status) {
                 $subscription = Subscription::retrieve($session->subscription);
                 $user->setStripeSubscriptionId($subscription->id);
+                $user->setFreeTrial(true);
                 $this->entityManager->flush();
 
                 return $this->redirectToRoute('app_dashboard');
@@ -141,7 +147,7 @@ final class StripeController extends AbstractController
     #[Route('/profile', name: 'app_profile')]
     public function profile(Request $request): Response
     {
-        $user = $this->security->getUser();
+        $user = $this->getCurrentUser();
         if (!$user || !$user->getStripeSubscriptionId()) {
             $route = $request->headers->get('referer') ?? '/';
 
@@ -150,12 +156,9 @@ final class StripeController extends AbstractController
 
         try {
             $subscription = Subscription::retrieve($user->getStripeSubscriptionId());
-            $nextInvoiceDate = new DateTime();
-            $nextInvoiceDate->setTimestamp($subscription->current_period_end);
 
             return $this->render('stripe/index.html.twig', [
-                'subscription' => $subscription,
-                'nextInvoiceDate' => $nextInvoiceDate,
+                'subscription' => $subscription
             ]);
         } catch (ApiErrorException $e) {
             return $this->redirectToRoute('app_home');
