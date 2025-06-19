@@ -55,7 +55,12 @@ export default function Pricing({price}) {
                                 </li>
                             </ul>
                             <div className="mt-6">
-                                <button className="btn btn-primary btn-block">Subscribe</button>
+                                <button
+                                  className="btn btn-primary btn-block"
+                                  onClick={() => (document.location.href = '/connect/strava')}
+                                >
+                                  Subscribe
+                                </button>
                             </div>
                         </div>
                     </div>
