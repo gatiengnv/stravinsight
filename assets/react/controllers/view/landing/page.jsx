@@ -1,6 +1,5 @@
 import FeaturesContainer from "../../components/FeaturesContainer";
 import FaqContainer from "../../components/FaqContainer";
-import QuotesContainer from "../../components/QuotesContainer";
 import Header from "../../components/Header";
 import StepsContainer from "../../components/StepsContainer";
 import Footer from "../../components/Footer";
@@ -18,7 +17,7 @@ export default function LandingPage({isLoggedIn, price, premiumMode}) {
                 <PremiumBanner/>
                 <FeaturesContainer/>
                 <StepsContainer/>
-                <QuotesContainer/>
+                {/* <QuotesContainer/> */}
                 <FaqContainer/>
                 {isPremiumMode && (<Pricing price={price}/>)}
                 <AvatarContainer/>

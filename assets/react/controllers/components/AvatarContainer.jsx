@@ -41,7 +41,7 @@ export default function AvatarContainer() {
                                 <AvatarItem key={i} i={i}/>
                             ))}
                         </div>
-                        <p className="text-sm font-medium">Join 10,000+ athletes already using our platform</p>
+                        <p className="text-sm font-medium">Join athletes already using our platform</p>
                     </div>
                 </div>
             </div>

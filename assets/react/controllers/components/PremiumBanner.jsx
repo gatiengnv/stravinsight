@@ -58,7 +58,7 @@ export default function PremiumBanner() {
                             <p className="text-white/90 drop-shadow-md">
                                 Get a complete overview of your training progress and performance metrics
                             </p>
-                            <a className="btn btn-sm btn-primary mt-2">Discover More</a>
+                            <a className="btn btn-sm btn-primary mt-2" href={"/connect/strava"}>Discover More</a>
                         </div>
                     </div>
                 </div>
