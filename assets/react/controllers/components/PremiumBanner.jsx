@@ -37,7 +37,8 @@ export default function PremiumBanner() {
                         <ArrowRight className="h-5 w-5 ml-1 animate-pulse"/>
                     </button>
                     <button
-                        className="btn glass btn-lg bg-white/20 backdrop-blur-sm hover:bg-white/30 transform hover:-translate-y-1 transition-all">
+                        className="btn glass btn-lg bg-white/20 backdrop-blur-sm hover:bg-white/30 transform hover:-translate-y-1 transition-all"
+                        onClick={() => window.open("https://www.youtube.com/watch?v=4iChsZTyk-c", "_blank")}>
                         View Demo
                     </button>
                 </div>
