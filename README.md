@@ -14,18 +14,18 @@ This Dockerized setup makes it easy to launch Stravinsight in both development a
 1.  Make sure [Docker Compose](https://docs.docker.com/compose/install/) (v2.10+) is installed.
 2.  Build the Docker images fresh:
 ```bash
-DOMAIN=localhost docker compose build --no-cache
+  DOMAIN=localhost docker compose build --no-cache
 ```
 
 Start the full stack with:
 ```bash
-DOMAIN=localhost docker compose -f compose.traefik.yaml -f compose.yaml -f compose.override.yaml up --pull always -d --wait
+   DOMAIN=localhost docker compose -f compose.traefik.yaml -f compose.yaml -f compose.override.yaml up --pull always -d --wait
 ```
 Open your browser at `https://localhost` and accept the auto-generated TLS certificate.
 
 Stop everything cleanly:
 ```bash
-DOMAIN=localhost docker compose down --remove-orphans
+   DOMAIN=localhost docker compose down --remove-orphans
 ```
 
 ## 🔐 Required Environment Variables
