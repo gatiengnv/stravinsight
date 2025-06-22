@@ -1,51 +1,80 @@
-# Symfony Docker
+# Stravinsight – Symfony Docker
 
-A [Docker](https://www.docker.com/)-based installer and runtime for the [Symfony](https://symfony.com) web framework,
-with [FrankenPHP](https://frankenphp.dev) and [Caddy](https://caddyserver.com/) inside!
+Stravinsight is a powerful data-driven web application that syncs and analyzes your sports activity data from Strava.
+Built with Symfony, FrankenPHP, and Caddy, it offers real-time dashboards, AI-powered insights via Gemini, and a sleek Google Maps-based visualization interface.
+
+This Dockerized setup makes it easy to launch Stravinsight in both development and production environments with modern tooling and optimal performance.
+
+[Test Stravinsight online](https://stravinsight.com)
 
 ![CI](https://github.com/dunglas/symfony-docker/workflows/CI/badge.svg)
 
-## Getting Started
+## 🚀 Getting Started
 
-1. If not already done, [install Docker Compose](https://docs.docker.com/compose/install/) (v2.10+)
-2. Run `docker compose build --no-cache` to build fresh images
-3. Run `docker compose up --pull always -d --wait` to set up and start a fresh Symfony project
-4. Open `https://localhost` in your favorite web browser and [accept the auto-generated TLS certificate](https://stackoverflow.com/a/15076602/1352334)
-5. Run `docker compose down --remove-orphans` to stop the Docker containers.
+1.  Make sure [Docker Compose](https://docs.docker.com/compose/install/) (v2.10+) is installed.
+2.  Build the Docker images fresh:
+```bash
+DOMAIN=localhost docker compose build --no-cache
+```
 
-## Features
+Start the full stack with:
+```bash
+DOMAIN=localhost docker compose -f compose.traefik.yaml -f compose.yaml -f compose.override.yaml up --pull always -d --wait
+```
+Open your browser at `https://localhost` and accept the auto-generated TLS certificate.
 
-* Production, development and CI ready
-* Just 1 service by default
-* Blazing-fast performance thanks to [the worker mode of FrankenPHP](https://github.com/dunglas/frankenphp/blob/main/docs/worker.md) (automatically enabled in prod mode)
-* [Installation of extra Docker Compose services](docs/extra-services.md) with Symfony Flex
-* Automatic HTTPS (in dev and prod)
-* HTTP/3 and [Early Hints](https://symfony.com/blog/new-in-symfony-6-3-early-hints) support
-* Real-time messaging thanks to a built-in [Mercure hub](https://symfony.com/doc/current/mercure.html)
-* [Vulcain](https://vulcain.rocks) support
-* Native [XDebug](docs/xdebug.md) integration
-* Super-readable configuration
+Stop everything cleanly:
+```bash
+DOMAIN=localhost docker compose down --remove-orphans
+```
 
-**Enjoy!**
+## 🔐 Required Environment Variables
 
-## Docs
+Before running, create a `.env.local` file or set these variables in your environment:
 
-1. [Options available](docs/options.md)
-2. [Using Symfony Docker with an existing project](docs/existing-project.md)
-3. [Support for extra services](docs/extra-services.md)
-4. [Deploying in production](docs/production.md)
-5. [Debugging with Xdebug](docs/xdebug.md)
-6. [TLS Certificates](docs/tls.md)
-7. [Using MySQL instead of PostgreSQL](docs/mysql.md)
-8. [Using Alpine Linux instead of Debian](docs/alpine.md)
-9. [Using a Makefile](docs/makefile.md)
-10. [Updating the template](docs/updating.md)
-11. [Troubleshooting](docs/troubleshooting.md)
+```env
+### OAuth – Strava ###
+OAUTH_STRAVA_CLIENT_ID=YOUR_STRAVA_CLIENT_ID
+OAUTH_STRAVA_CLIENT_SECRET=YOUR_STRAVA_CLIENT_SECRET
 
-## License
+### Google APIs ###
+GOOGLE_MAP_API_KEY=YOUR_GOOGLE_MAP_API_KEY
+GEMINI_API_KEY=YOUR_GEMINI_API_KEY
 
-Symfony Docker is available under the MIT License.
+### Symfony App ###
+APP_SECRET=ChangeThisToARealSecret
 
-## Credits
+### PostgreSQL Database ###
+DATABASE_URL=postgresql://app:password@database:5432/app?serverVersion=16&charset=utf8
+POSTGRES_USER=app
+POSTGRES_PASSWORD=password
+POSTGRES_DB=app
 
-Created by [Kévin Dunglas](https://dunglas.dev), co-maintained by [Maxime Helias](https://twitter.com/maxhelias) and sponsored by [Les-Tilleuls.coop](https://les-tilleuls.coop).
+### Premium Mode ###
+PREMIUM_MODE=1
+```
+
+## ✨ Features
+
+- Strava OAuth2 Integration for activity sync
+- Real-time metrics and map views
+- AI insights powered by Gemini (Google AI)
+- Google Maps for route visualizations
+- Full HTTPS with Traefik and Caddy
+- Powered by FrankenPHP for performance
+- One-command launch with Docker Compose
+
+## 📚 Additional Documentation
+
+- Xdebug support
+- TLS Certificate handling
+- Using Makefile
+- Alpine or Debian base
+- Production Deployment
+
+## 🧑‍💻 Credits
+
+- Created by [Gatien Genevois](https://www.linkedin.com/in/gatiengnv/) as part of the Stravinsight project
+- Based on Symfony Docker by Kévin Dunglas
+
+Happy syncing & running with Stravinsight!
