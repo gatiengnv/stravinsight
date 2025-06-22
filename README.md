@@ -10,16 +10,19 @@ This Dockerized setup makes it easy to launch Stravinsight in both development a
 ![CI](https://github.com/dunglas/symfony-docker/workflows/CI/badge.svg)
 
 ## 🚀 Getting Started
-
-1.  Make sure [Docker Compose](https://docs.docker.com/compose/install/) (v2.10+) is installed.
-2.  Build the Docker images fresh:
+1. Clone the repository
+```bash
+   git clone https://github.com/gatiengnv/stravinsight
+```
+2. Make sure [Docker Compose](https://docs.docker.com/compose/install/) (v2.10+) is installed.
+3. Build the Docker images fresh:
 ```bash
   DOMAIN=localhost docker compose build --no-cache
 ```
 
 Start the full stack with:
 ```bash
-   DOMAIN=localhost docker compose -f compose.traefik.yaml -f compose.yaml -f compose.override.yaml up --pull always -d --wait
+    DOMAIN=localhost docker compose -f compose.traefik.yaml -f compose.yaml -f compose.override.yaml up --pull always -d --wait
 ```
 Open your browser at `https://localhost` and accept the auto-generated TLS certificate.
 
@@ -63,14 +66,6 @@ PREMIUM_MODE=1
 - Full HTTPS with Traefik and Caddy
 - Powered by FrankenPHP for performance
 - One-command launch with Docker Compose
-
-## 📚 Additional Documentation
-
-- Xdebug support
-- TLS Certificate handling
-- Using Makefile
-- Alpine or Debian base
-- Production Deployment
 
 ## 🧑‍💻 Credits
 
