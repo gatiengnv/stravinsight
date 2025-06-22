@@ -25,9 +25,6 @@ final class HomeController extends AbstractController
         Stripe::setApiKey($this->stripeSecretKey);
     }
 
-    /**
-     * @throws ApiErrorException
-     */
     #[Route('/', name: 'app_home')]
     public function index(Security $security): Response
     {
@@ -35,12 +32,18 @@ final class HomeController extends AbstractController
         $numberFormatter = new \NumberFormatter($locale, \NumberFormatter::CURRENCY);
 
         $isLoggedIn = $security->isGranted('IS_AUTHENTICATED_FULLY');
-        $price = Price::retrieve($this->stripePriceId);
         $premiumMode = $_ENV['PREMIUM_MODE'];
+
+        try {
+            $price = Price::retrieve($this->stripePriceId);
+            $formattedPrice = $numberFormatter->formatCurrency($price->unit_amount / 100, $price->currency);
+        } catch (ApiErrorException $e) {
+            $formattedPrice = $numberFormatter->formatCurrency(0, 'EUR'); // EUR comme devise par défaut
+        }
 
         return $this->render('home/index.html.twig', [
             'isLoggedIn' => $isLoggedIn,
-            'price' => $numberFormatter->formatCurrency($price->unit_amount / 100, $price->currency),
+            'price' => $formattedPrice,
             'premiumMode' => $premiumMode,
         ]);
     }

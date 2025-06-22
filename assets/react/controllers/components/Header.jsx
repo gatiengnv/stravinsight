@@ -39,6 +39,9 @@ export default function Header({isLoggedIn, isPremiumMode}) {
                                 </a>
                             </li>
                         ))}
+                        <li>
+                            <a className={"hover:text-primary font-medium transition-all hover:scale-105"} href={"https://github.com/gatiengnv/stravinsight"}>GitHub</a>
+                        </li>
                     </ul>
                 </div>
 

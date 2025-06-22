@@ -54,7 +54,7 @@ POSTGRES_PASSWORD=password
 POSTGRES_DB=app
 
 ### Premium Mode ###
-PREMIUM_MODE=1
+PREMIUM_MODE=0
 ```
 
 ## ✨ Features
