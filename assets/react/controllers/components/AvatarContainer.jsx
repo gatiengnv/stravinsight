@@ -13,7 +13,7 @@ export default function AvatarContainer() {
                     <h2 className="text-4xl font-bold tracking-tight sm:text-5xl">Ready to Transform Your
                         Training?</h2>
                     <p className="mt-6 text-xl opacity-90 max-w-2xl mx-auto">
-                        Join thousands of athletes who are taking their performance to the next level with our
+                        Join athletes who are taking their performance to the next level with our
                         advanced
                         analytics platform.
                     </p>
