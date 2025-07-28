@@ -42,26 +42,14 @@ export default function PremiumBanner() {
                         View Demo
                     </button>
                 </div>
-                <div
-                    className="mt-16 w-full max-w-5xl overflow-hidden rounded-2xl border shadow-2xl transform hover:scale-[1.02] transition-all duration-500">
-                    <div className="relative aspect-[16/9]">
-                        <div
-                            className="absolute inset-0 bg-cover bg-center"
-                            style={{
-                                backgroundImage: "url('/img/dashboard.png')",
-                            }}
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent"></div>
-                        <div className="absolute bottom-8 left-8 right-8 flex flex-col items-start gap-4">
-                            <h3 className="text-2xl font-bold text-white drop-shadow-md">Comprehensive
-                                Dashboard</h3>
-                            <p className="text-white/90 drop-shadow-md">
-                                Get a complete overview of your training progress and performance metrics
-                            </p>
-                            <a className="btn btn-sm btn-primary mt-2" href={"/connect/strava"}>Discover More</a>
-                        </div>
-                    </div>
-                </div>
+                <iframe
+                    className="mt-16 w-full max-w-5xl aspect-[16/9] rounded-2xl"
+                    src="https://www.youtube.com/embed/4iChsZTyk-c?start=18&autoplay=0&mute=1&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&vq=hd1080"
+                    title="Demo Video"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                />
             </div>
         </section>
     )

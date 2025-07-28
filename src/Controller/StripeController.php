@@ -50,7 +50,7 @@ final class StripeController extends AbstractController
 
             if (!$user->isFreeTrial()) {
                 $sessionData['subscription_data'] = [
-                    'trial_period_days' => 15,
+                    'trial_period_days' => 7,
                 ];
             }
 
@@ -58,7 +58,7 @@ final class StripeController extends AbstractController
 
             return $this->redirect($session->url);
         } catch (ApiErrorException $e) {
-            return $this->redirectToRoute('app_premium');
+            return $this->redirectToRoute('app_home');
         }
     }
 
@@ -67,7 +67,7 @@ final class StripeController extends AbstractController
     {
         $sessionId = $request->query->get('session_id');
         if (!$sessionId) {
-            return $this->redirectToRoute('app_premium');
+            return $this->redirectToRoute('app_home');
         }
 
         try {
@@ -75,7 +75,7 @@ final class StripeController extends AbstractController
             $user = $this->getCurrentUser();
 
             if (!$user) {
-                return $this->redirectToRoute('app_premium');
+                return $this->redirectToRoute('app_home');
             }
 
             if ('paid' === $session->payment_status) {
@@ -86,10 +86,10 @@ final class StripeController extends AbstractController
 
                 return $this->redirectToRoute('app_dashboard');
             } else {
-                return $this->redirectToRoute('app_premium');
+                return $this->redirectToRoute('app_home');
             }
         } catch (ApiErrorException $e) {
-            return $this->redirectToRoute('app_premium');
+            return $this->redirectToRoute('app_home');
         }
     }
 

@@ -33,7 +33,7 @@ export default function FaqContainer() {
                         {
                             question: "Do you offer a free trial?",
                             answer:
-                                "No, the app is completely free to use. We believe in providing value without any cost, so you can enjoy all features without any limitations.",
+                                "Yes, we offer a 7 day free trial for new users. You can explore all the features of our platform without any commitment.",
                         },
                         {
                             question: "Is there a limit to how many activities I can analyze?",

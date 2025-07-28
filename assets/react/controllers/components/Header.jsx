@@ -12,7 +12,7 @@ export default function Header({isLoggedIn, isPremiumMode}) {
     }, []);
     return (
         <header
-            className={`navbar ${scrolled ? 'bg-base-100/90 backdrop-blur-md' : 'bg-transparent'} sticky top-0 z-50 transition-all duration-300`}>
+            className={`navbar bg-base-100/90 backdrop-blur-md sticky top-0 z-50 transition-all duration-300`}>
             <div className="container mx-auto flex items-center justify-between">
                 <div className="flex items-center">
                     <a href="/" className="flex items-center gap-2 hover:scale-105 transition-transform">
